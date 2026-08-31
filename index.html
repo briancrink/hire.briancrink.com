@@ -8,45 +8,113 @@
   <link rel="apple-touch-icon" href="resources/images/icons/apple-touch-icon.png">
   <link rel="apple-touch-icon" href="resources/images/icons/apple-touch-icon-dark.png" media="(prefers-color-scheme: dark)">
   <title>Hire | Brian Crink</title>
-</head>
-<body>
+  <link rel="stylesheet" href="resources/search-bar/search-bar.css">
+  
   <style>
-    body {
-        background: #000000;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        margin: 0;
-        height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: background 0.4s;
-        opacity: 0;
-        animation: fadeIn 1.3s forwards;
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+    *, *::before, *::after {
+      box-sizing: border-box;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to   { opacity: 1; }
+    html {
+      background-color: #000000;
     }
 
-    .container {
-      text-align: center;
-      margin-top: 100px;
-    }
-
-    .dev-image {
+    .background {
+      position: fixed;
+      top: 0;
+      left: 0;
       width: 100%;
-      max-width: 420px;
-      height: auto;
-      margin-bottom: 40px;
-      opacity: 0.95;
+      height: 100%;
+      background-color: #000000;
+      background-image: 
+        linear-gradient(to right,  rgba(16, 16, 16, 0.6) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(16, 16, 16, 0.6) 1px, transparent 1px);
+      background-size: 30px 30px, 30px 30px;
+      background-position: 0 0, 0 0;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100dvh;
+      background: transparent;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      position: relative;
+      z-index: 2;
+    }
+
+    :root {
+      --crumb-y: -56px; /*adjust breadcrumb position */
+      --name-y: -32px; /*adjust name position */
+      --status-y: 52px; /*adjust hire-status position */
+      --tool-gap: 90px; /*adjust pill + search bar position */
+    }
+
+    .stage,
+    .tools {
+      text-align: center;
+      width: 100%;
+      max-width: 450px;
+      padding: 0 20px;
+      z-index: 3;
+    }
+
+    .stage,
+    .tools {
+      position: absolute;
+      top: 38%;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .tools {
+      padding-top: var(--tool-gap);
+    }
+
+    .dots {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: radial-gradient(circle, #161616 2px, transparent 1px);
+      background-size: 30px 30px;
+      background-position: 15.5px 15.5px;
+      pointer-events: none;
+      z-index: 0;
+      /* animation: dotPulse 6s ease-in-out infinite; */
+      opacity: 0;
+      will-change: opacity;
+      transform: translateZ(0);
+      -webkit-transform: translateZ(0);
+    }
+
+    @keyframes dotPulse {
+      0%, 100% { opacity: 0; }
+      50%      { opacity: 0.95; }
+    }
+
+    /* .dots.interactive {
+      animation: dotPulse 2.5s ease-in-out infinite;
+      opacity: 1;
+    } */
+
+    .identity {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: var(--name-y);
+      text-align: center;
     }
 
     .name {
       font-size: 3.0rem;
       font-weight: 600;
       color: #ffffff;
-      margin: 0 0 15px 0;
+      margin: 0;
       letter-spacing: -0.5px;
     }
 
@@ -61,150 +129,363 @@
       opacity: 0.85;
     }
 
-    .status {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 40px;
+    .sub-header .portal-word {
+      text-transform: uppercase;
+      font-size: 0.95rem;
+      letter-spacing: 0.16em;
     }
 
-    .status-pill {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      background: rgba(255, 255, 255, 0.023);
-      border-radius: 9999px;
-      padding: 8px 20px;
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      width: fit-content;
-    }
-
-    .status-dot {
-      width: 8px;
-      height: 8px;
-      background-color: #1784d1;
-      border-radius: 50%;
-      flex-shrink: 0;
-      animation: pulse 2s ease-in-out infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { 
-        opacity: 1; 
-        transform: scale(1);
-      }
-      50% { 
-        opacity: 0.35; 
-        transform: scale(0.85);
-      }
-    }
-
-    .status-text-wrapper {
-      display: flex;
-      align-items: center;
-      overflow: visible;
-      width: 0;
-    }
-
-    .status-text {
-      color: #1784d1;
-      font-family: ui-monospace, "SF Mono", Menlo, Monaco, "Courier New", monospace;
-      white-space: nowrap;
-      display: inline-block;
-      flex-shrink: 0;
-      min-height: 1em;
+    .sub-header .career-word,
+    .sub-header .career-word .os-mark {
+      font-size: 1.1rem;
       line-height: 1;
     }
 
-    .cursor {
-      width: 2px;
-      height: 1em;
-      background-color: #1784d1;
-      flex-shrink: 0;
-      animation: blink-caret 0.75s step-end infinite;
-      animation-delay: 0.1s;
-      animation-fill-mode: forwards;
-      margin-left: 4px;
+    .sub-header {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: var(--crumb-y);
+      margin: 0;
+      color: #0cff04c5;
+      font-size: 1rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.55em;
+      white-space: nowrap;
+      letter-spacing: 0.16em;
     }
 
-    @keyframes blink-caret {
-      from, to { opacity: 0; }
-      50% { opacity: 1; }
+    .sub-header .crumb-dot {
+      color: #8b949e;
+      font-weight: 500;
+      font-size: 0.85em;
+      line-height: 1;
+      letter-spacing: 0;
     }
+
+    .sub-header-link {
+      color: inherit;
+      text-decoration: none;
+      cursor: pointer;
+      transition: opacity 0.2s ease;
+    }
+
+    .sub-header-link:hover {
+      opacity: 0.85;
+    }
+
+    @property --pc1 { syntax: '<color>'; inherits: false; initial-value: #ff006e; }
+    @property --pc2 { syntax: '<color>'; inherits: false; initial-value: #8338ec; }
+    @property --pc3 { syntax: '<color>'; inherits: false; initial-value: #3a86ff; }
+    @property --pc4 { syntax: '<color>'; inherits: false; initial-value: #06d6a0; }
+    @property --pc5 { syntax: '<color>'; inherits: false; initial-value: #ffbe0b; }
+
+    @keyframes portalChromaFade {
+      0%   { --pc1: #ff006e; --pc2: #8338ec; --pc3: #3a86ff; --pc4: #06d6a0; --pc5: #ffbe0b; }
+      20%  { --pc1: #ffbe0b; --pc2: #ff006e; --pc3: #8338ec; --pc4: #3a86ff; --pc5: #06d6a0; }
+      40%  { --pc1: #06d6a0; --pc2: #ffbe0b; --pc3: #ff006e; --pc4: #8338ec; --pc5: #3a86ff; }
+      60%  { --pc1: #3a86ff; --pc2: #06d6a0; --pc3: #ffbe0b; --pc4: #ff006e; --pc5: #8338ec; }
+      80%  { --pc1: #8338ec; --pc2: #3a86ff; --pc3: #06d6a0; --pc4: #ffbe0b; --pc5: #ff006e; }
+      100% { --pc1: #ff006e; --pc2: #8338ec; --pc3: #3a86ff; --pc4: #06d6a0; --pc5: #ffbe0b; }
+    }
+
+    .sub-header-link.portal-word {
+      background-image: linear-gradient(
+        90deg,
+        var(--pc1),
+        var(--pc2),
+        var(--pc3),
+        var(--pc4),
+        var(--pc5)
+      );
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+      animation: portalChromaFade 8s linear infinite;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .sub-header-link.portal-word {
+        animation: none;
+      }
+    }
+
+    .os-mark {
+      font-weight: 600;
+      color: #ffffff;
+    }
+
+    .hire-status-row {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: var(--status-y);
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      margin: 0;
+    }
+
+    .hire-status {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin: 0;
+      color: #8b949e;
+      font-size: 0.95rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .hire-status .hire-beacon {
+      position: relative;
+      width: 15px;
+      height: 15px;
+      flex: 0 0 15px;
+      margin: 0;
+      opacity: 1;
+      visibility: visible;
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    .hire-status .hire-dot {
+      width: 15px;
+      height: 15px;
+      background: #27c93f;
+      border-radius: 50%;
+      box-shadow: 0 0 10px #27c93f;
+      position: relative;
+      z-index: 3;
+      display: block;
+    }
+
+    .hire-status .pulse-ring {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 15px;
+      height: 15px;
+      background: #18b02f;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      opacity: 0.45;
+      animation: pulseBeacon 1.35s infinite ease-out;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    @keyframes pulseBeacon {
+      0%   { transform: translate(-50%, -50%) scale(0.5); opacity: 0.6; }
+      100% { transform: translate(-50%, -50%) scale(2.3); opacity: 0; }
+    }
+
+    .mode-toggle {
+      position: relative;
+      display: inline-flex;
+      background: rgba(255, 255, 255, 0.023);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 50px;
+      padding: 4px;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+      margin-bottom: 32px;
+      width: 100%;
+      max-width: 270px;
+      z-index: 4;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .mode-toggle:hover {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(255, 255, 255, 0.25);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    }
+
+    .toggle-slider {
+      position: absolute;
+      top: 4px;
+      bottom: 4px;
+      left: 4px;
+      width: calc(50% - 4px);
+      background: rgba(0, 255, 157, 0.9);
+      border-radius: 46px;
+      transition: left 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+      z-index: 1;
+    }
+
+    .mode-toggle.roles .toggle-slider {
+      left: calc(50% + 0px);
+    }
+
+    .toggle-option {
+      flex: 1;
+      padding: 8px 16px;
+      text-align: center;
+      font-size: 15px;
+      font-weight: 500;
+      border-radius: 46px;
+      z-index: 2;
+      transition: color 0.2s ease;
+    }
+
+    .toggle-option.active {
+      color: #000000;
+      font-weight: 600;
+    }
+
+    .toggle-option.inactive {
+      color: #aaaaaa;
+    }
+
   </style>
+</head>
+<body>
+  <div class="background"></div>
+  <div class="dots"></div>
 
-  <div class="container">
-    <h1 class="name"><a href="https://briancrink.com" class="name-link">Brian Crink</a></h1>
-    
-    <div class="status">
-      <div class="status-pill">
-        <span class="status-dot"></span>
-        
-        <div class="status-text-wrapper">
-          <span class="status-text"></span>
-          <span class="cursor"></span>
-        </div>
+  <div class="stage">
+    <p class="sub-header">
+      <a href="https://portal.briancrink.com#career" class="sub-header-link portal-word">Portal</a>
+      <span class="crumb-dot" aria-hidden="true">•</span>
+      <a href="https://career.briancrink.com" class="sub-header-link career-word">Career<span class="os-mark">OS</span></a>
+    </p>
+    <div class="identity">
+      <h1 class="name"><a href="https://briancrink.com" class="name-link">Brian Crink</a></h1>
+    </div>
+    <div class="hire-status-row" id="hireStatusRow">
+      <p class="hire-status">
+        Available For Hire
+        <span class="hire-beacon is-on" id="hireBeacon" aria-hidden="true">
+          <span class="pulse-ring"></span>
+          <span class="hire-dot"></span>
+        </span>
+      </p>
+    </div>
+  </div>
+
+  <div class="tools">
+    <div class="mode-toggle" id="modeToggle">
+      <div class="toggle-slider" id="toggleSlider"></div>
+
+      <div class="toggle-option active" id="rolesOption" onclick="switchMode('roles')">
+        Roles
+      </div>
+      <div class="toggle-option inactive" id="servicesOption" onclick="switchMode('services')">
+        Services
       </div>
     </div>
 
-    <img src="resources/images/illustration/developer.jpg" alt="Software Developer" class="dev-image" draggable="false">
+    <div class="search-wrapper" id="searchWrapper">
+      <div class="search-bar" id="searchBar">
+        <div class="search-icon" id="searchIcon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2.2"
+              stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+        </div>
+
+        <input type="text" id="searchInput"
+             placeholder="Search roles, services, keywords"
+             autocomplete="off" spellcheck="false">
+        <div class="right-spacer" aria-hidden="true"></div>
+      </div>
+
+      <div class="icon-circles" id="iconCircles">
+        <div class="icon-circle" id="menuIcon"    role="button" tabindex="-1" aria-label="Menu">≡</div>
+        <div class="icon-circle" id="commandIcon" role="button" tabindex="-1" aria-label="Commands">⌘</div>
+      </div>
+
+      <div class="overlay-box" id="overlayBox">
+        <p style="margin: 0; color: #ccc; font-size: 15px;">
+          Quick commands or actions appear here
+        </p>
+      </div>
+    </div>
   </div>
 
+  <script src="resources/search-bar/search-bar.js"></script>
+
   <script>
-    function typeWriter(element, text, speed = 85) {
-      return new Promise((resolve) => {
-        element.textContent = '';
-        let i = 0;
+    function switchMode(mode) {
+      const toggle = document.getElementById('modeToggle');
+      const servicesOption = document.getElementById('servicesOption');
+      const rolesOption = document.getElementById('rolesOption');
 
-        const interval = setInterval(() => {
-          if (i < text.length) {
-            element.textContent += text.charAt(i);
-            i++;
-          } else {
-            clearInterval(interval);
-            resolve();
-          }
-        }, speed);
-      });
+      if (mode === 'roles') {
+        toggle.classList.add('roles');
+        servicesOption.classList.remove('active');
+        servicesOption.classList.add('inactive');
+        rolesOption.classList.remove('inactive');
+        rolesOption.classList.add('active');
+
+        setTimeout(() => {
+          window.location.href = 'https://hire.briancrink.com/roles';
+        }, 200);
+      } else {
+        toggle.classList.remove('roles');
+        rolesOption.classList.remove('active');
+        rolesOption.classList.add('inactive');
+        servicesOption.classList.remove('inactive');
+        servicesOption.classList.add('active');
+
+        setTimeout(() => {
+          window.location.href = 'https://hire.briancrink.com/services';
+        }, 200);
+      }
     }
 
-    async function startTypewriter() {
-      const wrapper = document.querySelector('.status-text-wrapper');
-      const statusText = document.querySelector('.status-text');
-      if (!wrapper || !statusText) return;
+    const GRID = 30;
 
-      const fullText = "Planned Development";
+    function snapHireDotToGrid() {
+      const beacon = document.getElementById('hireBeacon');
+      if (!beacon) return;
 
-      const measurer = document.createElement('span');
-      measurer.style.position = 'absolute';
-      measurer.style.visibility = 'hidden';
-      measurer.style.whiteSpace = 'nowrap';
-      measurer.style.font = getComputedStyle(statusText).font;
-      measurer.textContent = fullText;
-      document.body.appendChild(measurer);
+      beacon.style.transform = '';
 
-      const textWidth = measurer.offsetWidth;
-      document.body.removeChild(measurer);
-
-      const extraSpaceForCursor = 14;
-      wrapper.style.width = `${textWidth + extraSpaceForCursor}px`;
-
-      await typeWriter(statusText, fullText, 85);
+      const rect = beacon.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const snapX = Math.round(cx / GRID) * GRID;
+      beacon.style.transform = 'translateX(' + (snapX - cx) + 'px)';
     }
 
-    function restartTypewriter() {
-      const statusText = document.querySelector('.status-text');
-      if (!statusText) return;
-
-      startTypewriter().then(() => {
-        setTimeout(restartTypewriter, 5000);
-      });
+    function scheduleSnap() {
+      requestAnimationFrame(snapHireDotToGrid);
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-      setTimeout(restartTypewriter, 300);
-    });
+    window.addEventListener('load', scheduleSnap);
+    window.addEventListener('resize', scheduleSnap);
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(scheduleSnap);
+    }
+
+    const dots = document.querySelector('.dots');
+    const toggle = document.getElementById('modeToggle');
+    const searchInput = document.getElementById('searchInput');
+
+    function activateDots() {
+      // dots.classList.add('interactive');
+    }
+
+    function deactivateDots() {
+      // dots.classList.remove('interactive');
+    }
+
+    searchInput.addEventListener('focus', activateDots);
+    searchInput.addEventListener('blur', deactivateDots);
+
+    toggle.addEventListener('mouseenter', activateDots);
+    toggle.addEventListener('mouseleave', deactivateDots);
   </script>
-
 </body>
 </html>
