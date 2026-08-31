@@ -44,13 +44,22 @@
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       position: relative;
       z-index: 2;
+      transition: background 0.4s;
+      opacity: 0;
+      animation: fadeIn 1.3s forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
     }
 
     :root {
-      --crumb-y: -56px; /*adjust breadcrumb position */
-      --name-y: -32px; /*adjust name position */
+      --crumb-y: -50px; /*adjust breadcrumb position */
+      --name-y: -24px; /*adjust name position */
       --status-y: 52px; /*adjust hire-status position */
-      --tool-gap: 90px; /*adjust pill + search bar position */
+      --location-y: 80px; /*adjust location-status position */
+      --tool-gap: 120px; /*adjust pill + search bar position */
     }
 
     .stage,
@@ -72,6 +81,12 @@
 
     .tools {
       padding-top: var(--tool-gap);
+      pointer-events: none;
+    }
+
+    .mode-toggle,
+    .search-wrapper {
+      pointer-events: auto;
     }
 
     .dots {
@@ -230,16 +245,43 @@
       margin: 0;
     }
 
+    .location-status {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: var(--location-y);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin: 0;
+      color: #8b949e;
+      font-size: 0.95rem;
+      font-weight: 300;
+      letter-spacing: 0.04em;
+      line-height: 1;
+      white-space: nowrap;
+      pointer-events: none;
+    }
+
+    .location-status .hire-pin {
+      width: 14px;
+      height: 14px;
+      flex: 0 0 14px;
+      display: block;
+    }
+
     .hire-status {
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 10px;
       margin: 0;
+      /* color: #09ff00; */
       color: #8b949e;
       font-size: 0.95rem;
-      font-weight: 500;
-      letter-spacing: 0.14em;
+      font-weight: 450;
+      letter-spacing: 0.06rem;
       line-height: 1;
       white-space: nowrap;
     }
@@ -369,6 +411,12 @@
           <span class="hire-dot"></span>
         </span>
       </p>
+    </div>
+    <div class="location-status" id="locationStatus">
+      <svg class="hire-pin" viewBox="0 0 24 24" aria-hidden="true">
+        <path fill="currentColor" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/>
+      </svg>
+      <span>USA · Remote</span>
     </div>
   </div>
 
