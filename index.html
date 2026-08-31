@@ -27,12 +27,16 @@
       width: 100%;
       height: 100%;
       background-color: #000000;
-      background-image: 
-        linear-gradient(to right,  rgba(16, 16, 16, 0.6) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(16, 16, 16, 0.6) 1px, transparent 1px);
-      background-size: 24px 24px, 24px 24px; /*30 */
-      background-position: 0 0, 0 0;
       z-index: -1;
+      pointer-events: none;
+    }
+
+    #gridCanvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
       pointer-events: none;
     }
 
@@ -398,6 +402,7 @@
 </head>
 <body>
   <div class="background"></div>
+  <canvas id="gridCanvas"></canvas>
   <div class="dots"></div>
 
   <div class="stage">
@@ -500,6 +505,20 @@
     }
 
     const GRID = 24; //30
+    const WELL = 16;
+    const WELL_R = 64;
+    const RIPPLE_AMP = 7;
+    const RIPPLE_LEN = 22;
+    const RIPPLE_SPEED = 2.4;
+    const RIPPLE_DECAY = 120;
+    const RIPPLE_OPACITY = 0.14;
+    const GRID_ALPHA = 0.6;
+
+    const gridCanvas = document.getElementById('gridCanvas');
+    const gridCtx = gridCanvas.getContext('2d');
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let canvasW = 0;
+    let canvasH = 0;
 
     function snapHireDotToGrid() {
       const beacon = document.getElementById('hireBeacon');
@@ -517,11 +536,95 @@
       requestAnimationFrame(snapHireDotToGrid);
     }
 
+    function beaconOrigin() {
+      const beacon = document.getElementById('hireBeacon');
+      if (!beacon) {
+        return { x: canvasW * 0.5, y: canvasH * 0.24 };
+      }
+      const rect = beacon.getBoundingClientRect();
+      return {
+        x: rect.left + rect.width / 2,
+        y: rect.top + rect.height / 2
+      };
+    }
+
+    function resizeGridCanvas() {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvasW = window.innerWidth;
+      canvasH = window.innerHeight;
+      gridCanvas.width = Math.floor(canvasW * dpr);
+      gridCanvas.height = Math.floor(canvasH * dpr);
+      gridCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    function warpPoint(x, y, cx, cy, t) {
+      const dx = x - cx;
+      const dy = y - cy;
+      const r = Math.hypot(dx, dy) || 0.0001;
+      const ux = dx / r;
+      const uy = dy / r;
+      const env = Math.exp(-r / RIPPLE_DECAY);
+      const wave = reduceMotion ? 0 : Math.sin(r / RIPPLE_LEN - t * RIPPLE_SPEED);
+      let pull = -WELL * Math.exp(-r / WELL_R);
+      if (!reduceMotion) pull += RIPPLE_AMP * wave * env;
+      const crest = Math.max(0, wave) * env;
+      return { x: x + ux * pull, y: y + uy * pull, crest: crest };
+    }
+
+    function strokeSeg(ctx, a, b) {
+      const crest = (a.crest + b.crest) * 0.5;
+      const lift = RIPPLE_OPACITY * crest;
+      const g = Math.round(16 + lift * 140);
+      ctx.strokeStyle = 'rgba(' + g + ',' + g + ',' + g + ',' + Math.min(0.9, GRID_ALPHA + lift) + ')';
+      ctx.beginPath();
+      ctx.moveTo(a.x, a.y);
+      ctx.lineTo(b.x, b.y);
+      ctx.stroke();
+    }
+
+    function drawWellRipple(now) {
+      const t = now / 1000;
+      const origin = beaconOrigin();
+      const ctx = gridCtx;
+      const cols = Math.ceil(canvasW / GRID) + 2;
+      const rows = Math.ceil(canvasH / GRID) + 2;
+
+      ctx.clearRect(0, 0, canvasW, canvasH);
+      ctx.lineWidth = 1;
+      ctx.lineJoin = 'round';
+
+      for (let c = 0; c <= cols; c++) {
+        let prev = null;
+        for (let r = 0; r <= rows; r++) {
+          const p = warpPoint(c * GRID, r * GRID, origin.x, origin.y, t);
+          if (prev) strokeSeg(ctx, prev, p);
+          prev = p;
+        }
+      }
+
+      for (let r = 0; r <= rows; r++) {
+        let prev = null;
+        for (let c = 0; c <= cols; c++) {
+          const p = warpPoint(c * GRID, r * GRID, origin.x, origin.y, t);
+          if (prev) strokeSeg(ctx, prev, p);
+          prev = p;
+        }
+      }
+
+      requestAnimationFrame(drawWellRipple);
+    }
+
     window.addEventListener('load', scheduleSnap);
-    window.addEventListener('resize', scheduleSnap);
+    window.addEventListener('resize', () => {
+      resizeGridCanvas();
+      scheduleSnap();
+    });
     if (document.fonts && document.fonts.ready) {
       document.fonts.ready.then(scheduleSnap);
     }
+
+    resizeGridCanvas();
+    requestAnimationFrame(drawWellRipple);
 
     const dots = document.querySelector('.dots');
     const toggle = document.getElementById('modeToggle');
