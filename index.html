@@ -59,12 +59,13 @@
     }
 
     :root {
-      --stage-top: 24%; /*adjust height of all stage + tools elements */
+      --stage-top: 20%; /*adjust height of all stage + tools elements */
       --crumb-y: -50px; /*adjust breadcrumb position */
       --name-y: -24px; /*adjust name position */
       --status-y: 46px; /*adjust hire-status position */
       --location-y: 100px; /*adjust location-status position */
-      --tool-gap: 140px; /*adjust pill + search bar position */
+      --dev-image-y: 126px; /*adjust developer image position */
+      --tool-gap: 270px; /*adjust pill + search bar position */
     }
 
     .stage,
@@ -128,6 +129,7 @@
       right: 0;
       top: var(--name-y);
       text-align: center;
+      z-index: 2;
     }
 
     .name {
@@ -147,6 +149,20 @@
     
     .name-link:hover {
       opacity: 0.85;
+    }
+
+    .dev-image {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: var(--dev-image-y);
+      width: 160px;
+      max-width: 160px;
+      height: auto;
+      margin: 0 auto;
+      opacity: 1;
+      z-index: 1;
+      pointer-events: none;
     }
 
     .sub-header .portal-word {
@@ -249,6 +265,7 @@
       justify-content: center;
       width: 100%;
       margin: 0;
+      z-index: 2;
     }
 
     .location-status {
@@ -268,6 +285,7 @@
       line-height: 1;
       white-space: nowrap;
       pointer-events: none;
+      z-index: 2;
     }
 
     .location-status .hire-pin {
@@ -429,6 +447,7 @@
       </svg>
       <span>USA · Remote</span>
     </div>
+    <img src="resources/images/profile/developer_emoji.png" alt="Software Developer" class="dev-image" draggable="false">
   </div>
 
   <div class="tools">
