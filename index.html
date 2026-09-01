@@ -66,8 +66,13 @@
       --location-y: 100px; /*adjust location-status position */
       --dev-image-y: 126px; /*adjust developer image position */
       --tool-gap: 270px; /*adjust pill + search bar position */
-      --board-y: 168px; /*adjust cards below search bar */
+      --board-y: 168px; /*padding from tools to first card row — do not snap this away on load */
       --card-min: 460px; /*min card width before wrapping to next row */
+      --card-fade: 8px; /*fade-out zone height under the search bar — lower this to shrink the dissolve */
+      --card-fade-gap: 0px; /*space below the search bar before fade starts */
+      --snap-pad: 36px; /*gap under the search bar when a row is seated */
+      --snap-ms: 720; /*row snap duration in ms */
+      --board-gap: 14px;
     }
 
     .stage,
@@ -428,7 +433,7 @@
       z-index: 3;
       pointer-events: none;
       --mask-solid: 0px;
-      --mask-end: 28px;
+      --mask-end: var(--card-fade);
       -webkit-mask-image: linear-gradient(
         to bottom,
         transparent 0,
@@ -452,7 +457,7 @@
       grid-template-columns: repeat(auto-fit, var(--card-min));
       justify-content: center;
       justify-items: center;
-      gap: 14px;
+      gap: var(--board-gap);
       width: 100%;
       pointer-events: auto;
     }
@@ -494,9 +499,15 @@
       cursor: pointer;
     }
 
+    /* NOTE: is-above no longer disables pointer-events. A card that is
+       partially (or even fully) faded by the mask should stay hoverable
+       and clickable — whether an interaction "counts" is decided purely
+       by the pointer's own Y position vs. the fade line in JS
+       (see pointerAboveFade()), not by the card's scroll position. */
+
     .hire-card.is-lit,
-    .hire-card.is-active:hover,
-    .hire-card.is-active:focus-within {
+    .hire-card.is-active:not(.is-above):hover,
+    .hire-card.is-active:not(.is-above):focus-within {
       background: rgba(0, 12, 4, 0.4);
       border-color: #003f0982;
     }
@@ -1957,7 +1968,8 @@
       const cards = Array.from(document.querySelectorAll('.hire-card.is-active'));
       cards.forEach((card) => card.classList.remove('is-in'));
 
-      const hold = cardsBooted ? 80 : 400;
+      const isBoot = !cardsBooted;
+      const hold = isBoot ? 400 : 80;
       cardsBooted = true;
       cardRevealTimer = window.setTimeout(() => {
         const rows = cardsByRow(cards);
@@ -1969,7 +1981,20 @@
           const rect = card.getBoundingClientRect();
           return rect.top < window.innerHeight * 0.92 && rect.bottom > topCut;
         });
-        if (firstVisible) revealRow(first);
+        if (firstVisible) {
+          revealRow(first);
+          if (isBoot) {
+            // The reveal animation offsets cards with translateY(12px)
+            // until it finishes, which can throw the initial seated
+            // scroll position off by a few pixels. Once the stagger
+            // completes, nudge the first row back into its exact seated
+            // position — but only if the person hasn't scrolled yet.
+            const settleDelay = first.cards.length * 180 + 60;
+            window.setTimeout(() => {
+              if (!userInteracted) seatFirstRow(true);
+            }, settleDelay);
+          }
+        }
 
         cardObserver = new IntersectionObserver((entries) => {
           const byRow = cardsByRow(cards);
@@ -1987,11 +2012,13 @@
     }
 
     function syncCards(mode) {
+      const wasBooted = cardsBooted;
       document.querySelectorAll('.hire-card').forEach((card) => {
         card.classList.toggle('is-active', card.dataset.mode === mode);
         card.classList.remove('is-lit');
       });
       queueCardReveal();
+      if (wasBooted) scheduleRowSnap();
     }
 
     if (!location.hash) writeHash('roles', true);
@@ -2147,27 +2174,209 @@
     }
 
 
+    function cssPx(name, fallback) {
+      const n = parseFloat(getComputedStyle(document.documentElement).getPropertyValue(name));
+      return Number.isFinite(n) ? n : fallback;
+    }
+
+    function fadePx() { return cssPx('--card-fade', 8); }
+    function fadeGapPx() { return cssPx('--card-fade-gap', 0); }
+    function snapPadPx() { return cssPx('--snap-pad', 14); }
+    function snapMs() { return cssPx('--snap-ms', 720); }
+    function boardGapPx() { return cssPx('--board-gap', 14); }
+
+    function searchCut() {
+      const bar = document.getElementById('searchBar') || document.querySelector('.search-bar');
+      return bar ? bar.getBoundingClientRect().bottom + fadeGapPx() : headerReserve();
+    }
+
+    function fadeLine() {
+      return searchCut() + fadePx();
+    }
+
+    function slotTop() {
+      return searchCut() + fadePx() + snapPadPx();
+    }
+
     function syncCardMask() {
       const flow = document.getElementById('pageFlow');
-      const bar = document.getElementById('searchBar') || document.querySelector('.search-bar');
       if (!flow) return;
-      const flowTop = flow.getBoundingClientRect().top;
-      const cut = bar ? bar.getBoundingClientRect().bottom + 6 : headerReserve();
-      const fade = 28;
-      const solid = Math.max(0, cut - flowTop);
+      const cut = searchCut();
+      const solid = Math.max(0, cut - flow.getBoundingClientRect().top);
+      const fade = fadePx();
       flow.style.setProperty('--mask-solid', solid + 'px');
       flow.style.setProperty('--mask-end', (solid + fade) + 'px');
+      const line = fadeLine();
+      activeCards().forEach((card) => {
+        const r = card.getBoundingClientRect();
+        const above = r.top < line;
+        card.classList.toggle('is-above', above);
+        if (above) card.classList.remove('is-lit');
+      });
     }
+
+    function activeCards() {
+      return Array.from(document.querySelectorAll('.hire-card.is-active'));
+    }
+
+    function rowBounds(cards) {
+      let top = Infinity;
+      let bottom = -Infinity;
+      cards.forEach((card) => {
+        const r = card.getBoundingClientRect();
+        if (r.top < top) top = r.top;
+        if (r.bottom > bottom) bottom = r.bottom;
+      });
+      return { top: top, bottom: bottom, height: bottom - top };
+    }
+
+    let snapping = false;
+    let snapTimer = 0;
+    let hoverTimer = 0;
+    let snappedKey = '';
+    let snapRAF = 0;
+    let userInteracted = false;
+
+    function rowKeyId(cards) {
+      return cards.map((c) => c.querySelector('.card-title')?.textContent || '').join('|');
+    }
+
+    // If the person starts scrolling/dragging while a rubber-band snap is
+    // still animating, stop fighting them: cancel the animation immediately
+    // and hand control straight back to native scrolling. A fresh snap will
+    // get scheduled automatically once they stop again.
+    function cancelSnapAnimation() {
+      if (snapRAF) {
+        cancelAnimationFrame(snapRAF);
+        snapRAF = 0;
+      }
+      snapping = false;
+    }
+
+    function snapRow(cards, instant) {
+      if (!cards || !cards.length || snapping) return;
+      const bounds = rowBounds(cards);
+      if (!Number.isFinite(bounds.top)) return;
+      const delta = bounds.top - slotTop();
+      if (Math.abs(delta) < 4) {
+        snappedKey = rowKeyId(cards);
+        syncCardMask();
+        return;
+      }
+      snapping = true;
+      snappedKey = rowKeyId(cards);
+      const ms = instant ? 0 : snapMs();
+      if (ms <= 0) {
+        window.scrollBy(0, delta);
+        snapping = false;
+        syncCardMask();
+        return;
+      }
+      const start = window.scrollY;
+      const end = start + delta;
+      const t0 = performance.now();
+      const ease = (t) => 1 - Math.pow(1 - t, 3);
+      function step(now) {
+        const t = Math.min(1, (now - t0) / ms);
+        window.scrollTo(0, start + (end - start) * ease(t));
+        syncCardMask();
+        if (t < 1) {
+          snapRAF = requestAnimationFrame(step);
+        } else {
+          snapRAF = 0;
+          snapping = false;
+          syncCardMask();
+          // Re-check after finishing in case layout shifted during the
+          // animation (e.g. images/fonts settling) and left us slightly off.
+          scheduleRowSnap();
+        }
+      }
+      snapRAF = requestAnimationFrame(step);
+    }
+
+    function mostVisibleRow() {
+      const rows = cardsByRow(activeCards());
+      if (!rows.length) return null;
+      const top = slotTop();
+      const bottom = window.innerHeight - 8;
+      let best = rows[0];
+      let bestArea = -1;
+      rows.forEach((row) => {
+        const b = rowBounds(row.cards);
+        const area = Math.max(0, Math.min(b.bottom, bottom) - Math.max(b.top, top));
+        if (area > bestArea) {
+          bestArea = area;
+          best = row;
+        }
+      });
+      return best;
+    }
+
+    function scheduleRowSnap() {
+      if (snapping) return;
+      window.clearTimeout(snapTimer);
+      snapTimer = window.setTimeout(() => {
+        const row = mostVisibleRow();
+        if (!row) return;
+        const b = rowBounds(row.cards);
+        const top = slotTop();
+        const bottom = window.innerHeight - 8;
+        const fullyIn = b.top >= top - 6 && b.bottom <= bottom + 6;
+        if (fullyIn) return;
+        const overlap = Math.min(b.bottom, bottom) - Math.max(b.top, top);
+        if (overlap < b.height * 0.45) return;
+        snapRow(row.cards);
+      }, 140);
+    }
+
+    function rowForCard(card) {
+      if (!card) return null;
+      const rows = cardsByRow(activeCards());
+      return rows.find((row) => row.cards.includes(card)) || null;
+    }
+
+    function pointerAboveFade(e) {
+      return e.clientY < fadeLine();
+    }
+
+    function seatFirstRow(instant) {
+      const rows = cardsByRow(activeCards());
+      if (!rows.length) return;
+      snapRow(rows[0].cards, instant);
+    }
+
     syncCardMask();
     requestAnimationFrame(syncCardMask);
-    window.addEventListener('scroll', syncCardMask, { passive: true });
+
+    // Every scroll: keep the fade mask glued to the search bar, and
+    // (re)schedule the rubber-band snap so the most-visible row settles
+    // into its seated position once scrolling stops — regardless of
+    // whether the pointer is hovering a card or not.
+    window.addEventListener('scroll', () => {
+      syncCardMask();
+      scheduleRowSnap();
+    }, { passive: true });
+
+    // Treat wheel/touch input as "the person is driving the scroll now" —
+    // cancel any in-progress programmatic snap so it doesn't fight them.
+    function markUserScrollIntent() {
+      userInteracted = true;
+      if (snapping) cancelSnapAnimation();
+    }
+    window.addEventListener('wheel', markUserScrollIntent, { passive: true });
+    window.addEventListener('touchstart', markUserScrollIntent, { passive: true });
+
     window.addEventListener('load', scheduleSnap);
-    window.addEventListener('load', syncCardMask);
+    window.addEventListener('load', () => {
+      syncCardMask();
+      if (!userInteracted) requestAnimationFrame(() => seatFirstRow(true));
+    });
     window.addEventListener('resize', () => {
       resizeGridCanvas();
       scheduleSnap();
       syncCardMask();
       playCardReflow();
+      scheduleRowSnap();
     });
     if (window.ResizeObserver) {
       new ResizeObserver(() => playCardReflow()).observe(document.getElementById('cardBoard'));
@@ -2199,15 +2408,32 @@
     }
 
     document.getElementById('cardBoard').addEventListener('pointerdown', (e) => {
+      if (pointerAboveFade(e)) {
+        clearLit();
+        return;
+      }
+      userInteracted = true;
       const card = e.target.closest('.hire-card.is-active');
       clearLit(card);
       if (card) card.classList.add('is-lit');
+      const row = rowForCard(card);
+      if (row) snapRow(row.cards);
     });
 
     document.getElementById('cardBoard').addEventListener('pointerover', (e) => {
+      if (pointerAboveFade(e)) {
+        window.clearTimeout(hoverTimer);
+        clearLit();
+        return;
+      }
       const card = e.target.closest('.hire-card.is-active');
       if (!card) return;
+      userInteracted = true;
       clearLit(card);
+      const row = rowForCard(card);
+      if (!row) return;
+      window.clearTimeout(hoverTimer);
+      hoverTimer = window.setTimeout(() => snapRow(row.cards), 70);
     });
 
     document.addEventListener('pointerdown', (e) => {
