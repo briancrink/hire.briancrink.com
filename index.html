@@ -66,7 +66,7 @@
       --location-y: 100px; /*adjust location-status position */
       --dev-image-y: 126px; /*adjust developer image position */
       --tool-gap: 270px; /*adjust pill + search bar position */
-      --board-y: 150px; /*adjust cards below search bar */
+      --board-y: 168px; /*adjust cards below search bar */
       --card-min: 460px; /*min card width before wrapping to next row */
     }
 
@@ -81,10 +81,11 @@
 
     .stage,
     .tools {
-      position: absolute;
+      position: fixed;
       top: var(--stage-top);
       left: 50%;
       transform: translateX(-50%);
+      z-index: 10;
     }
 
     .tools {
@@ -426,6 +427,24 @@
       padding: calc(var(--stage-top) + var(--tool-gap) + var(--board-y)) 20px 96px;
       z-index: 3;
       pointer-events: none;
+      --mask-solid: 0px;
+      --mask-end: 28px;
+      -webkit-mask-image: linear-gradient(
+        to bottom,
+        transparent 0,
+        transparent var(--mask-solid),
+        #000 var(--mask-end)
+      );
+      mask-image: linear-gradient(
+        to bottom,
+        transparent 0,
+        transparent var(--mask-solid),
+        #000 var(--mask-end)
+      );
+      -webkit-mask-size: 100% 100%;
+      mask-size: 100% 100%;
+      -webkit-mask-repeat: no-repeat;
+      mask-repeat: no-repeat;
     }
 
     .board {
@@ -1915,13 +1934,17 @@
       return rows;
     }
 
+    function headerReserve() {
+      const tools = document.querySelector('.tools');
+      if (!tools) return 220;
+      return Math.max(0, Math.ceil(tools.getBoundingClientRect().bottom) + 16);
+    }
+
     function revealRow(row) {
       const ordered = row.cards.slice().sort((a, b) => {
         return a.getBoundingClientRect().left - b.getBoundingClientRect().left;
       });
       ordered.forEach((card, i) => {
-        if (card.dataset.shown === '1') return;
-        card.dataset.shown = '1';
         window.setTimeout(() => {
           card.classList.add('is-in');
           rememberCardPositions();
@@ -1932,10 +1955,7 @@
     function queueCardReveal() {
       clearCardObserver();
       const cards = Array.from(document.querySelectorAll('.hire-card.is-active'));
-      cards.forEach((card) => {
-        card.classList.remove('is-in');
-        delete card.dataset.shown;
-      });
+      cards.forEach((card) => card.classList.remove('is-in'));
 
       const hold = cardsBooted ? 80 : 400;
       cardsBooted = true;
@@ -1943,28 +1963,26 @@
         const rows = cardsByRow(cards);
         if (!rows.length) return;
 
+        const topCut = headerReserve();
         const first = rows[0];
         const firstVisible = first.cards.some((card) => {
           const rect = card.getBoundingClientRect();
-          return rect.top < window.innerHeight * 0.92 && rect.bottom > 0;
+          return rect.top < window.innerHeight * 0.92 && rect.bottom > topCut;
         });
         if (firstVisible) revealRow(first);
 
-        const later = firstVisible ? rows.slice(1) : rows;
-        if (!later.length) return;
-
         cardObserver = new IntersectionObserver((entries) => {
+          const byRow = cardsByRow(cards);
           entries.forEach((entry) => {
             if (!entry.isIntersecting) return;
             const card = entry.target;
             const top = rowKey(card);
-            const row = later.find((item) => Math.abs(item.top - top) < 12) || later.find((item) => item.cards.includes(card));
+            const row = byRow.find((item) => Math.abs(item.top - top) < 12) || byRow.find((item) => item.cards.includes(card));
             if (!row) return;
             revealRow(row);
-            row.cards.forEach((el) => cardObserver.unobserve(el));
           });
-        }, { threshold: 0.22, rootMargin: '0px 0px -6% 0px' });
-        later.forEach((row) => row.cards.forEach((card) => cardObserver.observe(card)));
+        }, { threshold: 0.12, rootMargin: '-' + topCut + 'px 0px -8% 0px' });
+        cards.forEach((card) => cardObserver.observe(card));
       }, hold);
     }
 
@@ -2128,10 +2146,27 @@
       });
     }
 
+
+    function syncCardMask() {
+      const flow = document.getElementById('pageFlow');
+      const bar = document.getElementById('searchBar') || document.querySelector('.search-bar');
+      if (!flow) return;
+      const flowTop = flow.getBoundingClientRect().top;
+      const cut = bar ? bar.getBoundingClientRect().bottom + 6 : headerReserve();
+      const fade = 28;
+      const solid = Math.max(0, cut - flowTop);
+      flow.style.setProperty('--mask-solid', solid + 'px');
+      flow.style.setProperty('--mask-end', (solid + fade) + 'px');
+    }
+    syncCardMask();
+    requestAnimationFrame(syncCardMask);
+    window.addEventListener('scroll', syncCardMask, { passive: true });
     window.addEventListener('load', scheduleSnap);
+    window.addEventListener('load', syncCardMask);
     window.addEventListener('resize', () => {
       resizeGridCanvas();
       scheduleSnap();
+      syncCardMask();
       playCardReflow();
     });
     if (window.ResizeObserver) {
