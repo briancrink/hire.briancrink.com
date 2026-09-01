@@ -439,14 +439,14 @@
       display: none;
       width: 100%;
       text-align: left;
-      background: rgba(0, 0, 0, 0.56);
+      background: rgba(0, 0, 0, 0.4);
       border: 1px solid rgba(255, 255, 255, 0.07);
       border-radius: 20px;
       padding: 18px 18px 16px;
       color: #8b949e;
       opacity: 0;
       transform: translateY(12px);
-      transition: opacity 0.7s ease, transform 0.7s ease;
+      transition: opacity 0.6s ease, transform 0.6s ease;
     }
 
     .hire-card.is-active {
@@ -605,7 +605,7 @@
         </div>
 
         <input type="text" id="searchInput"
-             placeholder="Search roles, services, keywords"
+             placeholder="Search Roles"
              autocomplete="off" spellcheck="false">
         <div class="right-spacer" aria-hidden="true"></div>
       </div>
@@ -617,7 +617,7 @@
 
       <div class="overlay-box" id="overlayBox">
         <p style="margin: 0; color: #ccc; font-size: 15px;">
-          Quick commands or actions appear here
+          Quick Commands | Actions
         </p>
       </div>
     </div>
@@ -784,6 +784,8 @@
 
       if (pushHash) writeHash(next, false);
       syncCards(next);
+      const search = document.getElementById('searchInput');
+      if (search) search.placeholder = next === 'services' ? 'Search Services' : 'Search Roles';
     }
 
     function canWriteHistory() {
@@ -833,7 +835,7 @@
         delete card.dataset.shown;
       });
 
-      const hold = cardsBooted ? 80 : 1300;
+      const hold = cardsBooted ? 80 : 400;
       cardsBooted = true;
       cardRevealTimer = window.setTimeout(() => {
         let delay = 0;
@@ -844,7 +846,7 @@
             if (card.dataset.shown === '1') return;
             card.dataset.shown = '1';
             const wait = delay;
-            delay += 320;
+            delay += 180;
             window.setTimeout(() => card.classList.add('is-in'), wait);
             cardObserver.unobserve(card);
           });
