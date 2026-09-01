@@ -530,6 +530,14 @@
     if (!location.hash) writeHash('roles', true);
     applyMode(modeFromHash(), false);
 
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+      const typing = e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable);
+      if (typing) return;
+      e.preventDefault();
+      switchMode(e.key === 'ArrowRight' ? 'services' : 'roles');
+    });
+
     const GRID = 24; //30
     const WELL = 16;
     const WELL_R = 64;
