@@ -67,6 +67,7 @@
       --dev-image-y: 126px; /*adjust developer image position */
       --tool-gap: 270px; /*adjust pill + search bar position */
       --board-y: 150px; /*adjust cards below search bar */
+      --card-min: 460px; /*min card width before wrapping to next row */
     }
 
     .stage,
@@ -420,7 +421,7 @@
     .page-flow {
       position: relative;
       width: 100%;
-      max-width: 450px;
+      max-width: min(1680px, calc(100vw - 40px));
       margin: 0 auto;
       padding: calc(var(--stage-top) + var(--tool-gap) + var(--board-y)) 20px 96px;
       z-index: 3;
@@ -428,16 +429,26 @@
     }
 
     .board {
-      display: flex;
-      flex-direction: column;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, var(--card-min));
+      justify-content: center;
+      justify-items: center;
       gap: 14px;
       width: 100%;
       pointer-events: auto;
     }
 
+    @media (max-width: 499px) {
+      .board {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
     .hire-card {
       display: none;
-      width: 100%;
+      width: var(--card-min);
+      max-width: 100%;
+      flex: 0 0 var(--card-min);
       text-align: left;
       background: rgba(0, 0, 0, 0.4);
       border: 1px solid rgba(255, 255, 255, 0.07);
@@ -446,6 +457,7 @@
       color: #8b949e;
       opacity: 0;
       transform: translateY(12px);
+      will-change: transform;
       transition: opacity 0.6s ease, transform 0.6s ease, background 0.2s ease, border-color 0.2s ease;
     }
 
@@ -701,6 +713,1051 @@
         </div>
       </article>
 
+      <article class="hire-card" data-mode="roles">
+        <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5V9H4V6.5zm0 4.5h16v7A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5V11zm3.25 2.25a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5h-3.5z"/></svg>
+        <h3 class="card-title">Help Desk</h3>
+        <p class="card-desc">First-line intake for incidents, access, and the questions that keep a team moving.</p>
+        <div class="card-tags">
+          <span class="card-tag">ITIL</span>
+          <span class="card-tag">Zendesk</span>
+          <span class="card-tag">SLA</span>
+        </div>
+        <p class="card-label">Featured Work</p>
+        <div class="card-work">
+          <a href="https://portal.briancrink.com">Portal</a>
+          <a href="https://hire.briancrink.com">Hire</a>
+        </div>
+        <div class="card-actions">
+          <a href="https://hire.briancrink.com/resume/">Resume</a>
+          <a href="https://contact.briancrink.com">Contact</a>
+        </div>
+      </article>
+      <article class="hire-card" data-mode="roles">
+        <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5V9H4V6.5zm0 4.5h16v7A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5V11zm3.25 2.25a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5h-3.5z"/></svg>
+        <h3 class="card-title">IT Support</h3>
+        <p class="card-desc">Keep devices, accounts, and internal tools reachable so work does not stall.</p>
+        <div class="card-tags">
+          <span class="card-tag">Windows</span>
+          <span class="card-tag">macOS</span>
+          <span class="card-tag">Okta</span>
+        </div>
+        <p class="card-label">Featured Work</p>
+        <div class="card-work">
+          <a href="https://portal.briancrink.com">Portal</a>
+          <a href="https://hire.briancrink.com">Hire</a>
+        </div>
+        <div class="card-actions">
+          <a href="https://hire.briancrink.com/resume/">Resume</a>
+          <a href="https://contact.briancrink.com">Contact</a>
+        </div>
+      </article>
+      <article class="hire-card" data-mode="roles">
+        <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5V9H4V6.5zm0 4.5h16v7A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5V11zm3.25 2.25a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5h-3.5z"/></svg>
+        <h3 class="card-title">Technical Writer</h3>
+        <p class="card-desc">Turn a working system into language a person can follow without a walkthrough.</p>
+        <div class="card-tags">
+          <span class="card-tag">Docs</span>
+          <span class="card-tag">Markdown</span>
+          <span class="card-tag">IA</span>
+        </div>
+        <p class="card-label">Featured Work</p>
+        <div class="card-work">
+          <a href="https://portal.briancrink.com">Portal</a>
+          <a href="https://hire.briancrink.com">Hire</a>
+        </div>
+        <div class="card-actions">
+          <a href="https://hire.briancrink.com/resume/">Resume</a>
+          <a href="https://contact.briancrink.com">Contact</a>
+        </div>
+      </article>
+      <article class="hire-card" data-mode="roles">
+        <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5V9H4V6.5zm0 4.5h16v7A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5V11zm3.25 2.25a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5h-3.5z"/></svg>
+        <h3 class="card-title">Documentation Specialist</h3>
+        <p class="card-desc">Own the corpus: structure, versioning, and the path from draft to published.</p>
+        <div class="card-tags">
+          <span class="card-tag">Docs</span>
+          <span class="card-tag">Git</span>
+          <span class="card-tag">CMS</span>
+        </div>
+        <p class="card-label">Featured Work</p>
+        <div class="card-work">
+          <a href="https://portal.briancrink.com">Portal</a>
+          <a href="https://hire.briancrink.com">Hire</a>
+        </div>
+        <div class="card-actions">
+          <a href="https://hire.briancrink.com/resume/">Resume</a>
+          <a href="https://contact.briancrink.com">Contact</a>
+        </div>
+      </article>
+      <article class="hire-card" data-mode="roles">
+        <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5V9H4V6.5zm0 4.5h16v7A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5V11zm3.25 2.25a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5h-3.5z"/></svg>
+        <h3 class="card-title">Control Systems</h3>
+        <p class="card-desc">Specify and maintain the loops that keep an operational process inside its bounds.</p>
+        <div class="card-tags">
+          <span class="card-tag">PLC</span>
+          <span class="card-tag">SCADA</span>
+          <span class="card-tag">Python</span>
+        </div>
+        <p class="card-label">Featured Work</p>
+        <div class="card-work">
+          <a href="https://portal.briancrink.com">Portal</a>
+          <a href="https://hire.briancrink.com">Hire</a>
+        </div>
+        <div class="card-actions">
+          <a href="https://hire.briancrink.com/resume/">Resume</a>
+          <a href="https://contact.briancrink.com">Contact</a>
+        </div>
+      </article>
+      <article class="hire-card" data-mode="roles">
+        <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5V9H4V6.5zm0 4.5h16v7A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5V11zm3.25 2.25a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5h-3.5z"/></svg>
+        <h3 class="card-title">Business Systems Analyst</h3>
+        <p class="card-desc">Map how a company actually works, then specify the system that should hold it.</p>
+        <div class="card-tags">
+          <span class="card-tag">SQL</span>
+          <span class="card-tag">BPM</span>
+          <span class="card-tag">Requirements</span>
+        </div>
+        <p class="card-label">Featured Work</p>
+        <div class="card-work">
+          <a href="https://portal.briancrink.com">Portal</a>
+          <a href="https://hire.briancrink.com">Hire</a>
+        </div>
+        <div class="card-actions">
+          <a href="https://hire.briancrink.com/resume/">Resume</a>
+          <a href="https://contact.briancrink.com">Contact</a>
+        </div>
+      </article>
+      <article class="hire-card" data-mode="roles">
+        <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5V9H4V6.5zm0 4.5h16v7A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5V11zm3.25 2.25a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5h-3.5z"/></svg>
+        <h3 class="card-title">Product Owner</h3>
+        <p class="card-desc">Hold the backlog, the cut line, and the reason a next slice ships.</p>
+        <div class="card-tags">
+          <span class="card-tag">Agile</span>
+          <span class="card-tag">Jira</span>
+          <span class="card-tag">Roadmap</span>
+        </div>
+        <p class="card-label">Featured Work</p>
+        <div class="card-work">
+          <a href="https://portal.briancrink.com">Portal</a>
+          <a href="https://hire.briancrink.com">Hire</a>
+        </div>
+        <div class="card-actions">
+          <a href="https://hire.briancrink.com/resume/">Resume</a>
+          <a href="https://contact.briancrink.com">Contact</a>
+        </div>
+      </article>
+      <article class="hire-card" data-mode="roles">
+        <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5V9H4V6.5zm0 4.5h16v7A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5V11zm3.25 2.25a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5h-3.5z"/></svg>
+        <h3 class="card-title">Project Manager</h3>
+        <p class="card-desc">Keep scope, time, and people in one motion until the delivery is real.</p>
+        <div class="card-tags">
+          <span class="card-tag">PM</span>
+          <span class="card-tag">Jira</span>
+          <span class="card-tag">Risk</span>
+        </div>
+        <p class="card-label">Featured Work</p>
+        <div class="card-work">
+          <a href="https://portal.briancrink.com">Portal</a>
+          <a href="https://hire.briancrink.com">Hire</a>
+        </div>
+        <div class="card-actions">
+          <a href="https://hire.briancrink.com/resume/">Resume</a>
+          <a href="https://contact.briancrink.com">Contact</a>
+        </div>
+      </article>
+      <article class="hire-card" data-mode="roles">
+        <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5V9H4V6.5zm0 4.5h16v7A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5V11zm3.25 2.25a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5h-3.5z"/></svg>
+        <h3 class="card-title">Project Coordinator</h3>
+        <p class="card-desc">Track the moving parts so a project does not lose the thread between meetings.</p>
+        <div class="card-tags">
+          <span class="card-tag">Jira</span>
+          <span class="card-tag">Confluence</span>
+          <span class="card-tag">Scheduling</span>
+        </div>
+        <p class="card-label">Featured Work</p>
+        <div class="card-work">
+          <a href="https://portal.briancrink.com">Portal</a>
+          <a href="https://hire.briancrink.com">Hire</a>
+        </div>
+        <div class="card-actions">
+          <a href="https://hire.briancrink.com/resume/">Resume</a>
+          <a href="https://contact.briancrink.com">Contact</a>
+        </div>
+      </article>
+      <article class="hire-card" data-mode="roles">
+        <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5V9H4V6.5zm0 4.5h16v7A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5V11zm3.25 2.25a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5h-3.5z"/></svg>
+        <h3 class="card-title">Solutions Architect</h3>
+        <p class="card-desc">Shape a system that can be built, operated, and paid for without surprise.</p>
+        <div class="card-tags">
+          <span class="card-tag">AWS</span>
+          <span class="card-tag">Integration</span>
+          <span class="card-tag">ADRs</span>
+        </div>
+        <p class="card-label">Featured Work</p>
+        <div class="card-work">
+          <a href="https://portal.briancrink.com">Portal</a>
+          <a href="https://hire.briancrink.com">Hire</a>
+        </div>
+        <div class="card-actions">
+          <a href="https://hire.briancrink.com/resume/">Resume</a>
+          <a href="https://contact.briancrink.com">Contact</a>
+        </div>
+      </article>
+      <article class="hire-card" data-mode="roles">
+        <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5V9H4V6.5zm0 4.5h16v7A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5V11zm3.25 2.25a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5h-3.5z"/></svg>
+        <h3 class="card-title">Cloud Solutions Architect</h3>
+        <p class="card-desc">Place workloads on the cloud so scale, cost, and failure modes stay honest.</p>
+        <div class="card-tags">
+          <span class="card-tag">AWS</span>
+          <span class="card-tag">Azure</span>
+          <span class="card-tag">Terraform</span>
+        </div>
+        <p class="card-label">Featured Work</p>
+        <div class="card-work">
+          <a href="https://portal.briancrink.com">Portal</a>
+          <a href="https://hire.briancrink.com">Hire</a>
+        </div>
+        <div class="card-actions">
+          <a href="https://hire.briancrink.com/resume/">Resume</a>
+          <a href="https://contact.briancrink.com">Contact</a>
+        </div>
+      </article>
+      <article class="hire-card" data-mode="roles">
+        <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5V9H4V6.5zm0 4.5h16v7A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5V11zm3.25 2.25a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5h-3.5z"/></svg>
+        <h3 class="card-title">Scrum Master</h3>
+        <p class="card-desc">Protect the cadence and remove the friction that keeps a team from finishing.</p>
+        <div class="card-tags">
+          <span class="card-tag">Scrum</span>
+          <span class="card-tag">Agile</span>
+          <span class="card-tag">Jira</span>
+        </div>
+        <p class="card-label">Featured Work</p>
+        <div class="card-work">
+          <a href="https://portal.briancrink.com">Portal</a>
+          <a href="https://hire.briancrink.com">Hire</a>
+        </div>
+        <div class="card-actions">
+          <a href="https://hire.briancrink.com/resume/">Resume</a>
+          <a href="https://contact.briancrink.com">Contact</a>
+        </div>
+      </article>
+      <article class="hire-card" data-mode="roles">
+        <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5V9H4V6.5zm0 4.5h16v7A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5V11zm3.25 2.25a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5h-3.5z"/></svg>
+        <h3 class="card-title">UI / UX Designer</h3>
+        <p class="card-desc">Design the path a person takes through a product, not only the screen they see.</p>
+        <div class="card-tags">
+          <span class="card-tag">Figma</span>
+          <span class="card-tag">IA</span>
+          <span class="card-tag">Research</span>
+        </div>
+        <p class="card-label">Featured Work</p>
+        <div class="card-work">
+          <a href="https://portal.briancrink.com">Portal</a>
+          <a href="https://hire.briancrink.com">Hire</a>
+        </div>
+        <div class="card-actions">
+          <a href="https://hire.briancrink.com/resume/">Resume</a>
+          <a href="https://contact.briancrink.com">Contact</a>
+        </div>
+      </article>
+      <article class="hire-card" data-mode="roles">
+        <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5V9H4V6.5zm0 4.5h16v7A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5V11zm3.25 2.25a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5h-3.5z"/></svg>
+        <h3 class="card-title">Q/A Test Engineer</h3>
+        <p class="card-desc">Prove what the product does, and write down what it still will not.</p>
+        <div class="card-tags">
+          <span class="card-tag">QA</span>
+          <span class="card-tag">Cypress</span>
+          <span class="card-tag">TestRail</span>
+        </div>
+        <p class="card-label">Featured Work</p>
+        <div class="card-work">
+          <a href="https://portal.briancrink.com">Portal</a>
+          <a href="https://hire.briancrink.com">Hire</a>
+        </div>
+        <div class="card-actions">
+          <a href="https://hire.briancrink.com/resume/">Resume</a>
+          <a href="https://contact.briancrink.com">Contact</a>
+        </div>
+      </article>
+      <article class="hire-card" data-mode="roles">
+        <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5V9H4V6.5zm0 4.5h16v7A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5V11zm3.25 2.25a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5h-3.5z"/></svg>
+        <h3 class="card-title">Data Analyst</h3>
+        <p class="card-desc">Turn raw records into a reading a decision can stand on.</p>
+        <div class="card-tags">
+          <span class="card-tag">SQL</span>
+          <span class="card-tag">Python</span>
+          <span class="card-tag">Tableau</span>
+        </div>
+        <p class="card-label">Featured Work</p>
+        <div class="card-work">
+          <a href="https://portal.briancrink.com">Portal</a>
+          <a href="https://hire.briancrink.com">Hire</a>
+        </div>
+        <div class="card-actions">
+          <a href="https://hire.briancrink.com/resume/">Resume</a>
+          <a href="https://contact.briancrink.com">Contact</a>
+        </div>
+      </article>
+      <article class="hire-card" data-mode="roles">
+        <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5V9H4V6.5zm0 4.5h16v7A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5V11zm3.25 2.25a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5h-3.5z"/></svg>
+        <h3 class="card-title">Data Engineer</h3>
+        <p class="card-desc">Build the pipes that move data from event to warehouse without losing the grain.</p>
+        <div class="card-tags">
+          <span class="card-tag">SQL</span>
+          <span class="card-tag">Spark</span>
+          <span class="card-tag">Airflow</span>
+        </div>
+        <p class="card-label">Featured Work</p>
+        <div class="card-work">
+          <a href="https://portal.briancrink.com">Portal</a>
+          <a href="https://hire.briancrink.com">Hire</a>
+        </div>
+        <div class="card-actions">
+          <a href="https://hire.briancrink.com/resume/">Resume</a>
+          <a href="https://contact.briancrink.com">Contact</a>
+        </div>
+      </article>
+      <article class="hire-card" data-mode="roles">
+        <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5V9H4V6.5zm0 4.5h16v7A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5V11zm3.25 2.25a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5h-3.5z"/></svg>
+        <h3 class="card-title">Technical Support Engineer</h3>
+        <p class="card-desc">Diagnose across product and infrastructure when a ticket is no longer first-line.</p>
+        <div class="card-tags">
+          <span class="card-tag">Linux</span>
+          <span class="card-tag">APIs</span>
+          <span class="card-tag">Logs</span>
+        </div>
+        <p class="card-label">Featured Work</p>
+        <div class="card-work">
+          <a href="https://portal.briancrink.com">Portal</a>
+          <a href="https://hire.briancrink.com">Hire</a>
+        </div>
+        <div class="card-actions">
+          <a href="https://hire.briancrink.com/resume/">Resume</a>
+          <a href="https://contact.briancrink.com">Contact</a>
+        </div>
+      </article>
+      <article class="hire-card" data-mode="roles">
+        <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5V9H4V6.5zm0 4.5h16v7A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5V11zm3.25 2.25a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5h-3.5z"/></svg>
+        <h3 class="card-title">Software Developer</h3>
+        <p class="card-desc">Write and ship the code that turns a spec into a running surface.</p>
+        <div class="card-tags">
+          <span class="card-tag">TypeScript</span>
+          <span class="card-tag">Git</span>
+          <span class="card-tag">Node.js</span>
+        </div>
+        <p class="card-label">Featured Work</p>
+        <div class="card-work">
+          <a href="https://portal.briancrink.com">Portal</a>
+          <a href="https://hire.briancrink.com">Hire</a>
+        </div>
+        <div class="card-actions">
+          <a href="https://hire.briancrink.com/resume/">Resume</a>
+          <a href="https://contact.briancrink.com">Contact</a>
+        </div>
+      </article>
+      <article class="hire-card" data-mode="roles">
+        <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5V9H4V6.5zm0 4.5h16v7A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5V11zm3.25 2.25a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5h-3.5z"/></svg>
+        <h3 class="card-title">Software Architect</h3>
+        <p class="card-desc">Set the shape of the codebase so later work does not fight the first decisions.</p>
+        <div class="card-tags">
+          <span class="card-tag">ADRs</span>
+          <span class="card-tag">TypeScript</span>
+          <span class="card-tag">Systems</span>
+        </div>
+        <p class="card-label">Featured Work</p>
+        <div class="card-work">
+          <a href="https://portal.briancrink.com">Portal</a>
+          <a href="https://hire.briancrink.com">Hire</a>
+        </div>
+        <div class="card-actions">
+          <a href="https://hire.briancrink.com/resume/">Resume</a>
+          <a href="https://contact.briancrink.com">Contact</a>
+        </div>
+      </article>
+      <article class="hire-card" data-mode="roles">
+        <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5V9H4V6.5zm0 4.5h16v7A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5V11zm3.25 2.25a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5h-3.5z"/></svg>
+        <h3 class="card-title">Cloud Architect</h3>
+        <p class="card-desc">Design the cloud estate: accounts, networks, and the seams between services.</p>
+        <div class="card-tags">
+          <span class="card-tag">AWS</span>
+          <span class="card-tag">VPC</span>
+          <span class="card-tag">IAM</span>
+        </div>
+        <p class="card-label">Featured Work</p>
+        <div class="card-work">
+          <a href="https://portal.briancrink.com">Portal</a>
+          <a href="https://hire.briancrink.com">Hire</a>
+        </div>
+        <div class="card-actions">
+          <a href="https://hire.briancrink.com/resume/">Resume</a>
+          <a href="https://contact.briancrink.com">Contact</a>
+        </div>
+      </article>
+      <article class="hire-card" data-mode="roles">
+        <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5V9H4V6.5zm0 4.5h16v7A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5V11zm3.25 2.25a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5h-3.5z"/></svg>
+        <h3 class="card-title">Cloud Microservice Architect</h3>
+        <p class="card-desc">Split a platform into services that can deploy, fail, and scale on their own.</p>
+        <div class="card-tags">
+          <span class="card-tag">K8s</span>
+          <span class="card-tag">gRPC</span>
+          <span class="card-tag">AWS</span>
+        </div>
+        <p class="card-label">Featured Work</p>
+        <div class="card-work">
+          <a href="https://portal.briancrink.com">Portal</a>
+          <a href="https://hire.briancrink.com">Hire</a>
+        </div>
+        <div class="card-actions">
+          <a href="https://hire.briancrink.com/resume/">Resume</a>
+          <a href="https://contact.briancrink.com">Contact</a>
+        </div>
+      </article>
+      <article class="hire-card" data-mode="roles">
+        <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5V9H4V6.5zm0 4.5h16v7A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5V11zm3.25 2.25a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5h-3.5z"/></svg>
+        <h3 class="card-title">Cloud System Architect</h3>
+        <p class="card-desc">Hold the whole cloud system in view: data, compute, identity, and recovery.</p>
+        <div class="card-tags">
+          <span class="card-tag">AWS</span>
+          <span class="card-tag">Terraform</span>
+          <span class="card-tag">Observability</span>
+        </div>
+        <p class="card-label">Featured Work</p>
+        <div class="card-work">
+          <a href="https://portal.briancrink.com">Portal</a>
+          <a href="https://hire.briancrink.com">Hire</a>
+        </div>
+        <div class="card-actions">
+          <a href="https://hire.briancrink.com/resume/">Resume</a>
+          <a href="https://contact.briancrink.com">Contact</a>
+        </div>
+      </article>
+      <article class="hire-card" data-mode="roles">
+        <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5V9H4V6.5zm0 4.5h16v7A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5V11zm3.25 2.25a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5h-3.5z"/></svg>
+        <h3 class="card-title">DevOps Engineer</h3>
+        <p class="card-desc">Make build, deploy, and runtime a single path instead of a handoff.</p>
+        <div class="card-tags">
+          <span class="card-tag">CI/CD</span>
+          <span class="card-tag">Docker</span>
+          <span class="card-tag">Terraform</span>
+        </div>
+        <p class="card-label">Featured Work</p>
+        <div class="card-work">
+          <a href="https://portal.briancrink.com">Portal</a>
+          <a href="https://hire.briancrink.com">Hire</a>
+        </div>
+        <div class="card-actions">
+          <a href="https://hire.briancrink.com/resume/">Resume</a>
+          <a href="https://contact.briancrink.com">Contact</a>
+        </div>
+      </article>
+      <article class="hire-card" data-mode="roles">
+        <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5V9H4V6.5zm0 4.5h16v7A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5V11zm3.25 2.25a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5h-3.5z"/></svg>
+        <h3 class="card-title">Full Stack Developer</h3>
+        <p class="card-desc">Work both sides of the request: the client a person uses and the service behind it.</p>
+        <div class="card-tags">
+          <span class="card-tag">TypeScript</span>
+          <span class="card-tag">Node.js</span>
+          <span class="card-tag">SQL</span>
+        </div>
+        <p class="card-label">Featured Work</p>
+        <div class="card-work">
+          <a href="https://portal.briancrink.com">Portal</a>
+          <a href="https://hire.briancrink.com">Hire</a>
+        </div>
+        <div class="card-actions">
+          <a href="https://hire.briancrink.com/resume/">Resume</a>
+          <a href="https://contact.briancrink.com">Contact</a>
+        </div>
+      </article>
+      <article class="hire-card" data-mode="roles">
+        <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5V9H4V6.5zm0 4.5h16v7A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5V11zm3.25 2.25a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5h-3.5z"/></svg>
+        <h3 class="card-title">SaaS Developer</h3>
+        <p class="card-desc">Ship a multi-tenant product that stays stable as accounts and usage grow.</p>
+        <div class="card-tags">
+          <span class="card-tag">TypeScript</span>
+          <span class="card-tag">Postgres</span>
+          <span class="card-tag">Stripe</span>
+        </div>
+        <p class="card-label">Featured Work</p>
+        <div class="card-work">
+          <a href="https://portal.briancrink.com">Portal</a>
+          <a href="https://hire.briancrink.com">Hire</a>
+        </div>
+        <div class="card-actions">
+          <a href="https://hire.briancrink.com/resume/">Resume</a>
+          <a href="https://contact.briancrink.com">Contact</a>
+        </div>
+      </article>
+      <article class="hire-card" data-mode="roles">
+        <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5V9H4V6.5zm0 4.5h16v7A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5V11zm3.25 2.25a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5h-3.5z"/></svg>
+        <h3 class="card-title">Systems Designer</h3>
+        <p class="card-desc">Compose parts into a system whose behavior can be reasoned about.</p>
+        <div class="card-tags">
+          <span class="card-tag">IA</span>
+          <span class="card-tag">Architecture</span>
+          <span class="card-tag">APIs</span>
+        </div>
+        <p class="card-label">Featured Work</p>
+        <div class="card-work">
+          <a href="https://portal.briancrink.com">Portal</a>
+          <a href="https://hire.briancrink.com">Hire</a>
+        </div>
+        <div class="card-actions">
+          <a href="https://hire.briancrink.com/resume/">Resume</a>
+          <a href="https://contact.briancrink.com">Contact</a>
+        </div>
+      </article>
+      <article class="hire-card" data-mode="roles">
+        <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5V9H4V6.5zm0 4.5h16v7A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5V11zm3.25 2.25a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5h-3.5z"/></svg>
+        <h3 class="card-title">AI Systems Builder</h3>
+        <p class="card-desc">Stand up the runtime that lets models, tools, and data talk in production.</p>
+        <div class="card-tags">
+          <span class="card-tag">Python</span>
+          <span class="card-tag">LLM</span>
+          <span class="card-tag">APIs</span>
+        </div>
+        <p class="card-label">Featured Work</p>
+        <div class="card-work">
+          <a href="https://portal.briancrink.com">Portal</a>
+          <a href="https://hire.briancrink.com">Hire</a>
+        </div>
+        <div class="card-actions">
+          <a href="https://hire.briancrink.com/resume/">Resume</a>
+          <a href="https://contact.briancrink.com">Contact</a>
+        </div>
+      </article>
+      <article class="hire-card" data-mode="roles">
+        <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5V9H4V6.5zm0 4.5h16v7A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5V11zm3.25 2.25a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5h-3.5z"/></svg>
+        <h3 class="card-title">AI Systems Designer</h3>
+        <p class="card-desc">Specify how models, memory, and tools should sit together before they are built.</p>
+        <div class="card-tags">
+          <span class="card-tag">LLM</span>
+          <span class="card-tag">IA</span>
+          <span class="card-tag">Python</span>
+        </div>
+        <p class="card-label">Featured Work</p>
+        <div class="card-work">
+          <a href="https://portal.briancrink.com">Portal</a>
+          <a href="https://hire.briancrink.com">Hire</a>
+        </div>
+        <div class="card-actions">
+          <a href="https://hire.briancrink.com/resume/">Resume</a>
+          <a href="https://contact.briancrink.com">Contact</a>
+        </div>
+      </article>
+      <article class="hire-card" data-mode="roles">
+        <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5V9H4V6.5zm0 4.5h16v7A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5V11zm3.25 2.25a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5h-3.5z"/></svg>
+        <h3 class="card-title">AI Systems Orchestrator</h3>
+        <p class="card-desc">Coordinate agents, tools, and human steps so a workflow completes.</p>
+        <div class="card-tags">
+          <span class="card-tag">Agents</span>
+          <span class="card-tag">Python</span>
+          <span class="card-tag">Queues</span>
+        </div>
+        <p class="card-label">Featured Work</p>
+        <div class="card-work">
+          <a href="https://portal.briancrink.com">Portal</a>
+          <a href="https://hire.briancrink.com">Hire</a>
+        </div>
+        <div class="card-actions">
+          <a href="https://hire.briancrink.com/resume/">Resume</a>
+          <a href="https://contact.briancrink.com">Contact</a>
+        </div>
+      </article>
+      <article class="hire-card" data-mode="roles">
+        <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5V9H4V6.5zm0 4.5h16v7A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5V11zm3.25 2.25a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5h-3.5z"/></svg>
+        <h3 class="card-title">Agent Architect</h3>
+        <p class="card-desc">Design agents with clear tools, limits, and a path back to a person.</p>
+        <div class="card-tags">
+          <span class="card-tag">Agents</span>
+          <span class="card-tag">LLM</span>
+          <span class="card-tag">Eval</span>
+        </div>
+        <p class="card-label">Featured Work</p>
+        <div class="card-work">
+          <a href="https://portal.briancrink.com">Portal</a>
+          <a href="https://hire.briancrink.com">Hire</a>
+        </div>
+        <div class="card-actions">
+          <a href="https://hire.briancrink.com/resume/">Resume</a>
+          <a href="https://contact.briancrink.com">Contact</a>
+        </div>
+      </article>
+      <article class="hire-card" data-mode="roles">
+        <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5V9H4V6.5zm0 4.5h16v7A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5V11zm3.25 2.25a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5h-3.5z"/></svg>
+        <h3 class="card-title">AI Architect</h3>
+        <p class="card-desc">Place models in a larger system so cost, latency, and risk stay in view.</p>
+        <div class="card-tags">
+          <span class="card-tag">LLM</span>
+          <span class="card-tag">AWS</span>
+          <span class="card-tag">Python</span>
+        </div>
+        <p class="card-label">Featured Work</p>
+        <div class="card-work">
+          <a href="https://portal.briancrink.com">Portal</a>
+          <a href="https://hire.briancrink.com">Hire</a>
+        </div>
+        <div class="card-actions">
+          <a href="https://hire.briancrink.com/resume/">Resume</a>
+          <a href="https://contact.briancrink.com">Contact</a>
+        </div>
+      </article>
+      <article class="hire-card" data-mode="roles">
+        <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5V9H4V6.5zm0 4.5h16v7A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5V11zm3.25 2.25a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5h-3.5z"/></svg>
+        <h3 class="card-title">AI Conductor</h3>
+        <p class="card-desc">Direct multi-agent work so each part plays its role and the result stays coherent.</p>
+        <div class="card-tags">
+          <span class="card-tag">Agents</span>
+          <span class="card-tag">Orchestration</span>
+          <span class="card-tag">Eval</span>
+        </div>
+        <p class="card-label">Featured Work</p>
+        <div class="card-work">
+          <a href="https://portal.briancrink.com">Portal</a>
+          <a href="https://hire.briancrink.com">Hire</a>
+        </div>
+        <div class="card-actions">
+          <a href="https://hire.briancrink.com/resume/">Resume</a>
+          <a href="https://contact.briancrink.com">Contact</a>
+        </div>
+      </article>
+      <article class="hire-card" data-mode="roles">
+        <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5V9H4V6.5zm0 4.5h16v7A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5V11zm3.25 2.25a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5h-3.5z"/></svg>
+        <h3 class="card-title">AI Solutions Architect</h3>
+        <p class="card-desc">Fit an AI capability into a real operating problem, not a demo.</p>
+        <div class="card-tags">
+          <span class="card-tag">LLM</span>
+          <span class="card-tag">AWS</span>
+          <span class="card-tag">Product</span>
+        </div>
+        <p class="card-label">Featured Work</p>
+        <div class="card-work">
+          <a href="https://portal.briancrink.com">Portal</a>
+          <a href="https://hire.briancrink.com">Hire</a>
+        </div>
+        <div class="card-actions">
+          <a href="https://hire.briancrink.com/resume/">Resume</a>
+          <a href="https://contact.briancrink.com">Contact</a>
+        </div>
+      </article>
+      <article class="hire-card" data-mode="roles">
+        <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5V9H4V6.5zm0 4.5h16v7A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5V11zm3.25 2.25a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5h-3.5z"/></svg>
+        <h3 class="card-title">Generative AI Architect</h3>
+        <p class="card-desc">Design generation systems: context, retrieval, eval, and the release path.</p>
+        <div class="card-tags">
+          <span class="card-tag">RAG</span>
+          <span class="card-tag">LLM</span>
+          <span class="card-tag">Python</span>
+        </div>
+        <p class="card-label">Featured Work</p>
+        <div class="card-work">
+          <a href="https://portal.briancrink.com">Portal</a>
+          <a href="https://hire.briancrink.com">Hire</a>
+        </div>
+        <div class="card-actions">
+          <a href="https://hire.briancrink.com/resume/">Resume</a>
+          <a href="https://contact.briancrink.com">Contact</a>
+        </div>
+      </article>
+      <article class="hire-card" data-mode="roles">
+        <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5V9H4V6.5zm0 4.5h16v7A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5V11zm3.25 2.25a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5h-3.5z"/></svg>
+        <h3 class="card-title">AI Training Specialist</h3>
+        <p class="card-desc">Prepare data, runs, and eval so a model improves on purpose.</p>
+        <div class="card-tags">
+          <span class="card-tag">PyTorch</span>
+          <span class="card-tag">Datasets</span>
+          <span class="card-tag">Eval</span>
+        </div>
+        <p class="card-label">Featured Work</p>
+        <div class="card-work">
+          <a href="https://portal.briancrink.com">Portal</a>
+          <a href="https://hire.briancrink.com">Hire</a>
+        </div>
+        <div class="card-actions">
+          <a href="https://hire.briancrink.com/resume/">Resume</a>
+          <a href="https://contact.briancrink.com">Contact</a>
+        </div>
+      </article>
+      <article class="hire-card" data-mode="roles">
+        <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5V9H4V6.5zm0 4.5h16v7A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5V11zm3.25 2.25a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5h-3.5z"/></svg>
+        <h3 class="card-title">Data Annotation</h3>
+        <p class="card-desc">Label examples with enough care that a model can learn the right boundary.</p>
+        <div class="card-tags">
+          <span class="card-tag">QA</span>
+          <span class="card-tag">Taxonomy</span>
+          <span class="card-tag">Tools</span>
+        </div>
+        <p class="card-label">Featured Work</p>
+        <div class="card-work">
+          <a href="https://portal.briancrink.com">Portal</a>
+          <a href="https://hire.briancrink.com">Hire</a>
+        </div>
+        <div class="card-actions">
+          <a href="https://hire.briancrink.com/resume/">Resume</a>
+          <a href="https://contact.briancrink.com">Contact</a>
+        </div>
+      </article>
+      <article class="hire-card" data-mode="roles">
+        <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5V9H4V6.5zm0 4.5h16v7A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5V11zm3.25 2.25a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5h-3.5z"/></svg>
+        <h3 class="card-title">Remote Help Desk</h3>
+        <p class="card-desc">Resolve tickets from anywhere without losing the context of the person's setup.</p>
+        <div class="card-tags">
+          <span class="card-tag">Zendesk</span>
+          <span class="card-tag">Remote</span>
+          <span class="card-tag">ITIL</span>
+        </div>
+        <p class="card-label">Featured Work</p>
+        <div class="card-work">
+          <a href="https://portal.briancrink.com">Portal</a>
+          <a href="https://hire.briancrink.com">Hire</a>
+        </div>
+        <div class="card-actions">
+          <a href="https://hire.briancrink.com/resume/">Resume</a>
+          <a href="https://contact.briancrink.com">Contact</a>
+        </div>
+      </article>
+      <article class="hire-card" data-mode="roles">
+        <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5V9H4V6.5zm0 4.5h16v7A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5V11zm3.25 2.25a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5h-3.5z"/></svg>
+        <h3 class="card-title">QA / Software Tester</h3>
+        <p class="card-desc">Exercise the product the way a person will, and catch what the happy path hides.</p>
+        <div class="card-tags">
+          <span class="card-tag">QA</span>
+          <span class="card-tag">Selenium</span>
+          <span class="card-tag">Cases</span>
+        </div>
+        <p class="card-label">Featured Work</p>
+        <div class="card-work">
+          <a href="https://portal.briancrink.com">Portal</a>
+          <a href="https://hire.briancrink.com">Hire</a>
+        </div>
+        <div class="card-actions">
+          <a href="https://hire.briancrink.com/resume/">Resume</a>
+          <a href="https://contact.briancrink.com">Contact</a>
+        </div>
+      </article>
+      <article class="hire-card" data-mode="roles">
+        <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5V9H4V6.5zm0 4.5h16v7A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5V11zm3.25 2.25a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5h-3.5z"/></svg>
+        <h3 class="card-title">Customer Support Specialist</h3>
+        <p class="card-desc">Meet the person at the edge of the product and get them back to work.</p>
+        <div class="card-tags">
+          <span class="card-tag">Zendesk</span>
+          <span class="card-tag">CRM</span>
+          <span class="card-tag">SLA</span>
+        </div>
+        <p class="card-label">Featured Work</p>
+        <div class="card-work">
+          <a href="https://portal.briancrink.com">Portal</a>
+          <a href="https://hire.briancrink.com">Hire</a>
+        </div>
+        <div class="card-actions">
+          <a href="https://hire.briancrink.com/resume/">Resume</a>
+          <a href="https://contact.briancrink.com">Contact</a>
+        </div>
+      </article>
+      <article class="hire-card" data-mode="roles">
+        <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5V9H4V6.5zm0 4.5h16v7A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5V11zm3.25 2.25a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5h-3.5z"/></svg>
+        <h3 class="card-title">Chat Support Specialist</h3>
+        <p class="card-desc">Handle live conversations with a short loop from question to resolution.</p>
+        <div class="card-tags">
+          <span class="card-tag">Chat</span>
+          <span class="card-tag">CRM</span>
+          <span class="card-tag">SLA</span>
+        </div>
+        <p class="card-label">Featured Work</p>
+        <div class="card-work">
+          <a href="https://portal.briancrink.com">Portal</a>
+          <a href="https://hire.briancrink.com">Hire</a>
+        </div>
+        <div class="card-actions">
+          <a href="https://hire.briancrink.com/resume/">Resume</a>
+          <a href="https://contact.briancrink.com">Contact</a>
+        </div>
+      </article>
+      <article class="hire-card" data-mode="roles">
+        <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5V9H4V6.5zm0 4.5h16v7A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5V11zm3.25 2.25a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5h-3.5z"/></svg>
+        <h3 class="card-title">Technical Support Analyst</h3>
+        <p class="card-desc">Read logs and config when a support case needs more than a script.</p>
+        <div class="card-tags">
+          <span class="card-tag">Linux</span>
+          <span class="card-tag">SQL</span>
+          <span class="card-tag">Tickets</span>
+        </div>
+        <p class="card-label">Featured Work</p>
+        <div class="card-work">
+          <a href="https://portal.briancrink.com">Portal</a>
+          <a href="https://hire.briancrink.com">Hire</a>
+        </div>
+        <div class="card-actions">
+          <a href="https://hire.briancrink.com/resume/">Resume</a>
+          <a href="https://contact.briancrink.com">Contact</a>
+        </div>
+      </article>
+      <article class="hire-card" data-mode="roles">
+        <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5V9H4V6.5zm0 4.5h16v7A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5V11zm3.25 2.25a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5h-3.5z"/></svg>
+        <h3 class="card-title">Junior Data Analyst</h3>
+        <p class="card-desc">Clean, query, and chart the first cut of a question so a senior can take it further.</p>
+        <div class="card-tags">
+          <span class="card-tag">SQL</span>
+          <span class="card-tag">Excel</span>
+          <span class="card-tag">Python</span>
+        </div>
+        <p class="card-label">Featured Work</p>
+        <div class="card-work">
+          <a href="https://portal.briancrink.com">Portal</a>
+          <a href="https://hire.briancrink.com">Hire</a>
+        </div>
+        <div class="card-actions">
+          <a href="https://hire.briancrink.com/resume/">Resume</a>
+          <a href="https://contact.briancrink.com">Contact</a>
+        </div>
+      </article>
+      <article class="hire-card" data-mode="roles">
+        <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5V9H4V6.5zm0 4.5h16v7A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5V11zm3.25 2.25a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5h-3.5z"/></svg>
+        <h3 class="card-title">IT Operations Associate</h3>
+        <p class="card-desc">Keep the day-to-day estate running: access, patches, and the quiet checks.</p>
+        <div class="card-tags">
+          <span class="card-tag">ITIL</span>
+          <span class="card-tag">Monitoring</span>
+          <span class="card-tag">Windows</span>
+        </div>
+        <p class="card-label">Featured Work</p>
+        <div class="card-work">
+          <a href="https://portal.briancrink.com">Portal</a>
+          <a href="https://hire.briancrink.com">Hire</a>
+        </div>
+        <div class="card-actions">
+          <a href="https://hire.briancrink.com/resume/">Resume</a>
+          <a href="https://contact.briancrink.com">Contact</a>
+        </div>
+      </article>
+      <article class="hire-card" data-mode="roles">
+        <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5V9H4V6.5zm0 4.5h16v7A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5V11zm3.25 2.25a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5h-3.5z"/></svg>
+        <h3 class="card-title">Software QA Engineer</h3>
+        <p class="card-desc">Automate the proof that a build still does what the last one claimed.</p>
+        <div class="card-tags">
+          <span class="card-tag">Cypress</span>
+          <span class="card-tag">CI</span>
+          <span class="card-tag">QA</span>
+        </div>
+        <p class="card-label">Featured Work</p>
+        <div class="card-work">
+          <a href="https://portal.briancrink.com">Portal</a>
+          <a href="https://hire.briancrink.com">Hire</a>
+        </div>
+        <div class="card-actions">
+          <a href="https://hire.briancrink.com/resume/">Resume</a>
+          <a href="https://contact.briancrink.com">Contact</a>
+        </div>
+      </article>
+      <article class="hire-card" data-mode="roles">
+        <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5V9H4V6.5zm0 4.5h16v7A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5V11zm3.25 2.25a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5h-3.5z"/></svg>
+        <h3 class="card-title">Business Analyst</h3>
+        <p class="card-desc">Translate an operating need into requirements a builder can implement.</p>
+        <div class="card-tags">
+          <span class="card-tag">Requirements</span>
+          <span class="card-tag">SQL</span>
+          <span class="card-tag">Process</span>
+        </div>
+        <p class="card-label">Featured Work</p>
+        <div class="card-work">
+          <a href="https://portal.briancrink.com">Portal</a>
+          <a href="https://hire.briancrink.com">Hire</a>
+        </div>
+        <div class="card-actions">
+          <a href="https://hire.briancrink.com/resume/">Resume</a>
+          <a href="https://contact.briancrink.com">Contact</a>
+        </div>
+      </article>
+      <article class="hire-card" data-mode="roles">
+        <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5V9H4V6.5zm0 4.5h16v7A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5V11zm3.25 2.25a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5h-3.5z"/></svg>
+        <h3 class="card-title">Site Reliability Engineer</h3>
+        <p class="card-desc">Keep a service up by treating operations as software.</p>
+        <div class="card-tags">
+          <span class="card-tag">SRE</span>
+          <span class="card-tag">K8s</span>
+          <span class="card-tag">Observability</span>
+        </div>
+        <p class="card-label">Featured Work</p>
+        <div class="card-work">
+          <a href="https://portal.briancrink.com">Portal</a>
+          <a href="https://hire.briancrink.com">Hire</a>
+        </div>
+        <div class="card-actions">
+          <a href="https://hire.briancrink.com/resume/">Resume</a>
+          <a href="https://contact.briancrink.com">Contact</a>
+        </div>
+      </article>
+      <article class="hire-card" data-mode="roles">
+        <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5V9H4V6.5zm0 4.5h16v7A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5V11zm3.25 2.25a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5h-3.5z"/></svg>
+        <h3 class="card-title">Product Support Engineer</h3>
+        <p class="card-desc">Sit between product and support when an issue is the system, not the user.</p>
+        <div class="card-tags">
+          <span class="card-tag">APIs</span>
+          <span class="card-tag">Logs</span>
+          <span class="card-tag">Jira</span>
+        </div>
+        <p class="card-label">Featured Work</p>
+        <div class="card-work">
+          <a href="https://portal.briancrink.com">Portal</a>
+          <a href="https://hire.briancrink.com">Hire</a>
+        </div>
+        <div class="card-actions">
+          <a href="https://hire.briancrink.com/resume/">Resume</a>
+          <a href="https://contact.briancrink.com">Contact</a>
+        </div>
+      </article>
+      <article class="hire-card" data-mode="roles">
+        <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5V9H4V6.5zm0 4.5h16v7A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5V11zm3.25 2.25a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5h-3.5z"/></svg>
+        <h3 class="card-title">AI Engineer</h3>
+        <p class="card-desc">Put models into the product path: inference, eval, and the fallback.</p>
+        <div class="card-tags">
+          <span class="card-tag">Python</span>
+          <span class="card-tag">LLM</span>
+          <span class="card-tag">APIs</span>
+        </div>
+        <p class="card-label">Featured Work</p>
+        <div class="card-work">
+          <a href="https://portal.briancrink.com">Portal</a>
+          <a href="https://hire.briancrink.com">Hire</a>
+        </div>
+        <div class="card-actions">
+          <a href="https://hire.briancrink.com/resume/">Resume</a>
+          <a href="https://contact.briancrink.com">Contact</a>
+        </div>
+      </article>
+      <article class="hire-card" data-mode="roles">
+        <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5V9H4V6.5zm0 4.5h16v7A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5V11zm3.25 2.25a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5h-3.5z"/></svg>
+        <h3 class="card-title">Machine Learning Engineer</h3>
+        <p class="card-desc">Train, ship, and watch models as production software.</p>
+        <div class="card-tags">
+          <span class="card-tag">PyTorch</span>
+          <span class="card-tag">Python</span>
+          <span class="card-tag">MLOps</span>
+        </div>
+        <p class="card-label">Featured Work</p>
+        <div class="card-work">
+          <a href="https://portal.briancrink.com">Portal</a>
+          <a href="https://hire.briancrink.com">Hire</a>
+        </div>
+        <div class="card-actions">
+          <a href="https://hire.briancrink.com/resume/">Resume</a>
+          <a href="https://contact.briancrink.com">Contact</a>
+        </div>
+      </article>
+      <article class="hire-card" data-mode="roles">
+        <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5V9H4V6.5zm0 4.5h16v7A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5V11zm3.25 2.25a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5h-3.5z"/></svg>
+        <h3 class="card-title">Systems Architect</h3>
+        <p class="card-desc">Draw the boundaries of a system so each part has a job and a failure mode.</p>
+        <div class="card-tags">
+          <span class="card-tag">Architecture</span>
+          <span class="card-tag">ADRs</span>
+          <span class="card-tag">Integration</span>
+        </div>
+        <p class="card-label">Featured Work</p>
+        <div class="card-work">
+          <a href="https://portal.briancrink.com">Portal</a>
+          <a href="https://hire.briancrink.com">Hire</a>
+        </div>
+        <div class="card-actions">
+          <a href="https://hire.briancrink.com/resume/">Resume</a>
+          <a href="https://contact.briancrink.com">Contact</a>
+        </div>
+      </article>
+      <article class="hire-card" data-mode="roles">
+        <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5V9H4V6.5zm0 4.5h16v7A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5V11zm3.25 2.25a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5h-3.5z"/></svg>
+        <h3 class="card-title">Backend Engineer</h3>
+        <p class="card-desc">Build the services, data, and contracts the client depends on.</p>
+        <div class="card-tags">
+          <span class="card-tag">Node.js</span>
+          <span class="card-tag">SQL</span>
+          <span class="card-tag">APIs</span>
+        </div>
+        <p class="card-label">Featured Work</p>
+        <div class="card-work">
+          <a href="https://portal.briancrink.com">Portal</a>
+          <a href="https://hire.briancrink.com">Hire</a>
+        </div>
+        <div class="card-actions">
+          <a href="https://hire.briancrink.com/resume/">Resume</a>
+          <a href="https://contact.briancrink.com">Contact</a>
+        </div>
+      </article>
+      <article class="hire-card" data-mode="roles">
+        <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5V9H4V6.5zm0 4.5h16v7A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5V11zm3.25 2.25a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5h-3.5z"/></svg>
+        <h3 class="card-title">Full-Stack Developer</h3>
+        <p class="card-desc">Own a feature from the interface through the store that remembers it.</p>
+        <div class="card-tags">
+          <span class="card-tag">TypeScript</span>
+          <span class="card-tag">Node.js</span>
+          <span class="card-tag">SQL</span>
+        </div>
+        <p class="card-label">Featured Work</p>
+        <div class="card-work">
+          <a href="https://portal.briancrink.com">Portal</a>
+          <a href="https://hire.briancrink.com">Hire</a>
+        </div>
+        <div class="card-actions">
+          <a href="https://hire.briancrink.com/resume/">Resume</a>
+          <a href="https://contact.briancrink.com">Contact</a>
+        </div>
+      </article>
+      <article class="hire-card" data-mode="roles">
+        <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5V9H4V6.5zm0 4.5h16v7A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5V11zm3.25 2.25a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5h-3.5z"/></svg>
+        <h3 class="card-title">Cloud Engineer</h3>
+        <p class="card-desc">Implement and operate the cloud layer a product actually runs on.</p>
+        <div class="card-tags">
+          <span class="card-tag">AWS</span>
+          <span class="card-tag">Terraform</span>
+          <span class="card-tag">Linux</span>
+        </div>
+        <p class="card-label">Featured Work</p>
+        <div class="card-work">
+          <a href="https://portal.briancrink.com">Portal</a>
+          <a href="https://hire.briancrink.com">Hire</a>
+        </div>
+        <div class="card-actions">
+          <a href="https://hire.briancrink.com/resume/">Resume</a>
+          <a href="https://contact.briancrink.com">Contact</a>
+        </div>
+      </article>
+      <article class="hire-card" data-mode="roles">
+        <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5V9H4V6.5zm0 4.5h16v7A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5V11zm3.25 2.25a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5h-3.5z"/></svg>
+        <h3 class="card-title">Security Analyst</h3>
+        <p class="card-desc">Watch the estate for what should not be happening, and write it down.</p>
+        <div class="card-tags">
+          <span class="card-tag">SIEM</span>
+          <span class="card-tag">SOC</span>
+          <span class="card-tag">IR</span>
+        </div>
+        <p class="card-label">Featured Work</p>
+        <div class="card-work">
+          <a href="https://portal.briancrink.com">Portal</a>
+          <a href="https://hire.briancrink.com">Hire</a>
+        </div>
+        <div class="card-actions">
+          <a href="https://hire.briancrink.com/resume/">Resume</a>
+          <a href="https://contact.briancrink.com">Contact</a>
+        </div>
+      </article>
+      <article class="hire-card" data-mode="roles">
+        <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5V9H4V6.5zm0 4.5h16v7A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5V11zm3.25 2.25a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5h-3.5z"/></svg>
+        <h3 class="card-title">Cybersecurity Engineer</h3>
+        <p class="card-desc">Build the controls that keep access, data, and runtime inside policy.</p>
+        <div class="card-tags">
+          <span class="card-tag">IAM</span>
+          <span class="card-tag">Network</span>
+          <span class="card-tag">AWS</span>
+        </div>
+        <p class="card-label">Featured Work</p>
+        <div class="card-work">
+          <a href="https://portal.briancrink.com">Portal</a>
+          <a href="https://hire.briancrink.com">Hire</a>
+        </div>
+        <div class="card-actions">
+          <a href="https://hire.briancrink.com/resume/">Resume</a>
+          <a href="https://contact.briancrink.com">Contact</a>
+        </div>
+      </article>
       <article class="hire-card" data-mode="services">
         <svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M5 4h14a1 1 0 0 1 1 1v6H4V5a1 1 0 0 1 1-1zm-1 9h16v6a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-6zm3 2.25a.75.75 0 0 0 0 1.5h4a.75.75 0 0 0 0-1.5H7z"/></svg>
         <h3 class="card-title">Web Platform</h3>
@@ -839,6 +1896,39 @@
       }
     }
 
+    function rowKey(card) {
+      return Math.round(card.getBoundingClientRect().top);
+    }
+
+    function cardsByRow(cards) {
+      const rows = [];
+      cards.forEach((card) => {
+        const top = rowKey(card);
+        let row = rows.find((item) => Math.abs(item.top - top) < 12);
+        if (!row) {
+          row = { top: top, cards: [] };
+          rows.push(row);
+        }
+        row.cards.push(card);
+      });
+      rows.sort((a, b) => a.top - b.top);
+      return rows;
+    }
+
+    function revealRow(row) {
+      const ordered = row.cards.slice().sort((a, b) => {
+        return a.getBoundingClientRect().left - b.getBoundingClientRect().left;
+      });
+      ordered.forEach((card, i) => {
+        if (card.dataset.shown === '1') return;
+        card.dataset.shown = '1';
+        window.setTimeout(() => {
+          card.classList.add('is-in');
+          rememberCardPositions();
+        }, i * 180);
+      });
+    }
+
     function queueCardReveal() {
       clearCardObserver();
       const cards = Array.from(document.querySelectorAll('.hire-card.is-active'));
@@ -850,20 +1940,31 @@
       const hold = cardsBooted ? 80 : 400;
       cardsBooted = true;
       cardRevealTimer = window.setTimeout(() => {
-        let delay = 0;
+        const rows = cardsByRow(cards);
+        if (!rows.length) return;
+
+        const first = rows[0];
+        const firstVisible = first.cards.some((card) => {
+          const rect = card.getBoundingClientRect();
+          return rect.top < window.innerHeight * 0.92 && rect.bottom > 0;
+        });
+        if (firstVisible) revealRow(first);
+
+        const later = firstVisible ? rows.slice(1) : rows;
+        if (!later.length) return;
+
         cardObserver = new IntersectionObserver((entries) => {
           entries.forEach((entry) => {
             if (!entry.isIntersecting) return;
             const card = entry.target;
-            if (card.dataset.shown === '1') return;
-            card.dataset.shown = '1';
-            const wait = delay;
-            delay += 180;
-            window.setTimeout(() => card.classList.add('is-in'), wait);
-            cardObserver.unobserve(card);
+            const top = rowKey(card);
+            const row = later.find((item) => Math.abs(item.top - top) < 12) || later.find((item) => item.cards.includes(card));
+            if (!row) return;
+            revealRow(row);
+            row.cards.forEach((el) => cardObserver.unobserve(el));
           });
-        }, { threshold: 0.28, rootMargin: '0px 0px -8% 0px' });
-        cards.forEach((card) => cardObserver.observe(card));
+        }, { threshold: 0.22, rootMargin: '0px 0px -6% 0px' });
+        later.forEach((row) => row.cards.forEach((card) => cardObserver.observe(card)));
       }, hold);
     }
 
@@ -996,11 +2097,46 @@
       requestAnimationFrame(drawWellRipple);
     }
 
+    function rememberCardPositions() {}
+
+    function playCardReflow() {
+      const cards = Array.from(document.querySelectorAll('.hire-card.is-active.is-in'));
+      if (!cards.length) return;
+
+      const first = cards.map((card) => ({ card: card, rect: card.getBoundingClientRect() }));
+      first.forEach((item) => {
+        item.card.style.transition = 'none';
+        item.card.style.transform = 'none';
+      });
+
+      first.forEach((item) => {
+        const last = item.card.getBoundingClientRect();
+        const dx = item.rect.left - last.left;
+        const dy = item.rect.top - last.top;
+        if (Math.abs(dx) < 0.5 && Math.abs(dy) < 0.5) {
+          item.card.style.transform = '';
+          return;
+        }
+        item.card.style.transform = 'translate(' + dx + 'px, ' + dy + 'px)';
+      });
+
+      void document.getElementById('cardBoard').offsetWidth;
+
+      first.forEach((item) => {
+        item.card.style.transition = 'transform 0.45s cubic-bezier(0.22, 1, 0.36, 1)';
+        item.card.style.transform = '';
+      });
+    }
+
     window.addEventListener('load', scheduleSnap);
     window.addEventListener('resize', () => {
       resizeGridCanvas();
       scheduleSnap();
+      playCardReflow();
     });
+    if (window.ResizeObserver) {
+      new ResizeObserver(() => playCardReflow()).observe(document.getElementById('cardBoard'));
+    }
     if (document.fonts && document.fonts.ready) {
       document.fonts.ready.then(scheduleSnap);
     }
