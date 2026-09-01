@@ -374,7 +374,7 @@
       z-index: 1;
     }
 
-    .mode-toggle.roles .toggle-slider {
+    .mode-toggle.services .toggle-slider {
       left: calc(50% + 0px);
     }
 
@@ -476,33 +476,59 @@
   <script src="resources/search-bar/search-bar.js"></script>
 
   <script>
-    function switchMode(mode) {
+    function modeFromHash() {
+      const key = String(location.hash || '').replace(/^#/, '').trim().toLowerCase();
+      return key === 'services' ? 'services' : 'roles';
+    }
+
+    function applyMode(mode, pushHash) {
       const toggle = document.getElementById('modeToggle');
       const servicesOption = document.getElementById('servicesOption');
       const rolesOption = document.getElementById('rolesOption');
+      const next = mode === 'services' ? 'services' : 'roles';
 
-      if (mode === 'roles') {
-        toggle.classList.add('roles');
-        servicesOption.classList.remove('active');
-        servicesOption.classList.add('inactive');
-        rolesOption.classList.remove('inactive');
-        rolesOption.classList.add('active');
-
-        setTimeout(() => {
-          window.location.href = 'https://hire.briancrink.com/roles';
-        }, 200);
-      } else {
-        toggle.classList.remove('roles');
+      if (next === 'services') {
+        toggle.classList.add('services');
         rolesOption.classList.remove('active');
         rolesOption.classList.add('inactive');
         servicesOption.classList.remove('inactive');
         servicesOption.classList.add('active');
+      } else {
+        toggle.classList.remove('services');
+        servicesOption.classList.remove('active');
+        servicesOption.classList.add('inactive');
+        rolesOption.classList.remove('inactive');
+        rolesOption.classList.add('active');
+      }
 
-        setTimeout(() => {
-          window.location.href = 'https://hire.briancrink.com/services';
-        }, 200);
+      if (pushHash) writeHash(next, false);
+    }
+
+    function canWriteHistory() {
+      try {
+        return window.top === window && location.protocol !== 'about:' && location.origin !== 'null';
+      } catch (err) {
+        return false;
       }
     }
+
+    function writeHash(mode, replace) {
+      if (!canWriteHistory()) return;
+      const hash = '#' + mode;
+      try {
+        if (replace) history.replaceState({ mode: mode }, '', hash);
+        else if (location.hash !== hash) history.pushState({ mode: mode }, '', hash);
+      } catch (err) {}
+    }
+
+    function switchMode(mode) {
+      applyMode(mode, true);
+    }
+
+    window.addEventListener('hashchange', () => applyMode(modeFromHash(), false));
+    window.addEventListener('popstate', () => applyMode(modeFromHash(), false));
+    if (!location.hash) writeHash('roles', true);
+    applyMode(modeFromHash(), false);
 
     const GRID = 24; //30
     const WELL = 16;
