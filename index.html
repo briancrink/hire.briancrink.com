@@ -149,6 +149,25 @@
       z-index: 2;
     }
 
+    .name-wrap {
+      position: relative;
+      display: inline-block;
+    }
+
+    .dev-image-mini {
+      position: absolute;
+      left: 100%;
+      top: 50%;
+      width: 60px;
+      height: 60px;
+      margin: 0 0 0 10px;
+      object-fit: contain;
+      pointer-events: none;
+      transform: translateY(-50%);
+      opacity: calc(max(0, (var(--hero-compact) - 0.9) / 0.10));
+      z-index: 2;
+    }
+
     .name {
       font-size: 3.0rem;
       font-weight: 600;
@@ -681,7 +700,10 @@
       <a href="https://os.briancrink.com/career" class="sub-header-link career-word">Career<span class="os-mark">OS</span></a>
     </p>
     <div class="identity">
-      <h1 class="name"><a href="https://briancrink.com" class="name-link">Brian Crink</a></h1>
+      <div class="name-wrap">
+        <h1 class="name"><a href="https://briancrink.com" class="name-link">Brian Crink</a></h1>
+        <img src="resources/images/profile/developer_emoji.png" alt="" class="dev-image-mini" draggable="false" data-fallback-src="https://raw.githubusercontent.com/briancrink/resources.briancrink.com/main/images/profile/developer_emoji.png" onerror="if(!this.dataset.fell && this.dataset.fallbackSrc){this.dataset.fell='1';this.src=this.dataset.fallbackSrc;}">
+      </div>
     </div>
     <div class="hire-status-row" id="hireStatusRow">
       <p class="hire-status">
