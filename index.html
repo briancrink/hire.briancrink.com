@@ -18,6 +18,7 @@
 
     html {
       background-color: #000000;
+      overscroll-behavior-y: none;
     }
 
     .background {
@@ -43,7 +44,7 @@
     body {
       margin: 0;
       padding: 0;
-      min-height: 100dvh;
+      min-height: 100svh;
       background: transparent;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       position: relative;
@@ -2646,6 +2647,7 @@
 
     function snapRow(cards, instant, targetTop) {
       if (!cards || !cards.length || snapping) return;
+      if (touchScroll && !instant) return;
       const bounds = rowBounds(cards);
       if (!Number.isFinite(bounds.top)) return;
       const target = typeof targetTop === 'number' ? targetTop : slotTop();
@@ -2707,10 +2709,18 @@
       return best;
     }
 
+    let touchScroll = false;
+    const coarsePointer = window.matchMedia('(pointer: coarse)').matches;
+
+    function heroStillCollapsing() {
+      return window.scrollY < compactRangePx() + 12;
+    }
+
     function scheduleRowSnap() {
-      if (snapping) return;
+      if (snapping || touchScroll || heroStillCollapsing()) return;
       window.clearTimeout(snapTimer);
       snapTimer = window.setTimeout(() => {
+        if (touchScroll || heroStillCollapsing()) return;
         const row = mostVisibleRow();
         if (!row) return;
         const b = rowBounds(row.cards);
@@ -2861,19 +2871,40 @@
       if (snapping) cancelSnapAnimation();
     }
     window.addEventListener('wheel', markUserScrollIntent, { passive: true });
-    window.addEventListener('touchstart', markUserScrollIntent, { passive: true });
+    window.addEventListener('touchstart', () => {
+      touchScroll = true;
+      markUserScrollIntent();
+    }, { passive: true });
+    window.addEventListener('touchmove', () => {
+      touchScroll = true;
+      if (snapping) cancelSnapAnimation();
+    }, { passive: true });
+    window.addEventListener('touchend', () => {
+      touchScroll = false;
+      window.setTimeout(() => {
+        if (!touchScroll) scheduleRowSnap();
+      }, 180);
+    }, { passive: true });
+    window.addEventListener('touchcancel', () => {
+      touchScroll = false;
+    }, { passive: true });
 
     window.addEventListener('load', scheduleSnap);
     window.addEventListener('load', () => {
       syncCardMask();
       if (!userInteracted) requestAnimationFrame(() => seatFirstRowForBoot());
     });
+    let lastInnerW = window.innerWidth;
     window.addEventListener('resize', () => {
       resizeGridCanvas();
       scheduleSnap();
       syncCardMask();
-      playCardReflow();
-      scheduleRowSnap();
+      const widthChanged = window.innerWidth !== lastInnerW;
+      lastInnerW = window.innerWidth;
+      if (widthChanged && !touchScroll) {
+        playCardReflow();
+        scheduleRowSnap();
+      }
     });
     if (window.ResizeObserver) {
       new ResizeObserver(() => playCardReflow()).observe(document.getElementById('cardBoard'));
@@ -2918,6 +2949,7 @@
     });
 
     document.getElementById('cardBoard').addEventListener('pointerover', (e) => {
+      if (coarsePointer) return;
       if (pointerAboveFade(e)) {
         window.clearTimeout(hoverTimer);
         clearLit();
