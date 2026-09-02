@@ -99,7 +99,7 @@
     }
 
     .tools {
-      transform: translateX(-50%) translateY(calc(var(--hero-compact) * var(--tool-collapse) * -1));
+      transform: translate3d(-50%, calc(var(--hero-compact) * var(--tool-collapse) * -1), 0);
     }
 
     .tools {
@@ -473,7 +473,7 @@
       padding: calc(var(--stage-top) + var(--tool-gap) + var(--board-y)) 20px 96px;
       z-index: 3;
       pointer-events: none;
-      transform: translateY(calc(var(--hero-compact) * var(--tool-collapse) * -1));
+      transform: translate3d(0, calc(var(--hero-compact) * var(--tool-collapse) * -1), 0);
       --mask-solid: 0px;
       --mask-end: var(--card-fade);
       -webkit-mask-image: linear-gradient(
@@ -499,6 +499,13 @@
          only the mask's job (a smooth visual fade) remains soft. */
       -webkit-clip-path: inset(var(--mask-end) 0 0 0);
       clip-path: inset(var(--mask-end) 0 0 0);
+    }
+
+    @media (pointer: coarse) {
+      .page-flow {
+        -webkit-clip-path: none;
+        clip-path: none;
+      }
     }
 
     .board {
@@ -2502,6 +2509,10 @@
     }
 
     function drawWellRipple(now) {
+      if (typeof touchScroll !== 'undefined' && touchScroll) {
+        requestAnimationFrame(drawWellRipple);
+        return;
+      }
       const t = now / 1000;
       const origin = beaconOrigin();
       const ctx = gridCtx;
@@ -2596,8 +2607,15 @@
       const cut = searchCut();
       const solid = Math.max(0, cut - flow.getBoundingClientRect().top);
       const fade = fadePx();
-      flow.style.setProperty('--mask-solid', solid + 'px');
-      flow.style.setProperty('--mask-end', (solid + fade) + 'px');
+      const solidPx = solid + 'px';
+      const endPx = (solid + fade) + 'px';
+      if (flow.style.getPropertyValue('--mask-solid') !== solidPx) {
+        flow.style.setProperty('--mask-solid', solidPx);
+      }
+      if (flow.style.getPropertyValue('--mask-end') !== endPx) {
+        flow.style.setProperty('--mask-end', endPx);
+      }
+      if (coarsePointer && touchScroll) return;
       const line = fadeLine();
       activeCards().forEach((card) => {
         const r = card.getBoundingClientRect();
@@ -2647,7 +2665,7 @@
 
     function snapRow(cards, instant, targetTop) {
       if (!cards || !cards.length || snapping) return;
-      if (touchScroll && !instant) return;
+      if ((touchScroll || coarsePointer) && !instant) return;
       const bounds = rowBounds(cards);
       if (!Number.isFinite(bounds.top)) return;
       const target = typeof targetTop === 'number' ? targetTop : slotTop();
@@ -2710,6 +2728,8 @@
     }
 
     let touchScroll = false;
+    let lastCompact = -1;
+    let scrollWork = 0;
     const coarsePointer = window.matchMedia('(pointer: coarse)').matches;
 
     function heroStillCollapsing() {
@@ -2717,7 +2737,7 @@
     }
 
     function scheduleRowSnap() {
-      if (snapping || touchScroll || heroStillCollapsing()) return;
+      if (coarsePointer || snapping || touchScroll || heroStillCollapsing()) return;
       window.clearTimeout(snapTimer);
       snapTimer = window.setTimeout(() => {
         if (touchScroll || heroStillCollapsing()) return;
@@ -2854,14 +2874,25 @@
     function syncHeroCompact() {
       const range = Math.max(1, compactRangePx());
       const t = Math.min(1, Math.max(0, window.scrollY / range));
-      document.documentElement.style.setProperty('--hero-compact', t.toFixed(4));
-      syncMemojiClip();
+      const rounded = t.toFixed(4);
+      if (rounded !== lastCompact) {
+        lastCompact = rounded;
+        document.documentElement.style.setProperty('--hero-compact', rounded);
+        syncMemojiClip();
+      }
+    }
+
+    function onScrollFrame() {
+      scrollWork = 0;
+      syncHeroCompact();
+      if (!touchScroll || !coarsePointer) syncCardMask();
+      else if (!heroStillCollapsing()) syncCardMask();
+      if (!coarsePointer) scheduleRowSnap();
     }
 
     window.addEventListener('scroll', () => {
-      syncHeroCompact();
-      syncCardMask();
-      scheduleRowSnap();
+      if (scrollWork) return;
+      scrollWork = requestAnimationFrame(onScrollFrame);
     }, { passive: true });
 
     // Treat wheel/touch input as "the person is driving the scroll now" —
@@ -2881,9 +2912,7 @@
     }, { passive: true });
     window.addEventListener('touchend', () => {
       touchScroll = false;
-      window.setTimeout(() => {
-        if (!touchScroll) scheduleRowSnap();
-      }, 180);
+      requestAnimationFrame(onScrollFrame);
     }, { passive: true });
     window.addEventListener('touchcancel', () => {
       touchScroll = false;
@@ -2906,7 +2935,7 @@
         scheduleRowSnap();
       }
     });
-    if (window.ResizeObserver) {
+    if (window.ResizeObserver && !coarsePointer) {
       new ResizeObserver(() => playCardReflow()).observe(document.getElementById('cardBoard'));
     }
     if (document.fonts && document.fonts.ready) {
