@@ -101,6 +101,7 @@
 
     .tools {
       transform: translate3d(-50%, calc(var(--hero-compact) * var(--tool-collapse) * -1), 0);
+      will-change: transform;
     }
 
     .tools {
@@ -512,20 +513,23 @@
       mask-size: 100% 100%;
       -webkit-mask-repeat: no-repeat;
       mask-repeat: no-repeat;
-      /* Hard-clip (not just visually mask) everything above the fade
-         line. clip-path removes the clipped region from hit-testing as
-         well as painting, so a card sitting invisibly above the search
-         bar can no longer show a pointer cursor or receive clicks —
-         only the mask's job (a smooth visual fade) remains soft. */
-      -webkit-clip-path: inset(var(--mask-end) 0 0 0);
-      clip-path: inset(var(--mask-end) 0 0 0);
     }
 
-    @media (pointer: coarse) {
-      .page-flow {
-        -webkit-clip-path: none;
-        clip-path: none;
-      }
+    /* Transparent — paints nothing, so the canvas grid and mask-faded
+       cards underneath render exactly as normal. Its only job is to
+       intercept hover/click in the region the mask has faded away, so a
+       hidden card can't show a pointer cursor or receive a click. It
+       tracks the search bar via the same transform .tools uses, so it
+       needs no per-scroll-frame JS at all — only sized on load/resize. */
+    #interactionGuard {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 4;
+      pointer-events: auto;
+      background: transparent;
+      transform: translate3d(0, calc(var(--hero-compact) * var(--tool-collapse) * -1), 0);
     }
 
     #compactPad {
@@ -591,15 +595,14 @@
       cursor: pointer;
     }
 
-    /* NOTE: is-above no longer disables pointer-events. A card that is
-       partially (or even fully) faded by the mask should stay hoverable
-       and clickable — whether an interaction "counts" is decided purely
-       by the pointer's own Y position vs. the fade line in JS
-       (see pointerAboveFade()), not by the card's scroll position. */
+    /* A card hidden behind the search bar is physically covered (for
+       pointer purposes) by #interactionGuard, which sits above it and
+       intercepts hover/click — so :hover/:focus-within simply never fire
+       there. No per-card class or per-frame JS needed to gate this. */
 
     .hire-card.is-lit,
-    .hire-card.is-active:not(.is-above):hover,
-    .hire-card.is-active:not(.is-above):focus-within {
+    .hire-card.is-active:hover,
+    .hire-card.is-active:focus-within {
       background: rgba(0, 12, 4, 0.4);
       border-color: #003f0982;
     }
@@ -779,6 +782,8 @@
       </div>
     </div>
   </div>
+
+  <div id="interactionGuard" aria-hidden="true"></div>
 
   <div class="page-flow" id="pageFlow">
     <section class="board" id="cardBoard" aria-label="Hire cards">
@@ -2470,12 +2475,29 @@
     const RIPPLE_DECAY = 120;
     const RIPPLE_OPACITY = 0.14;
     const GRID_ALPHA = 0.6;
+    // Beyond this radius the well/ripple's pull on a grid point is well
+    // under a pixel (env and pull both decay exponentially), so skipping
+    // the trig there is free — visually identical, much cheaper.
+    const WARP_CUTOFF = 340;
+    const WARP_CUTOFF_SQ = WARP_CUTOFF * WARP_CUTOFF;
+    const COLOR_STEPS = 20;
 
     const gridCanvas = document.getElementById('gridCanvas');
     const gridCtx = gridCanvas.getContext('2d');
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     let canvasW = 0;
     let canvasH = 0;
+
+    // Precomputed stroke colors bucketed by wave "crest" height, so the
+    // draw loop looks a color up instead of building a fresh rgba()
+    // string per segment (there can be 1000+ segments a frame).
+    const rippleColors = new Array(COLOR_STEPS + 1);
+    for (let i = 0; i <= COLOR_STEPS; i++) {
+      const lift = RIPPLE_OPACITY * (i / COLOR_STEPS);
+      const g = Math.round(16 + lift * 140);
+      const a = Math.min(0.9, GRID_ALPHA + lift);
+      rippleColors[i] = 'rgba(' + g + ',' + g + ',' + g + ',' + a.toFixed(3) + ')';
+    }
 
     function snapHireDotToGrid() {
       const beacon = document.getElementById('hireBeacon');
@@ -2493,17 +2515,33 @@
       requestAnimationFrame(snapHireDotToGrid);
     }
 
+    // The beacon doesn't move with scroll (it lives in .stage, which is
+    // never transformed by the header-collapse animation), so its screen
+    // position is effectively constant between resizes. Caching it here
+    // avoids a forced layout read (getBoundingClientRect) on every single
+    // animation frame — previously the ripple loop's biggest hidden cost.
+    let cachedOrigin = null;
+    function invalidateBeaconOrigin() {
+      cachedOrigin = null;
+    }
     function beaconOrigin() {
+      if (cachedOrigin) return cachedOrigin;
       const beacon = document.getElementById('hireBeacon');
       if (!beacon) {
-        return { x: canvasW * 0.5, y: canvasH * 0.24 };
+        cachedOrigin = { x: canvasW * 0.5, y: canvasH * 0.24 };
+        return cachedOrigin;
       }
       const rect = beacon.getBoundingClientRect();
-      return {
-        x: rect.left + rect.width / 2,
-        y: rect.top + rect.height / 2
-      };
+      cachedOrigin = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+      return cachedOrigin;
     }
+
+    let ripplePointsCols = 0;
+    let ripplePointsRows = 0;
+    let ripplePX = null;
+    let ripplePY = null;
+    let rippleCrest = null;
+    let ripplePaths = null;
 
     function resizeGridCanvas() {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -2512,64 +2550,101 @@
       gridCanvas.width = Math.floor(canvasW * dpr);
       gridCanvas.height = Math.floor(canvasH * dpr);
       gridCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ripplePointsCols = 0; // force the point cache to reallocate on next draw
     }
 
-    function warpPoint(x, y, cx, cy, t) {
-      const dx = x - cx;
-      const dy = y - cy;
-      const r = Math.hypot(dx, dy) || 0.0001;
-      const ux = dx / r;
-      const uy = dy / r;
-      const env = Math.exp(-r / RIPPLE_DECAY);
-      const wave = reduceMotion ? 0 : Math.sin(r / RIPPLE_LEN - t * RIPPLE_SPEED);
-      let pull = -WELL * Math.exp(-r / WELL_R);
-      if (!reduceMotion) pull += RIPPLE_AMP * wave * env;
-      const crest = Math.max(0, wave) * env;
-      return { x: x + ux * pull, y: y + uy * pull, crest: crest };
-    }
-
-    function strokeSeg(ctx, a, b) {
-      const crest = (a.crest + b.crest) * 0.5;
-      const lift = RIPPLE_OPACITY * crest;
-      const g = Math.round(16 + lift * 140);
-      ctx.strokeStyle = 'rgba(' + g + ',' + g + ',' + g + ',' + Math.min(0.9, GRID_ALPHA + lift) + ')';
-      ctx.beginPath();
-      ctx.moveTo(a.x, a.y);
-      ctx.lineTo(b.x, b.y);
-      ctx.stroke();
+    // Reused every frame instead of allocating a fresh {x,y,crest} object
+    // per grid point (there can be 1000+) — that allocation churn was a
+    // real source of GC-pause jank at 60fps.
+    function ensureRipplePoints(cols, rows) {
+      if (ripplePointsCols === cols && ripplePointsRows === rows && ripplePX) return;
+      const count = (cols + 1) * (rows + 1);
+      ripplePX = new Float32Array(count);
+      ripplePY = new Float32Array(count);
+      rippleCrest = new Float32Array(count);
+      ripplePointsCols = cols;
+      ripplePointsRows = rows;
     }
 
     function drawWellRipple(now) {
-      if (typeof touchScroll !== 'undefined' && touchScroll) {
-        requestAnimationFrame(drawWellRipple);
-        return;
-      }
       const t = now / 1000;
       const origin = beaconOrigin();
+      const ox = origin.x;
+      const oy = origin.y;
       const ctx = gridCtx;
       const cols = Math.ceil(canvasW / GRID) + 2;
       const rows = Math.ceil(canvasH / GRID) + 2;
+      const stride = cols + 1;
+
+      ensureRipplePoints(cols, rows);
+      const px = ripplePX;
+      const py = ripplePY;
+      const crest = rippleCrest;
+
+      for (let r = 0; r <= rows; r++) {
+        const y = r * GRID;
+        const rowBase = r * stride;
+        for (let c = 0; c <= cols; c++) {
+          const idx = rowBase + c;
+          const x = c * GRID;
+          const dx = x - ox;
+          const dy = y - oy;
+          const distSq = dx * dx + dy * dy;
+          if (distSq > WARP_CUTOFF_SQ) {
+            px[idx] = x;
+            py[idx] = y;
+            crest[idx] = 0;
+            continue;
+          }
+          const dist = Math.sqrt(distSq) || 0.0001;
+          const ux = dx / dist;
+          const uy = dy / dist;
+          const env = Math.exp(-dist / RIPPLE_DECAY);
+          const wave = reduceMotion ? 0 : Math.sin(dist / RIPPLE_LEN - t * RIPPLE_SPEED);
+          let pull = -WELL * Math.exp(-dist / WELL_R);
+          if (!reduceMotion) pull += RIPPLE_AMP * wave * env;
+          px[idx] = x + ux * pull;
+          py[idx] = y + uy * pull;
+          crest[idx] = Math.max(0, wave) * env;
+        }
+      }
+
+      if (!ripplePaths) ripplePaths = new Array(COLOR_STEPS + 1);
+      const paths = ripplePaths;
+      for (let i = 0; i <= COLOR_STEPS; i++) paths[i] = null;
+
+      function addSeg(ia, ib) {
+        const c = (crest[ia] + crest[ib]) * 0.5;
+        const bucket = c <= 0 ? 0 : Math.min(COLOR_STEPS, Math.round(c * COLOR_STEPS));
+        let path = paths[bucket];
+        if (!path) {
+          path = new Path2D();
+          paths[bucket] = path;
+        }
+        path.moveTo(px[ia], py[ia]);
+        path.lineTo(px[ib], py[ib]);
+      }
+
+      for (let c = 0; c <= cols; c++) {
+        for (let r = 0; r < rows; r++) {
+          addSeg(r * stride + c, (r + 1) * stride + c);
+        }
+      }
+      for (let r = 0; r <= rows; r++) {
+        const rowBase = r * stride;
+        for (let c = 0; c < cols; c++) {
+          addSeg(rowBase + c, rowBase + c + 1);
+        }
+      }
 
       ctx.clearRect(0, 0, canvasW, canvasH);
       ctx.lineWidth = 1;
       ctx.lineJoin = 'round';
-
-      for (let c = 0; c <= cols; c++) {
-        let prev = null;
-        for (let r = 0; r <= rows; r++) {
-          const p = warpPoint(c * GRID, r * GRID, origin.x, origin.y, t);
-          if (prev) strokeSeg(ctx, prev, p);
-          prev = p;
-        }
-      }
-
-      for (let r = 0; r <= rows; r++) {
-        let prev = null;
-        for (let c = 0; c <= cols; c++) {
-          const p = warpPoint(c * GRID, r * GRID, origin.x, origin.y, t);
-          if (prev) strokeSeg(ctx, prev, p);
-          prev = p;
-        }
+      for (let i = 0; i <= COLOR_STEPS; i++) {
+        const path = paths[i];
+        if (!path) continue;
+        ctx.strokeStyle = rippleColors[i];
+        ctx.stroke(path);
       }
 
       requestAnimationFrame(drawWellRipple);
@@ -2646,14 +2721,28 @@
       if (flow.style.getPropertyValue('--mask-end') !== endPx) {
         flow.style.setProperty('--mask-end', endPx);
       }
-      if (coarsePointer && touchScroll) return;
-      const line = fadeLine();
-      activeCards().forEach((card) => {
-        const r = card.getBoundingClientRect();
-        const above = r.top < line;
-        card.classList.toggle('is-above', above);
-        if (above) card.classList.remove('is-lit');
-      });
+    }
+
+    // A transparent, pointer-events-only strip that sits right where the
+    // mask hides cards, so hovering/clicking there lands on it instead of
+    // a hidden card underneath — without painting anything (the canvas
+    // and cards stay visible exactly as the mask alone renders them).
+    // It moves for free via the same CSS transform as .tools, so unlike
+    // the old per-card "is-above" loop it needs zero per-scroll-frame JS;
+    // it's only sized/positioned on load and resize.
+    function updateInteractionGuard() {
+      const guard = document.getElementById('interactionGuard');
+      const bar = document.getElementById('searchBar') || document.querySelector('.search-bar');
+      if (!guard || !bar) return;
+      const root = document.documentElement.style;
+      const prevCompact = root.getPropertyValue('--hero-compact');
+      // Measure with the collapse transform neutralized so we always
+      // capture the bar's fully expanded (scrollY = 0) position,
+      // regardless of where the page happens to be scrolled right now.
+      root.setProperty('--hero-compact', '0');
+      const solid = Math.max(0, bar.getBoundingClientRect().bottom + fadeGapPx());
+      root.setProperty('--hero-compact', prevCompact || '0');
+      guard.style.height = (solid + fadePx() + 2) + 'px';
     }
 
     function activeCards() {
@@ -2673,6 +2762,7 @@
 
     let snapping = false;
     let snapTimer = 0;
+    let snapSettleTimer = 0;
     let hoverTimer = 0;
     let snappedKey = '';
     let snapRAF = 0;
@@ -2691,12 +2781,23 @@
         cancelAnimationFrame(snapRAF);
         snapRAF = 0;
       }
+      window.clearTimeout(snapSettleTimer);
       snapping = false;
+    }
+
+    function finishSnap() {
+      snapRAF = 0;
+      snapSettleTimer = 0;
+      snapping = false;
+      syncCardMask();
+      updateTrailingFade();
+      // Re-check after finishing in case layout shifted during the
+      // animation (e.g. images/fonts settling) and left us slightly off.
+      scheduleRowSnap();
     }
 
     function snapRow(cards, instant, targetTop) {
       if (!cards || !cards.length || snapping) return;
-      if ((touchScroll || coarsePointer) && !instant) return;
       const bounds = rowBounds(cards);
       if (!Number.isFinite(bounds.top)) return;
       const target = typeof targetTop === 'number' ? targetTop : slotTop();
@@ -2707,19 +2808,33 @@
         updateTrailingFade();
         return;
       }
-      snapping = true;
       snappedKey = rowKeyId(cards);
-      const ms = instant ? 0 : snapMs();
-      if (ms <= 0) {
-        window.scrollBy(0, delta);
-        snapping = false;
+      const end = window.scrollY + delta;
+
+      if (instant) {
+        window.scrollTo(0, end);
         syncCardMask();
         updateTrailingFade();
         return;
       }
+
+      snapping = true;
+
+      if (coarsePointer) {
+        // Let the browser/compositor animate this natively — far smoother
+        // on touch devices than driving window.scrollTo from a JS rAF
+        // loop every frame, since it never has to fight the main thread
+        // (or the tail end of native momentum scrolling) for control of
+        // the scroll position.
+        window.scrollTo({ top: end, behavior: 'smooth' });
+        window.clearTimeout(snapSettleTimer);
+        snapSettleTimer = window.setTimeout(finishSnap, snapMs() + 100);
+        return;
+      }
+
       const start = window.scrollY;
-      const end = start + delta;
       const t0 = performance.now();
+      const ms = snapMs();
       const ease = (t) => 1 - Math.pow(1 - t, 3);
       function step(now) {
         const t = Math.min(1, (now - t0) / ms);
@@ -2728,13 +2843,7 @@
         if (t < 1) {
           snapRAF = requestAnimationFrame(step);
         } else {
-          snapRAF = 0;
-          snapping = false;
-          syncCardMask();
-          updateTrailingFade();
-          // Re-check after finishing in case layout shifted during the
-          // animation (e.g. images/fonts settling) and left us slightly off.
-          scheduleRowSnap();
+          finishSnap();
         }
       }
       snapRAF = requestAnimationFrame(step);
@@ -2762,33 +2871,52 @@
     let lastCompact = -1;
     let scrollWork = 0;
     const coarsePointer = window.matchMedia('(pointer: coarse)').matches;
+    const supportsScrollEnd = 'onscrollend' in window;
 
     function heroStillCollapsing() {
       return window.scrollY < compactRangePx() + 12;
     }
 
+    // The actual "are we settled, should a row snap into its seated
+    // position" check — shared by both the native scrollend listener
+    // (precise, modern browsers) and the debounce-timer fallback (older
+    // browsers, and non-scroll triggers like a mode switch or resize).
+    function settleAndSnap() {
+      if (snapping || touchScroll || heroStillCollapsing()) return;
+      const row = mostVisibleRow();
+      if (!row) return;
+      const b = rowBounds(row.cards);
+      const top = slotTop();
+      const bottom = window.innerHeight - 8;
+      const fullyIn = b.top >= top - 6 && b.bottom <= bottom + 6;
+      if (fullyIn) {
+        updateTrailingFade();
+        return;
+      }
+      const overlap = Math.min(b.bottom, bottom) - Math.max(b.top, top);
+      if (overlap < b.height * 0.45) {
+        updateTrailingFade();
+        return;
+      }
+      snapRow(row.cards);
+    }
+
     function scheduleRowSnap() {
-      if (coarsePointer || snapping || touchScroll || heroStillCollapsing()) return;
+      if (snapping || touchScroll || heroStillCollapsing()) return;
       window.clearTimeout(snapTimer);
-      snapTimer = window.setTimeout(() => {
-        if (touchScroll || heroStillCollapsing()) return;
-        const row = mostVisibleRow();
-        if (!row) return;
-        const b = rowBounds(row.cards);
-        const top = slotTop();
-        const bottom = window.innerHeight - 8;
-        const fullyIn = b.top >= top - 6 && b.bottom <= bottom + 6;
-        if (fullyIn) {
-          updateTrailingFade();
-          return;
-        }
-        const overlap = Math.min(b.bottom, bottom) - Math.max(b.top, top);
-        if (overlap < b.height * 0.45) {
-          updateTrailingFade();
-          return;
-        }
-        snapRow(row.cards);
-      }, 140);
+      snapTimer = window.setTimeout(settleAndSnap, 140);
+    }
+
+    // Where supported (all modern engines, including iOS 17+), scrollend
+    // fires exactly once real scrolling — including the tail end of
+    // momentum/inertial scrolling — has actually finished. That's a far
+    // more precise "has this settled?" signal than guessing with a fixed
+    // debounce, and it's what lets the seat-snap safely run on mobile.
+    if (supportsScrollEnd) {
+      window.addEventListener('scrollend', () => {
+        window.clearTimeout(snapTimer);
+        settleAndSnap();
+      }, { passive: true });
     }
 
     // Once the board has settled on a seated row, the row directly above
@@ -2863,10 +2991,12 @@
 
     syncHeroCompact();
     syncCardMask();
+    updateInteractionGuard();
     requestAnimationFrame(() => {
       syncHeroCompact();
       syncMemojiClip();
       syncCardMask();
+      updateInteractionGuard();
     });
 
     // Every scroll: keep the fade mask glued to the search bar, and
@@ -2932,7 +3062,7 @@
       syncHeroCompact();
       if (!touchScroll || !coarsePointer) syncCardMask();
       else if (!heroStillCollapsing()) syncCardMask();
-      if (!coarsePointer) scheduleRowSnap();
+      if (!supportsScrollEnd) scheduleRowSnap();
     }
 
     window.addEventListener('scroll', () => {
@@ -2958,6 +3088,11 @@
     window.addEventListener('touchend', () => {
       touchScroll = false;
       requestAnimationFrame(onScrollFrame);
+      if (supportsScrollEnd) return;
+      // No native scrollend on this browser — lift-off is the best signal
+      // we get that momentum scrolling is (about to be) done, so fall
+      // back to the debounce path from here too.
+      scheduleRowSnap();
     }, { passive: true });
     window.addEventListener('touchcancel', () => {
       touchScroll = false;
@@ -2965,15 +3100,19 @@
 
     window.addEventListener('load', scheduleSnap);
     window.addEventListener('load', () => {
+      invalidateBeaconOrigin();
       syncCardMask();
+      updateInteractionGuard();
       ensureCompactScroll();
       if (!userInteracted) requestAnimationFrame(() => seatFirstRowForBoot());
     });
     let lastInnerW = window.innerWidth;
     window.addEventListener('resize', () => {
       resizeGridCanvas();
+      invalidateBeaconOrigin();
       scheduleSnap();
       syncCardMask();
+      updateInteractionGuard();
       ensureCompactScroll();
       const widthChanged = window.innerWidth !== lastInnerW;
       lastInnerW = window.innerWidth;
@@ -2986,7 +3125,10 @@
       new ResizeObserver(() => playCardReflow()).observe(document.getElementById('cardBoard'));
     }
     if (document.fonts && document.fonts.ready) {
-      document.fonts.ready.then(scheduleSnap);
+      document.fonts.ready.then(() => {
+        invalidateBeaconOrigin();
+        scheduleSnap();
+      });
     }
 
     resizeGridCanvas();
