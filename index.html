@@ -24,15 +24,18 @@
     html {
       background-color: var(--page-bg);
       color: var(--page-fg);
-      min-height: 100%;
-      min-height: 100dvh;
-      overscroll-behavior-y: none;
+      height: 100%;
+      max-height: 100%;
+      overflow: hidden;
+      overscroll-behavior: none;
       transition: background-color 0.45s ease, color 0.45s ease;
     }
 
     html, body {
-      min-height: 100%;
-      min-height: 100dvh;
+      height: 100%;
+      max-height: 100%;
+      overflow: hidden;
+      overscroll-behavior: none;
     }
 
     body.light,
@@ -65,8 +68,9 @@
     body {
       margin: 0;
       padding: 0;
-      min-height: 100%;
-      min-height: 100dvh;
+      height: 100%;
+      max-height: 100%;
+      overflow: hidden;
       background-color: var(--page-bg);
       color: var(--page-fg);
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -102,6 +106,7 @@
       --tool-collapse: 170px; /*distance tools + cards rise: tool-gap (270) - location-y (100) */
       --compact-range: 160px; /*scroll distance that completes the collapse */
       --scroll-cancel: 0px; /*undo compact-range scroll on the board so short rows stay seated */
+      --chrome-expanded: 420px;
     }
 
     .stage,
@@ -530,15 +535,27 @@
       color: #aaaaaa;
     }
 
+    #scroller {
+      position: fixed;
+      left: 0;
+      right: 0;
+      top: var(--chrome-expanded);
+      bottom: 0;
+      z-index: 1;
+      overflow-x: hidden;
+      overflow-y: auto;
+      overscroll-behavior-y: none;
+      -webkit-overflow-scrolling: touch;
+    }
+
     .page-flow {
       position: relative;
       width: 100%;
       max-width: min(1680px, calc(100vw - 40px));
       margin: 0 auto;
-      padding: calc(var(--stage-top) + var(--tool-gap) + var(--board-y)) 20px 96px;
+      padding: 12px 20px 96px;
       z-index: 3;
       pointer-events: none;
-      transform: translate3d(0, calc(var(--hero-compact) * var(--tool-collapse) * -1 + var(--scroll-cancel)), 0);
       --mask-solid: 0px;
       --mask-end: var(--card-fade);
       -webkit-mask-image: linear-gradient(
@@ -934,6 +951,7 @@
 
   <div id="interactionGuard" aria-hidden="true"></div>
 
+  <div id="scroller">
   <div class="page-flow" id="pageFlow">
     <section class="board" id="cardBoard" aria-label="Hire cards">
       <article class="hire-card" data-mode="roles">
@@ -2447,6 +2465,7 @@
     </section>
     <div id="compactPad" aria-hidden="true"></div>
   </div>
+  </div>
 
   <button class="theme-toggle" id="theme-toggle" type="button" tabindex="-1">
     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.15"/><line x1="12" y1="2.4" x2="12" y2="5.1"/><line x1="12" y1="18.9" x2="12" y2="21.6"/><line x1="2.4" y1="12" x2="5.1" y2="12"/><line x1="18.9" y1="12" x2="21.6" y2="12"/><line x1="5.2" y1="5.2" x2="7.1" y2="7.1"/><line x1="16.9" y1="16.9" x2="18.8" y2="18.8"/><line x1="18.8" y1="5.2" x2="16.9" y2="7.1"/><line x1="7.1" y1="16.9" x2="5.2" y2="18.8"/></svg>
@@ -2475,6 +2494,20 @@
         setToggleIcon();
       }
     })();
+
+    const scroller = document.getElementById('scroller');
+    function scrollYNow() {
+      return scroller ? scroller.scrollTop : window.scrollY;
+    }
+    function scrollToY(y, opts) {
+      if (!scroller) {
+        if (opts && opts.behavior) window.scrollTo({ top: y, behavior: opts.behavior });
+        else window.scrollTo(0, y);
+        return;
+      }
+      if (opts && opts.behavior === 'smooth') scroller.scrollTo({ top: y, behavior: 'smooth' });
+      else scroller.scrollTop = y;
+    }
 
     function modeFromHash() {
       const key = String(location.hash || '').replace(/^#/, '').trim().toLowerCase();
@@ -3017,10 +3050,10 @@
         return;
       }
       snappedKey = rowKeyId(cards);
-      const end = window.scrollY + delta;
+      const end = scrollYNow() + delta;
 
       if (instant) {
-        window.scrollTo(0, end);
+        scrollToY(end);
         syncCardMask();
         updateTrailingFade();
         return;
@@ -3034,19 +3067,19 @@
         // loop every frame, since it never has to fight the main thread
         // (or the tail end of native momentum scrolling) for control of
         // the scroll position.
-        window.scrollTo({ top: end, behavior: 'smooth' });
+        scrollToY(end, { behavior: 'smooth' });
         window.clearTimeout(snapSettleTimer);
         snapSettleTimer = window.setTimeout(finishSnap, snapMs() + 100);
         return;
       }
 
-      const start = window.scrollY;
+      const start = scrollYNow();
       const t0 = performance.now();
       const ms = snapMs();
       const ease = (t) => 1 - Math.pow(1 - t, 3);
       function step(now) {
         const t = Math.min(1, (now - t0) / ms);
-        window.scrollTo(0, start + (end - start) * ease(t));
+        scrollToY(start + (end - start) * ease(t));
         syncCardMask();
         if (t < 1) {
           snapRAF = requestAnimationFrame(step);
@@ -3082,7 +3115,7 @@
     const supportsScrollEnd = 'onscrollend' in window;
 
     function heroStillCollapsing() {
-      return window.scrollY < compactRangePx() + 12;
+      return scrollYNow() < compactRangePx() + 12;
     }
 
     // The actual "are we settled, should a row snap into its seated
@@ -3091,22 +3124,28 @@
     // browsers, and non-scroll triggers like a mode switch or resize).
     function settleAndSnap() {
       if (snapping || touchScroll || heroStillCollapsing()) return;
-      const row = mostVisibleRow();
-      if (!row) return;
-      const b = rowBounds(row.cards);
-      const top = slotTop();
-      const bottom = window.innerHeight - 8;
-      const fullyIn = b.top >= top - 6 && b.bottom <= bottom + 6;
-      if (fullyIn) {
+      const rows = cardsByRow(activeCards());
+      if (!rows.length) return;
+      const cut = searchCut();
+      const seat = slotTop();
+      const fade = fadePx();
+      let idx = 0;
+      for (let i = 0; i < rows.length; i++) {
+        if (rowBounds(rows[i].cards).bottom > cut + fade) {
+          idx = i;
+          break;
+        }
+      }
+      const current = rows[idx];
+      const b = rowBounds(current.cards);
+      const clipped = b.top < seat - 2;
+      const target = (clipped && rows[idx + 1]) ? rows[idx + 1] : current;
+      const tb = rowBounds(target.cards);
+      if (Math.abs(tb.top - seat) < 6) {
         updateTrailingFade();
         return;
       }
-      const overlap = Math.min(b.bottom, bottom) - Math.max(b.top, top);
-      if (overlap < b.height * 0.45) {
-        updateTrailingFade();
-        return;
-      }
-      snapRow(row.cards);
+      snapRow(target.cards);
     }
 
     function scheduleRowSnap() {
@@ -3121,7 +3160,7 @@
     // more precise "has this settled?" signal than guessing with a fixed
     // debounce, and it's what lets the seat-snap safely run on mobile.
     if (supportsScrollEnd) {
-      window.addEventListener('scrollend', () => {
+      (scroller || window).addEventListener('scrollend', () => {
         window.clearTimeout(snapTimer);
         settleAndSnap();
       }, { passive: true });
@@ -3219,7 +3258,9 @@
       pad.style.height = '0px';
       const range = compactRangePx();
       const slack = 32;
-      const maxY = document.documentElement.scrollHeight - window.innerHeight;
+      const maxY = scroller
+        ? scroller.scrollHeight - scroller.clientHeight
+        : document.documentElement.scrollHeight - window.innerHeight;
       const need = Math.max(0, range + slack - Math.max(0, maxY));
       pad.style.height = need + 'px';
     }
@@ -3251,9 +3292,19 @@
       img.style.maskImage = mask;
     }
 
+    function measureChrome() {
+      const edge = document.querySelector('.search-wrapper')
+        || document.getElementById('searchBar')
+        || document.querySelector('.search-bar')
+        || document.getElementById('modeToggle');
+      if (!edge) return;
+      const h = Math.ceil(edge.getBoundingClientRect().bottom);
+      document.documentElement.style.setProperty('--chrome-expanded', Math.max(0, h) + 'px');
+    }
+
     function syncHeroCompact() {
       const range = Math.max(1, compactRangePx());
-      const y = window.scrollY;
+      const y = scrollYNow();
       const t = Math.min(1, Math.max(0, y / range));
       const rounded = t.toFixed(4);
       const cancel = Math.min(y, range);
@@ -3262,6 +3313,7 @@
         lastCompact = rounded;
         document.documentElement.style.setProperty('--hero-compact', rounded);
         syncMemojiClip();
+        measureChrome();
       }
     }
 
@@ -3273,10 +3325,24 @@
       if (!supportsScrollEnd) scheduleRowSnap();
     }
 
-    window.addEventListener('scroll', () => {
+    (scroller || window).addEventListener('scroll', () => {
       if (scrollWork) return;
       scrollWork = requestAnimationFrame(onScrollFrame);
     }, { passive: true });
+    ['.stage', '.tools', '.theme-toggle', '#interactionGuard'].forEach((sel) => {
+      const el = document.querySelector(sel);
+      if (!el || !scroller) return;
+      el.addEventListener('wheel', (e) => {
+        scroller.scrollTop += e.deltaY;
+      }, { passive: true });
+    });
+    measureChrome();
+    window.addEventListener('resize', measureChrome);
+    requestAnimationFrame(measureChrome);
+    const toolsEl = document.querySelector('.tools');
+    if (window.ResizeObserver && toolsEl) {
+      new ResizeObserver(() => measureChrome()).observe(toolsEl);
+    }
 
     // Treat wheel/touch input as "the person is driving the scroll now" —
     // cancel any in-progress programmatic snap so it doesn't fight them.
@@ -3403,5 +3469,5 @@
     toggle.addEventListener('mouseenter', activateDots);
     toggle.addEventListener('mouseleave', deactivateDots);
   </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a3b7845ab9ab0de2',t:'MTc4OTQ3NDEwOA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
