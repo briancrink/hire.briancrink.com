@@ -16,9 +16,29 @@
       box-sizing: border-box;
     }
 
+    :root {
+      --page-bg: #000000;
+      --page-fg: #ffffff;
+    }
+
     html {
-      background-color: #000000;
+      background-color: var(--page-bg);
+      color: var(--page-fg);
+      min-height: 100%;
+      min-height: 100dvh;
       overscroll-behavior-y: none;
+      transition: background-color 0.45s ease, color 0.45s ease;
+    }
+
+    html, body {
+      min-height: 100%;
+      min-height: 100dvh;
+    }
+
+    body.light,
+    html:has(body.light) {
+      --page-bg: #ffffff;
+      --page-fg: #1a1a1a;
     }
 
     .background {
@@ -27,9 +47,10 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background-color: #000000;
+      background-color: var(--page-bg);
       z-index: -1;
       pointer-events: none;
+      transition: background-color 0.45s ease;
     }
 
     #gridCanvas {
@@ -44,12 +65,14 @@
     body {
       margin: 0;
       padding: 0;
-      min-height: 100svh;
-      background: transparent;
+      min-height: 100%;
+      min-height: 100dvh;
+      background-color: var(--page-bg);
+      color: var(--page-fg);
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       position: relative;
       z-index: 2;
-      transition: background 0.4s;
+      transition: background-color 0.45s ease, color 0.45s ease;
       opacity: 0;
       animation: fadeIn 1.3s forwards;
     }
@@ -233,12 +256,21 @@
       letter-spacing: 0.16em;
     }
 
-    .sub-header .crumb-dot {
-      color: #8b949e;
-      font-weight: 500;
-      font-size: 0.85rem;
-      line-height: 1;
-      letter-spacing: 0;
+    .sub-header .map-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: inherit;
+      text-decoration: none;
+      line-height: 0;
+    }
+
+    .sub-header .map-link:hover { opacity: 0.85; }
+
+    .sub-header .map-icon {
+      width: 2.8rem;
+      height: 2.8rem;
+      display: block;
     }
 
     .sub-header-link {
@@ -293,6 +325,10 @@
       font-weight: 600;
       color: #ffffff;
     }
+
+    body.light .name { color: #1a1a1a; }
+    body.light .os-mark { color: #1a1a1a; }
+    body.light .theme-toggle { color: #1a1a1a; }
 
     .hire-status-row {
       position: absolute;
@@ -554,13 +590,36 @@
       }
     }
 
+    @media (max-width: 768px) {
+      .dev-image-mini { display: none; }
+    }
+
+    .theme-toggle {
+      position: fixed;
+      top: 12px;
+      right: 12px;
+      z-index: 40;
+      background: transparent;
+      border: none;
+      width: 48px;
+      height: 48px;
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 50%;
+      transition: transform 0.3s;
+      color: #ffffff;
+    }
+
+    .theme-toggle:hover { transform: rotate(20deg); }
+    .theme-toggle svg { width: 28px; height: 28px; display: block; }
+
     .hire-card {
       display: none;
       width: var(--card-min);
       max-width: 100%;
       flex: 0 0 var(--card-min);
       text-align: left;
-      background: rgba(0, 0, 0, 0.4);
+      background: rgba(0, 0, 0, 0.18);
       border: 1px solid rgba(255, 255, 255, 0.07);
       border-radius: 20px;
       padding: 18px 18px 16px;
@@ -690,6 +749,66 @@
       border-color: rgba(255, 255, 255, 0.16);
     }
 
+    body.light .mode-toggle {
+      background: rgba(0, 0, 0, 0.03);
+      border-color: rgba(0, 0, 0, 0.15);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    body.light .mode-toggle:hover {
+      background: rgba(0, 0, 0, 0.05);
+      border-color: rgba(0, 0, 0, 0.18);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.10);
+    }
+
+    body.light .hire-status {
+      background: rgba(0, 0, 0, 0.03);
+      border-color: rgba(0, 0, 0, 0.15);
+      color: #374151;
+    }
+
+    body.light .location-status {
+      color: #374151;
+    }
+
+    body.light .hire-card {
+      background: rgba(0, 0, 0, 0.05);
+      border-color: rgba(0, 0, 0, 0.08);
+      color: #4b5563;
+    }
+
+    body.light .hire-card.is-lit,
+    body.light .hire-card.is-active:hover,
+    body.light .hire-card.is-active:focus-within {
+      background: rgba(0, 0, 0, 0.10);
+      border-color: rgba(0, 0, 0, 0.10);
+    }
+
+    body.light .card-icon {
+      color: #111827;
+    }
+
+    body.light .card-title {
+      color: #111827;
+    }
+
+    body.light .card-desc,
+    body.light .card-tag,
+    body.light .card-label {
+      color: #4b5563;
+    }
+
+    body.light .card-tag {
+      border-color: rgba(0, 0, 0, 0.14);
+    }
+
+    body.light .card-work a,
+    body.light .card-actions a {
+      background: rgba(0, 0, 0, 0.06);
+      border-color: rgba(0, 0, 0, 0.14);
+      color: #1f2937;
+    }
+
     .card-actions {
       display: flex;
       flex-wrap: wrap;
@@ -706,7 +825,29 @@
   <div class="stage">
     <p class="sub-header">
       <a href="https://portal.briancrink.com#career" class="sub-header-link portal-word">Portal</a>
-      <span class="crumb-dot" aria-hidden="true">•</span>
+      <a href="https://site.briancrink.com/map" class="map-link" aria-label="Site map"><svg class="map-icon" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <clipPath id="mapFillHire"><path d="M3.15 7.85 L8.85 4.55 L15.05 8.05 L20.7 4.75 L20.7 16.25 L15.05 19.55 L8.85 16.05 L3.15 19.35 Z"/></clipPath>
+          <g clip-path="url(#mapFillHire)">
+            <path d="M3.15 7.85 L8.85 4.55 L15.05 8.05 L20.7 4.75 L20.7 16.25 L15.05 19.55 L8.85 16.05 L3.15 19.35 Z" fill="#3f8f4e"/>
+            <path d="M3.15 19.35 C 8.85 11.05, 15.05 13.8, 20.7 8.75 V 14.65 C 18.9 15.9, 16.15 18.4, 14.85 19.35 L 3.15 19.35 Z" fill="#3a86ff"/>
+          </g>
+          <path d="M3.15 7.85 L8.85 4.55 L15.05 8.05 L20.7 4.75 L20.7 16.25 L15.05 19.55 L8.85 16.05 L3.15 19.35 Z" fill="none" stroke="rgba(47, 58, 51, 0.32)" stroke-width="0.85"/>
+          <line x1="8.85" y1="6.2" x2="8.85" y2="14.4" stroke="rgba(255,255,255,0.62)" stroke-width="0.36" stroke-linecap="round"/>
+          <line x1="15.05" y1="9.7" x2="15.05" y2="17.9" stroke="rgba(255,255,255,0.62)" stroke-width="0.36" stroke-linecap="round"/>
+          <g class="map-compass">
+            <circle cx="6.114" cy="14.75" r="2.38" fill="#ffffff" stroke="#2eb5e8" stroke-width="0.58"/>
+            <circle cx="6.114" cy="14.75" r="2.07" fill="none" stroke="#1b94d0" stroke-width="0.16"/>
+            <line x1="6.114" y1="13.02" x2="6.114" y2="12.68" stroke="#9ecce4" stroke-width="0.22" stroke-linecap="round"/>
+            <line x1="6.114" y1="16.48" x2="6.114" y2="16.82" stroke="#9ecce4" stroke-width="0.22" stroke-linecap="round"/>
+            <line x1="4.384" y1="14.75" x2="4.044" y2="14.75" stroke="#9ecce4" stroke-width="0.22" stroke-linecap="round"/>
+            <line x1="7.844" y1="14.75" x2="8.184" y2="14.75" stroke="#9ecce4" stroke-width="0.22" stroke-linecap="round"/>
+            <path d="M7.259 13.605 L5.605 14.241 L6.623 15.259 Z" fill="#ef4a3c"/>
+            <path d="M4.969 15.895 L5.605 14.241 L6.623 15.259 Z" fill="#33b7e8"/>
+            <circle cx="6.114" cy="14.75" r="0.46" fill="#ffffff"/>
+          </g>
+          <line x1="19.545" y1="13.689" x2="22.395" y2="16.539" stroke="#e0b36a" stroke-width="1.85" stroke-linecap="round"/>
+          <circle cx="16.858" cy="11.002" r="2.85" fill="rgba(90, 190, 255, 0.38)" stroke="#8b9098" stroke-width="0.82"/>
+        </svg></a>
       <a href="https://os.briancrink.com/career" class="sub-header-link career-word">Career<span class="os-mark">OS</span></a>
     </p>
     <div class="identity">
@@ -2299,9 +2440,34 @@
     <div id="compactPad" aria-hidden="true"></div>
   </div>
 
+  <button class="theme-toggle" id="theme-toggle" type="button" tabindex="-1">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.15"/><line x1="12" y1="2.4" x2="12" y2="5.1"/><line x1="12" y1="18.9" x2="12" y2="21.6"/><line x1="2.4" y1="12" x2="5.1" y2="12"/><line x1="18.9" y1="12" x2="21.6" y2="12"/><line x1="5.2" y1="5.2" x2="7.1" y2="7.1"/><line x1="16.9" y1="16.9" x2="18.8" y2="18.8"/><line x1="18.8" y1="5.2" x2="16.9" y2="7.1"/><line x1="7.1" y1="16.9" x2="5.2" y2="18.8"/></svg>
+  </button>
+
   <script src="resources/search-bar/search-bar.js"></script>
 
   <script>
+    (function () {
+      const toggleBtn = document.getElementById('theme-toggle');
+      const body = document.body;
+      const sunIcon = `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.15"/><line x1="12" y1="2.4" x2="12" y2="5.1"/><line x1="12" y1="18.9" x2="12" y2="21.6"/><line x1="2.4" y1="12" x2="5.1" y2="12"/><line x1="18.9" y1="12" x2="21.6" y2="12"/><line x1="5.2" y1="5.2" x2="7.1" y2="7.1"/><line x1="16.9" y1="16.9" x2="18.8" y2="18.8"/><line x1="18.8" y1="5.2" x2="16.9" y2="7.1"/><line x1="7.1" y1="16.9" x2="5.2" y2="18.8"/></svg>`;
+      const moonIcon = `<svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 14.35A9 9 0 1 1 9.65 3 7.15 7.15 0 0 0 21 14.35z"/></svg>`;
+      function setToggleIcon() {
+        if (!toggleBtn) return;
+        toggleBtn.innerHTML = body.classList.contains('light') ? moonIcon : sunIcon;
+      }
+      if (toggleBtn) {
+        toggleBtn.addEventListener('click', () => {
+          body.classList.toggle('light');
+          setToggleIcon();
+          if (typeof startGridTheme === 'function') {
+            startGridTheme(body.classList.contains('light') ? 1 : 0);
+          }
+        });
+        setToggleIcon();
+      }
+    })();
+
     function modeFromHash() {
       const key = String(location.hash || '').replace(/^#/, '').trim().toLowerCase();
       return key === 'services' ? 'services' : 'roles';
@@ -2492,12 +2658,45 @@
     // draw loop looks a color up instead of building a fresh rgba()
     // string per segment (there can be 1000+ segments a frame).
     const rippleColors = new Array(COLOR_STEPS + 1);
-    for (let i = 0; i <= COLOR_STEPS; i++) {
-      const lift = RIPPLE_OPACITY * (i / COLOR_STEPS);
-      const g = Math.round(16 + lift * 140);
-      const a = Math.min(0.9, GRID_ALPHA + lift);
-      rippleColors[i] = 'rgba(' + g + ',' + g + ',' + g + ',' + a.toFixed(3) + ')';
+    const GRID_THEME_MS = 450;
+    let gridTheme = document.body.classList.contains('light') ? 1 : 0;
+    let gridThemeFrom = gridTheme;
+    let gridThemeTo = gridTheme;
+    let gridThemeStart = 0;
+
+    function mixRippleColors(u) {
+      const t = u < 0 ? 0 : u > 1 ? 1 : u;
+      for (let i = 0; i <= COLOR_STEPS; i++) {
+        const lift = RIPPLE_OPACITY * (i / COLOR_STEPS);
+        const g0 = 16 + lift * 140;
+        const a0 = Math.min(0.9, GRID_ALPHA + lift);
+        const g1 = 30 + lift * 40;
+        const a1 = Math.min(0.16, 0.06 + lift * 0.08);
+        const g = Math.round(g0 + (g1 - g0) * t);
+        const a = a0 + (a1 - a0) * t;
+        rippleColors[i] = 'rgba(' + g + ',' + g + ',' + g + ',' + a.toFixed(3) + ')';
+      }
     }
+
+    function startGridTheme(to) {
+      gridThemeFrom = to > gridTheme ? Math.max(gridTheme, 0.7) : gridTheme;
+      gridThemeTo = to;
+      gridTheme = gridThemeFrom;
+      gridThemeStart = performance.now();
+      mixRippleColors(gridTheme);
+    }
+
+    function tickGridTheme(now) {
+      if (!gridThemeStart) return;
+      const raw = Math.min(1, (now - gridThemeStart) / GRID_THEME_MS);
+      const goingLight = gridThemeTo > gridThemeFrom;
+      const p = goingLight ? (1 - Math.pow(1 - raw, 3)) : Math.pow(raw, 3);
+      gridTheme = gridThemeFrom + (gridThemeTo - gridThemeFrom) * p;
+      mixRippleColors(gridTheme);
+      if (raw >= 1) gridThemeStart = 0;
+    }
+
+    mixRippleColors(gridTheme);
 
     function snapHireDotToGrid() {
       const beacon = document.getElementById('hireBeacon');
@@ -2567,6 +2766,7 @@
     }
 
     function drawWellRipple(now) {
+      tickGridTheme(now);
       const t = now / 1000;
       const origin = beaconOrigin();
       const ox = origin.x;
