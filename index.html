@@ -84,7 +84,7 @@
 
     :root {
       --stage-top: 12vh; /*adjust height of all stage + tools elements */
-      --crumb-y: -50px; /*adjust breadcrumb position */
+      --crumb-y: -62px; /*adjust breadcrumb position */
       --name-y: -24px; /*adjust name position */
       --status-y: 46px; /*adjust hire-status position */
       --location-y: 100px; /*adjust location-status position */
@@ -260,6 +260,10 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
+      position: relative;
+      width: 2.8rem;
+      height: 2.8rem;
+      flex: 0 0 2.8rem;
       color: inherit;
       text-decoration: none;
       line-height: 0;
@@ -268,8 +272,12 @@
     .sub-header .map-link:hover { opacity: 0.85; }
 
     .sub-header .map-icon {
-      width: 2.8rem;
-      height: 2.8rem;
+      width: 3.4rem;
+      height: 3.4rem;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
       display: block;
     }
 
