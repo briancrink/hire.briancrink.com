@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cstyle%3Epath%7Bfill:%231a1a1a%7D%40media (prefers-color-scheme:dark)%7Bpath%7Bfill:%23ffffff%7D%7D%3C/style%3E%3Cpath d='M12 2.45c2.55 0 4.35 1.95 4.45 5.05.1 1.75-.3 3.3-1.15 4.3C14.5 13.2 13.3 13.9 12 13.9s-2.5-.7-3.3-2.1C7.85 10.8 7.45 9.25 7.55 7.5 7.65 4.4 9.45 2.45 12 2.45z'/%3E%3Cpath fill-rule='evenodd' d='M3.05 22v-5.5c.15-2.05 3.5-3.35 7.2-2.55L12.05 16.2 13.8 14c3.7-.85 7.05.5 7.15 2.5V22H3.05zM10.2 14.85 12.05 16.7 13.85 14.9l.85.7-1.05 6.4h-3.2l-1.1-6.4.85-.75zM16.05 17.2h1.65v1.1H16.05z'/%3E%3Cpath d='M11.25 16.55h1.6L12.05 21.2z'/%3E%3C/svg%3E">
-  <link rel="apple-touch-icon" href="resources/images/icons/apple-touch-icon-light-hire.png.png">
-  <link rel="apple-touch-icon" href="resources/images/icons/apple-touch-icon-dark-hire.png.png" media="(prefers-color-scheme: dark)">
+  <link rel="apple-touch-icon" href="resources/images/icons/favicon/apple-touch-icon-light-hire.png">
+  <link rel="apple-touch-icon" href="resources/images/icons/favicon/apple-touch-icon-dark-hire.png" media="(prefers-color-scheme: dark)">
   <title>Hire | Brian Crink</title>
   <link rel="stylesheet" href="resources/search-bar/search-bar.css">
   
@@ -95,10 +95,6 @@
       --tool-gap: 270px; /*adjust pill + search bar position */
       --board-y: 168px; /*padding from tools to first card row — do not snap this away on load */
       --card-min: 460px; /*min card width before wrapping to next row */
-      --card-fade: 8px; /*fade-out zone height under the search bar — lower this to shrink the dissolve */
-      --card-fade-gap: 0px; /*space below the search bar before fade starts */
-      --snap-pad: 36px; /*gap under the search bar when a row is seated */
-      --snap-ms: 720; /*row snap duration in ms */
       --board-gap: 14px;
       --card-reveal-y: 12px; /*how far cards start below their resting spot before the fade-in settles */
       --hero-compact: 0; /*0 = full hero, 1 = memoji/location gone, tools locked high */
@@ -506,12 +502,33 @@
       width: calc(50% - 4px);
       background: rgba(0, 255, 157, 0.9);
       border-radius: 46px;
-      transition: left 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+      transform-origin: 50% 50%;
+      transition: left 0.34s cubic-bezier(0.5, 0, 0.2, 1);
+      will-change: left, transform;
       z-index: 1;
     }
 
     .mode-toggle.services .toggle-slider {
       left: calc(50% + 0px);
+    }
+
+    /* Jelly knob: stretches while it travels, squashes on arrival, then
+       wobbles out. Runs alongside the 0.34s slide; 0.64s total. */
+    .toggle-slider.is-jelly {
+      animation: toggleJelly 0.64s ease-in-out both;
+    }
+
+    @keyframes toggleJelly {
+      0%   { transform: scale(1, 1); }
+      24%  { transform: scale(1.2, 0.84); }
+      44%  { transform: scale(0.9, 1.1); }
+      62%  { transform: scale(1.05, 0.96); }
+      80%  { transform: scale(0.985, 1.015); }
+      100% { transform: scale(1, 1); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .toggle-slider.is-jelly { animation: none; }
     }
 
     .toggle-option {
@@ -555,47 +572,12 @@
       padding: 12px 20px 96px;
       z-index: 3;
       pointer-events: none;
-      --mask-solid: 0px;
-      --mask-end: var(--card-fade);
-      -webkit-mask-image: linear-gradient(
-        to bottom,
-        transparent 0,
-        transparent var(--mask-solid),
-        #000 var(--mask-end)
-      );
-      mask-image: linear-gradient(
-        to bottom,
-        transparent 0,
-        transparent var(--mask-solid),
-        #000 var(--mask-end)
-      );
-      -webkit-mask-size: 100% 100%;
-      mask-size: 100% 100%;
-      -webkit-mask-repeat: no-repeat;
-      mask-repeat: no-repeat;
-    }
-
-    /* Transparent — paints nothing, so the canvas grid and mask-faded
-       cards underneath render exactly as normal. Its only job is to
-       intercept hover/click in the region the mask has faded away, so a
-       hidden card can't show a pointer cursor or receive a click. It
-       tracks the search bar via the same transform .tools uses, so it
-       needs no per-scroll-frame JS at all — only sized on load/resize. */
-    #interactionGuard {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 4;
-      pointer-events: auto;
-      background: transparent;
-      transform: translate3d(0, calc(var(--hero-compact) * var(--tool-collapse) * -1), 0);
-    }
-
-    #compactPad {
-      width: 100%;
-      height: 0;
-      pointer-events: none;
+      /* Always leave at least --compact-range of scroll so the header can
+         finish collapsing. 100% tracks #scroller's height as it grows during
+         the collapse, so max scroll stays constant and the browser never
+         clamps scrollTop back mid-collapse (which looked like a bounce when
+         content only barely overflowed). Long content is unaffected. */
+      min-height: calc(100% + var(--compact-range));
     }
 
     .board {
@@ -664,36 +646,34 @@
       transform: none;
     }
 
-    /* Applied to a row that's just above the seated row once it has
-       settled: rather than leaving a stray sliver of a mostly-faded row
-       poking out below the search bar, ease it the rest of the way to
-       fully invisible (and non-interactive) over about a second. */
-    .hire-card.is-trailing {
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 1s ease;
-    }
-
     .hire-card.is-active {
       cursor: pointer;
     }
 
-    /* A card hidden behind the search bar is physically covered (for
-       pointer purposes) by #interactionGuard, which sits above it and
-       intercepts hover/click — so :hover/:focus-within simply never fire
-       there. No per-card class or per-frame JS needed to gate this. */
-
-    .hire-card.is-lit,
+    /* Hover: quieter cue — the green border brightens a little. */
     .hire-card.is-active:hover,
     .hire-card.is-active:focus-within {
       background: rgba(0, 12, 4, 0.4);
-      border-color: #003f0982;
+      border-color: rgba(0, 255, 157, 0.24);
+    }
+
+    /* Selected: same treatment as an active tag chip (green accent,
+       green border, green tint). Wins over hover on the same card. */
+    .hire-card.is-active.is-lit {
+      background: rgba(0, 255, 157, 0.08);
+      border-color: rgba(0, 255, 157, 0.5);
+    }
+
+    .hire-card.is-lit .card-title,
+    .hire-card.is-lit .card-icon {
+      color: #00ff9d;
     }
 
     .card-icon {
       width: 18px;
       height: 18px;
       display: block;
+      transition: color 0.2s ease;
       margin: 0 0 12px;
       color: #ffffff;
     }
@@ -701,6 +681,7 @@
     .card-title {
       margin: 0 0 8px;
       color: #d7dbe0;
+      transition: color 0.2s ease;
       font-size: 1.05rem;
       font-weight: 600;
       letter-spacing: -0.02em;
@@ -801,11 +782,10 @@
       color: #4b5563;
     }
 
-    body.light .hire-card.is-lit,
     body.light .hire-card.is-active:hover,
     body.light .hire-card.is-active:focus-within {
-      background: rgba(0, 0, 0, 0.10);
-      border-color: rgba(0, 0, 0, 0.10);
+      background: rgba(0, 0, 0, 0.07);
+      border-color: rgba(4, 120, 87, 0.28);
     }
 
     body.light .card-icon {
@@ -814,6 +794,16 @@
 
     body.light .card-title {
       color: #111827;
+    }
+
+    body.light .hire-card.is-active.is-lit {
+      background: rgba(16, 185, 129, 0.08);
+      border-color: rgba(4, 120, 87, 0.45);
+    }
+
+    body.light .hire-card.is-lit .card-title,
+    body.light .hire-card.is-lit .card-icon {
+      color: #047857;
     }
 
     body.light .card-desc,
@@ -838,6 +828,302 @@
       flex-wrap: wrap;
       gap: 8px;
     }
+
+    /* ---------- Search: bar extras, tag strip, menus, results ---------- */
+    .search-wrapper {
+      position: relative;
+      z-index: 6;
+    }
+
+    .right-spacer {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .search-clear {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      padding: 0;
+      border: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.08);
+      color: #bbbbbb;
+      font: 600 11px/1 inherit;
+      cursor: pointer;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    .search-bar.has-query .search-clear { display: inline-flex; }
+    .search-clear:hover { background: rgba(255, 255, 255, 0.16); color: #ffffff; }
+
+    .tag-strip {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      gap: 8px;
+      width: min(860px, calc(100vw - 24px));
+      margin: 14px 0 0 50%;
+      padding: 2px 28px;
+      transform: translateX(-50%);
+      overflow-x: auto;
+      overflow-y: hidden;
+      overscroll-behavior-x: contain;
+      scrollbar-width: none;
+      pointer-events: auto;
+      -webkit-mask-image: linear-gradient(to right, transparent 0, #000 28px, #000 calc(100% - 28px), transparent 100%);
+      mask-image: linear-gradient(to right, transparent 0, #000 28px, #000 calc(100% - 28px), transparent 100%);
+    }
+
+    .tag-strip::-webkit-scrollbar { display: none; }
+    .tag-strip .tag-chip:first-child { margin-left: auto; }
+    .tag-strip .tag-chip:last-child { margin-right: auto; }
+
+    .tag-chip {
+      flex: 0 0 auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      height: 30px;
+      padding: 0 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.45);
+      color: #8b949e;
+      font-family: inherit;
+      font-size: 0.78rem;
+      font-weight: 500;
+      line-height: 1;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease, opacity 0.2s ease;
+    }
+
+    .tag-chip .n {
+      font-size: 0.68rem;
+      opacity: 0.6;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .tag-chip:hover { color: #d7dbe0; border-color: rgba(255, 255, 255, 0.22); }
+    .tag-chip.is-all { color: #d7dbe0; }
+    .tag-chip.is-on { color: #00ff9d; border-color: rgba(0, 255, 157, 0.5); background: rgba(0, 255, 157, 0.08); }
+    .tag-chip.is-empty { opacity: 0.32; }
+
+    .card-tag {
+      cursor: pointer;
+      transition: color 0.2s ease, border-color 0.2s ease;
+    }
+
+    .card-tag:hover { color: #d7dbe0; border-color: rgba(255, 255, 255, 0.2); }
+
+    .card-tag.is-on,
+    .card-tag.is-match,
+    .card-work a.is-match {
+      color: #00ff9d;
+      border-color: rgba(0, 255, 157, 0.45);
+    }
+
+    mark.hl {
+      background: rgba(0, 255, 157, 0.16);
+      color: inherit;
+      border-radius: 3px;
+      padding: 0 1px;
+    }
+
+    .overlay-box {
+      top: calc(100% + 12px);
+      max-height: min(62vh, 480px);
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      padding: 8px;
+      text-align: left;
+      background: rgba(12, 12, 12, 0.94);
+      scrollbar-width: thin;
+    }
+
+    .ov-section + .ov-section {
+      margin-top: 6px;
+      padding-top: 6px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .ov-head {
+      padding: 6px 10px 4px;
+      color: #5d6670;
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .ov-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      padding: 9px 10px;
+      border: 0;
+      border-radius: 10px;
+      background: transparent;
+      color: #c9d1d9;
+      font-family: inherit;
+      font-size: 0.88rem;
+      font-weight: 500;
+      line-height: 1.2;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .ov-ico {
+      flex: 0 0 18px;
+      width: 18px;
+      text-align: center;
+      color: #8b949e;
+    }
+
+    .ov-hint {
+      margin-left: auto;
+      max-width: 48%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: #5d6670;
+      font-size: 0.75rem;
+      white-space: nowrap;
+    }
+
+    .ov-label code,
+    #emptyState code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.8rem;
+      color: #d7dbe0;
+    }
+
+    body.light .ov-label code,
+    body.light #emptyState code { color: #111827; }
+
+    .ov-item:hover,
+    .ov-item.is-sel { background: rgba(255, 255, 255, 0.06); }
+    .ov-item.is-on,
+    .ov-item.is-on .ov-ico { color: #00ff9d; }
+
+    .ov-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      padding: 4px 8px 8px;
+    }
+
+    .ov-chips .tag-chip {
+      height: 26px;
+      padding: 0 10px;
+      font-size: 0.74rem;
+    }
+
+    .ov-chips .tag-chip.is-sel { outline: 1px solid rgba(255, 255, 255, 0.4); outline-offset: 1px; }
+
+    .ov-empty {
+      padding: 12px 10px;
+      color: #8b949e;
+      font-size: 0.85rem;
+    }
+
+    .ov-foot {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px 14px;
+      padding: 8px 10px 4px;
+      color: #5d6670;
+      font-size: 0.72rem;
+    }
+
+    .ov-foot kbd,
+    .ov-hint kbd {
+      font-family: inherit;
+      font-size: 0.68rem;
+      padding: 1px 5px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 4px;
+      color: #8b949e;
+    }
+
+    @media (pointer: coarse) {
+      .ov-foot { display: none; }
+    }
+
+    #emptyState {
+      display: none;
+      max-width: 460px;
+      margin: 40px auto 0;
+      text-align: center;
+      color: #8b949e;
+      pointer-events: auto;
+    }
+
+    #emptyState.show { display: block; }
+
+    #emptyState h3 {
+      margin: 0 0 8px;
+      color: #d7dbe0;
+      font-size: 1.05rem;
+      font-weight: 600;
+    }
+
+    #emptyState p {
+      margin: 0 0 16px;
+      font-size: 0.9rem;
+      line-height: 1.45;
+    }
+
+    .empty-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .empty-actions button {
+      padding: 7px 12px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.35);
+      color: #b7bec6;
+      font-family: inherit;
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .empty-actions button:hover { border-color: rgba(255, 255, 255, 0.24); }
+
+    /* One row that fits with room to spare: no scrolling at all. */
+    html.scroll-locked #scroller { overflow-y: hidden; }
+
+    body.light .tag-chip { background: rgba(255, 255, 255, 0.75); border-color: rgba(0, 0, 0, 0.12); color: #4b5563; }
+    body.light .tag-chip:hover { color: #111827; border-color: rgba(0, 0, 0, 0.25); }
+    body.light .tag-chip.is-all { color: #111827; }
+    body.light .tag-chip.is-on,
+    body.light .card-tag.is-on,
+    body.light .card-tag.is-match,
+    body.light .card-work a.is-match { color: #047857; border-color: rgba(4, 120, 87, 0.45); background: rgba(16, 185, 129, 0.08); }
+    body.light mark.hl { background: rgba(16, 185, 129, 0.18); }
+    body.light .overlay-box { background: rgba(255, 255, 255, 0.97); border-color: rgba(0, 0, 0, 0.1); box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12); }
+    body.light .ov-item { color: #1f2937; }
+    body.light .ov-item:hover,
+    body.light .ov-item.is-sel { background: rgba(0, 0, 0, 0.05); }
+    body.light .ov-item.is-on,
+    body.light .ov-item.is-on .ov-ico { color: #047857; }
+    body.light .ov-section + .ov-section { border-top-color: rgba(0, 0, 0, 0.07); }
+    body.light .ov-foot kbd,
+    body.light .ov-hint kbd { border-color: rgba(0, 0, 0, 0.15); color: #4b5563; }
+    body.light .search-clear { background: rgba(0, 0, 0, 0.06); color: #4b5563; }
+    body.light #emptyState { color: #4b5563; }
+    body.light #emptyState h3 { color: #111827; }
+    body.light .empty-actions button { background: rgba(0, 0, 0, 0.05); border-color: rgba(0, 0, 0, 0.14); color: #1f2937; }
 
   </style>
 </head>
@@ -931,8 +1217,12 @@
 
         <input type="text" id="searchInput"
              placeholder="Search Roles"
+             aria-label="Search roles and services"
+             enterkeyhint="search"
              autocomplete="off" spellcheck="false">
-        <div class="right-spacer" aria-hidden="true"></div>
+        <div class="right-spacer">
+          <button type="button" class="search-clear" id="searchClear" tabindex="-1" aria-label="Clear search">✕</button>
+        </div>
       </div>
 
       <div class="icon-circles" id="iconCircles">
@@ -940,20 +1230,17 @@
         <div class="icon-circle" id="commandIcon" role="button" tabindex="-1" aria-label="Commands">⌘</div>
       </div>
 
-      <div class="overlay-box" id="overlayBox">
-        <p style="margin: 0; color: #ccc; font-size: 15px;">
-          Quick Commands | Actions
-        </p>
-      </div>
+      <div class="overlay-box" id="overlayBox" aria-label="Search menu"></div>
     </div>
+
+    <div class="tag-strip" id="tagStrip" role="toolbar" aria-label="Filter by tag"></div>
   </div>
 
-  <div id="interactionGuard" aria-hidden="true"></div>
 
   <div id="scroller">
   <div class="page-flow" id="pageFlow">
         <section class="board" id="cardBoard" aria-label="Hire cards"></section>
-    <div id="compactPad" aria-hidden="true"></div>
+    <div id="emptyState" aria-live="polite"></div>
   </div>
   </div>
 
@@ -986,17 +1273,9 @@
     })();
 
     const scroller = document.getElementById('scroller');
+    let scrollLocked = false; // single row that fits (or no results): nothing to scroll
     function scrollYNow() {
       return scroller ? scroller.scrollTop : window.scrollY;
-    }
-    function scrollToY(y, opts) {
-      if (!scroller) {
-        if (opts && opts.behavior) window.scrollTo({ top: y, behavior: opts.behavior });
-        else window.scrollTo(0, y);
-        return;
-      }
-      if (opts && opts.behavior === 'smooth') scroller.scrollTo({ top: y, behavior: 'smooth' });
-      else scroller.scrollTop = y;
     }
 
     function modeFromHash() {
@@ -1020,7 +1299,7 @@
     function renderHireCard(card, mode) {
       const icon = card.icon || {};
       const tags = (card.tags || []).map(function (tag) {
-        return '<span class="card-tag">' + escapeHtml(tag) + '</span>';
+        return '<span class="card-tag" data-tag="' + escapeHtml(tag) + '" title="Filter by ' + escapeHtml(tag) + '">' + escapeHtml(tag) + '</span>';
       }).join('');
       const work = (card.work || []).map(cardLink).join('');
       const actions = (card.actions || []).map(cardLink).join('');
@@ -1060,13 +1339,32 @@
       board.innerHTML =
         roles.map(function (card) { return renderHireCard(card, 'roles'); }).join('') +
         services.map(function (card) { return renderHireCard(card, 'services'); }).join('');
+      if (window.hireSearch) window.hireSearch.build(roles, services);
     }
+
+    // Restart the jelly keyframes on the knob each time the view changes.
+    // Removing the class + a reflow lets rapid toggles restart cleanly
+    // instead of being ignored mid-animation.
+    let toggleMode = null;
+    function jellyKnob() {
+      const knob = document.getElementById('toggleSlider');
+      if (!knob) return;
+      knob.classList.remove('is-jelly');
+      void knob.offsetWidth;
+      knob.classList.add('is-jelly');
+    }
+    document.getElementById('toggleSlider').addEventListener('animationend', (e) => {
+      if (e.animationName === 'toggleJelly') e.currentTarget.classList.remove('is-jelly');
+    });
 
     function applyMode(mode, pushHash) {
       const toggle = document.getElementById('modeToggle');
       const servicesOption = document.getElementById('servicesOption');
       const rolesOption = document.getElementById('rolesOption');
       const next = mode === 'services' ? 'services' : 'roles';
+
+      if (toggleMode && toggleMode !== next) jellyKnob();
+      toggleMode = next;
 
       if (next === 'services') {
         toggle.classList.add('services');
@@ -1194,20 +1492,29 @@
             if (!row) return;
             revealRow(row);
           });
-        }, { threshold: 0.12, rootMargin: '-' + topCut + 'px 0px -8% 0px' });
+        }, { root: scroller || null, threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
         cards.forEach((card) => cardObserver.observe(card));
       }, hold);
     }
 
     function syncCards(mode) {
       const wasBooted = cardsBooted;
+      if (window.hireSearch) {
+        // Applies mode + current query/tags to is-active, and re-ranks.
+        window.hireSearch.setMode(mode);
+      } else {
+        document.querySelectorAll('.hire-card').forEach((card) => {
+          card.classList.toggle('is-active', card.dataset.mode === mode);
+        });
+      }
       document.querySelectorAll('.hire-card').forEach((card) => {
-        card.classList.toggle('is-active', card.dataset.mode === mode);
-        card.classList.remove('is-lit', 'is-trailing');
+        card.classList.remove('is-lit');
+        card.style.transition = '';
+        card.style.transform = '';
       });
       queueCardReveal();
-      if (wasBooted) scheduleRowSnap();
-      requestAnimationFrame(ensureCompactScroll);
+      if (wasBooted && scroller) scroller.scrollTop = 0;
+      requestAnimationFrame(updateScrollLock);
     }
 
     if (!location.hash) writeHash('roles', true);
@@ -1482,342 +1789,35 @@
       return Number.isFinite(n) ? n : fallback;
     }
 
-    function fadePx() { return cssPx('--card-fade', 8); }
-    function fadeGapPx() { return cssPx('--card-fade-gap', 0); }
-    function snapPadPx() { return cssPx('--snap-pad', 14); }
-    function snapMs() { return cssPx('--snap-ms', 720); }
-    function boardGapPx() { return cssPx('--board-gap', 14); }
-    function revealOffsetPx() { return cssPx('--card-reveal-y', 12); }
-
-    function searchCut() {
-      const bar = document.getElementById('searchBar') || document.querySelector('.search-bar');
-      return bar ? bar.getBoundingClientRect().bottom + fadeGapPx() : headerReserve();
-    }
-
-    function fadeLine() {
-      return searchCut() + fadePx();
-    }
-
-    function slotTop() {
-      return searchCut() + fadePx() + snapPadPx();
-    }
-
-    function syncCardMask() {
-      const flow = document.getElementById('pageFlow');
-      if (!flow) return;
-      const cut = searchCut();
-      const solid = Math.max(0, cut - flow.getBoundingClientRect().top);
-      const fade = fadePx();
-      const solidPx = solid + 'px';
-      const endPx = (solid + fade) + 'px';
-      if (flow.style.getPropertyValue('--mask-solid') !== solidPx) {
-        flow.style.setProperty('--mask-solid', solidPx);
-      }
-      if (flow.style.getPropertyValue('--mask-end') !== endPx) {
-        flow.style.setProperty('--mask-end', endPx);
-      }
-    }
-
-    // A transparent, pointer-events-only strip that sits right where the
-    // mask hides cards, so hovering/clicking there lands on it instead of
-    // a hidden card underneath — without painting anything (the canvas
-    // and cards stay visible exactly as the mask alone renders them).
-    // It moves for free via the same CSS transform as .tools, so unlike
-    // the old per-card "is-above" loop it needs zero per-scroll-frame JS;
-    // it's only sized/positioned on load and resize.
-    function updateInteractionGuard() {
-      const guard = document.getElementById('interactionGuard');
-      const bar = document.getElementById('searchBar') || document.querySelector('.search-bar');
-      if (!guard || !bar) return;
-      const root = document.documentElement.style;
-      const prevCompact = root.getPropertyValue('--hero-compact');
-      // Measure with the collapse transform neutralized so we always
-      // capture the bar's fully expanded (scrollY = 0) position,
-      // regardless of where the page happens to be scrolled right now.
-      root.setProperty('--hero-compact', '0');
-      const solid = Math.max(0, bar.getBoundingClientRect().bottom + fadeGapPx());
-      root.setProperty('--hero-compact', prevCompact || '0');
-      guard.style.height = (solid + fadePx() + 2) + 'px';
-    }
+    function compactRangePx() { return cssPx('--compact-range', 160); }
 
     function activeCards() {
       return Array.from(document.querySelectorAll('.hire-card.is-active'));
     }
 
-    function rowBounds(cards) {
-      let top = Infinity;
-      let bottom = -Infinity;
-      cards.forEach((card) => {
-        const r = card.getBoundingClientRect();
-        if (r.top < top) top = r.top;
-        if (r.bottom > bottom) bottom = r.bottom;
-      });
-      return { top: top, bottom: bottom, height: bottom - top };
+    // Bottom edge of the fixed header chrome: the tag strip under the search
+    // bar (falls back to the bar itself if the strip is missing).
+    function chromeEdgeEl() {
+      return document.getElementById('tagStrip')
+        || document.getElementById('searchBar')
+        || document.querySelector('.search-bar');
     }
 
-    let snapping = false;
-    let snapTimer = 0;
-    let snapSettleTimer = 0;
-    let hoverTimer = 0;
-    let snappedKey = '';
-    let snapRAF = 0;
-    let userInteracted = false;
+    /* ---------------------------------------------------------------
+       Scrolling — same model as site.briancrink.com/map:
+       #scroller is a plain native scroll container pinned under the
+       header. Scrolling sets --hero-compact (0 → 1 over --compact-range),
+       the header collapses with it, and --chrome-expanded is re-measured
+       so the scroller always starts right under the header. Wheel input
+       over the header is forwarded to the scroller. No snapping, no
+       programmatic scroll animation, no fade mask, no spacer.
 
-    function rowKeyId(cards) {
-      return cards.map((c) => c.querySelector('.card-title')?.textContent || '').join('|');
-    }
-
-    // If the person starts scrolling/dragging while a rubber-band snap is
-    // still animating, stop fighting them: cancel the animation immediately
-    // and hand control straight back to native scrolling. A fresh snap will
-    // get scheduled automatically once they stop again.
-    function cancelSnapAnimation() {
-      if (snapRAF) {
-        cancelAnimationFrame(snapRAF);
-        snapRAF = 0;
-      }
-      window.clearTimeout(snapSettleTimer);
-      snapping = false;
-    }
-
-    function finishSnap() {
-      snapRAF = 0;
-      snapSettleTimer = 0;
-      snapping = false;
-      syncCardMask();
-      updateTrailingFade();
-      // Re-check after finishing in case layout shifted during the
-      // animation (e.g. images/fonts settling) and left us slightly off.
-      scheduleRowSnap();
-    }
-
-    function snapRow(cards, instant, targetTop) {
-      if (!cards || !cards.length || snapping) return;
-      const bounds = rowBounds(cards);
-      if (!Number.isFinite(bounds.top)) return;
-      const target = typeof targetTop === 'number' ? targetTop : slotTop();
-      const delta = bounds.top - target;
-      if (Math.abs(delta) < 4) {
-        snappedKey = rowKeyId(cards);
-        syncCardMask();
-        updateTrailingFade();
-        return;
-      }
-      snappedKey = rowKeyId(cards);
-      const end = scrollYNow() + delta;
-
-      if (instant) {
-        scrollToY(end);
-        syncCardMask();
-        updateTrailingFade();
-        return;
-      }
-
-      snapping = true;
-
-      if (coarsePointer) {
-        // Let the browser/compositor animate this natively — far smoother
-        // on touch devices than driving window.scrollTo from a JS rAF
-        // loop every frame, since it never has to fight the main thread
-        // (or the tail end of native momentum scrolling) for control of
-        // the scroll position.
-        scrollToY(end, { behavior: 'smooth' });
-        window.clearTimeout(snapSettleTimer);
-        snapSettleTimer = window.setTimeout(finishSnap, snapMs() + 100);
-        return;
-      }
-
-      const start = scrollYNow();
-      const t0 = performance.now();
-      const ms = snapMs();
-      const ease = (t) => 1 - Math.pow(1 - t, 3);
-      function step(now) {
-        const t = Math.min(1, (now - t0) / ms);
-        scrollToY(start + (end - start) * ease(t));
-        syncCardMask();
-        if (t < 1) {
-          snapRAF = requestAnimationFrame(step);
-        } else {
-          finishSnap();
-        }
-      }
-      snapRAF = requestAnimationFrame(step);
-    }
-
-    function mostVisibleRow() {
-      const rows = cardsByRow(activeCards());
-      if (!rows.length) return null;
-      const top = slotTop();
-      const bottom = window.innerHeight - 8;
-      let best = rows[0];
-      let bestArea = -1;
-      rows.forEach((row) => {
-        const b = rowBounds(row.cards);
-        const area = Math.max(0, Math.min(b.bottom, bottom) - Math.max(b.top, top));
-        if (area > bestArea) {
-          bestArea = area;
-          best = row;
-        }
-      });
-      return best;
-    }
-
-    let touchScroll = false;
-    let lastCompact = -1;
-    let scrollWork = 0;
+       One extra rule kept from before: when every visible card fits in a
+       single row below the expanded header (or nothing matches), the
+       scroller is set to overflow: hidden — nothing to scroll.
+       --------------------------------------------------------------- */
     const coarsePointer = window.matchMedia('(pointer: coarse)').matches;
-    const supportsScrollEnd = 'onscrollend' in window;
-
-    function heroStillCollapsing() {
-      return scrollYNow() < compactRangePx() + 12;
-    }
-
-    // The actual "are we settled, should a row snap into its seated
-    // position" check — shared by both the native scrollend listener
-    // (precise, modern browsers) and the debounce-timer fallback (older
-    // browsers, and non-scroll triggers like a mode switch or resize).
-    function settleAndSnap() {
-      if (snapping || touchScroll || heroStillCollapsing()) return;
-      const rows = cardsByRow(activeCards());
-      if (!rows.length) return;
-      const cut = searchCut();
-      const seat = slotTop();
-      const fade = fadePx();
-      let idx = 0;
-      for (let i = 0; i < rows.length; i++) {
-        if (rowBounds(rows[i].cards).bottom > cut + fade) {
-          idx = i;
-          break;
-        }
-      }
-      const current = rows[idx];
-      const b = rowBounds(current.cards);
-      const clipped = b.top < seat - 2;
-      const target = (clipped && rows[idx + 1]) ? rows[idx + 1] : current;
-      const tb = rowBounds(target.cards);
-      if (Math.abs(tb.top - seat) < 6) {
-        updateTrailingFade();
-        return;
-      }
-      snapRow(target.cards);
-    }
-
-    function scheduleRowSnap() {
-      if (snapping || touchScroll || heroStillCollapsing()) return;
-      window.clearTimeout(snapTimer);
-      snapTimer = window.setTimeout(settleAndSnap, 140);
-    }
-
-    // Where supported (all modern engines, including iOS 17+), scrollend
-    // fires exactly once real scrolling — including the tail end of
-    // momentum/inertial scrolling — has actually finished. That's a far
-    // more precise "has this settled?" signal than guessing with a fixed
-    // debounce, and it's what lets the seat-snap safely run on mobile.
-    if (supportsScrollEnd) {
-      (scroller || window).addEventListener('scrollend', () => {
-        window.clearTimeout(snapTimer);
-        settleAndSnap();
-      }, { passive: true });
-    }
-
-    // Once the board has settled on a seated row, the row directly above
-    // it is usually already hidden by the mask/clip — but if a sliver of
-    // its bottom edge still pokes out below the search bar, ease that
-    // remnant the rest of the way to fully invisible instead of leaving
-    // it hanging there.
-    function updateTrailingFade() {
-      const rows = cardsByRow(activeCards());
-      if (!rows.length) return;
-      const seatTop = slotTop();
-      let seatedIdx = 0;
-      let bestDist = Infinity;
-      rows.forEach((row, i) => {
-        const dist = Math.abs(rowBounds(row.cards).top - seatTop);
-        if (dist < bestDist) {
-          bestDist = dist;
-          seatedIdx = i;
-        }
-      });
-      const cut = searchCut();
-      rows.forEach((row, i) => {
-        const trailing = i === seatedIdx - 1 && rowBounds(row.cards).bottom > cut;
-        row.cards.forEach((card) => card.classList.toggle('is-trailing', trailing));
-      });
-    }
-
-    function rowForCard(card) {
-      if (!card) return null;
-      const rows = cardsByRow(activeCards());
-      return rows.find((row) => row.cards.includes(card)) || null;
-    }
-
-    function pointerAboveFade(e) {
-      return e.clientY < fadeLine();
-    }
-
-    // On first load, the first row's cards are still sitting
-    // revealOffsetPx() below their natural resting spot (the pre-reveal
-    // translateY). Target that much lower than the seated slot so that
-    // as the reveal glides the row up into its natural position, it
-    // lands exactly on the seated line — no separate rebound needed.
-    function seatFirstRowForBoot() {
-      const rows = cardsByRow(activeCards());
-      if (!rows.length) return;
-      const row = rows[0];
-      const pending = row.cards.filter((c) => !c.classList.contains('is-in'));
-
-      if (!pending.length) {
-        // The reveal already finished before we got a chance to look —
-        // no offset to compensate for, just seat normally.
-        snapRow(row.cards, true);
-        return;
-      }
-
-      snapRow(row.cards, true, slotTop() + revealOffsetPx());
-
-      // Belt-and-suspenders: once every not-yet-revealed card has
-      // actually finished its own reveal transition, do one silent
-      // instant re-check in case something else (a late web font, an
-      // image) reflowed the row while it was animating. Normally a no-op.
-      let remaining = pending.length;
-      function onCardSettled(ev) {
-        if (ev.propertyName !== 'transform') return;
-        ev.target.removeEventListener('transitionend', onCardSettled);
-        remaining -= 1;
-        if (remaining > 0) return;
-        if (!userInteracted) snapRow(row.cards, true);
-      }
-      pending.forEach((card) => card.addEventListener('transitionend', onCardSettled));
-    }
-
-    syncHeroCompact();
-    syncCardMask();
-    updateInteractionGuard();
-    requestAnimationFrame(() => {
-      syncHeroCompact();
-      syncMemojiClip();
-      syncCardMask();
-      updateInteractionGuard();
-    });
-
-    // Every scroll: keep the fade mask glued to the search bar, and
-    // (re)schedule the rubber-band snap so the most-visible row settles
-    // into its seated position once scrolling stops — regardless of
-    // whether the pointer is hovering a card or not.
-    function compactRangePx() { return cssPx('--compact-range', 160); }
-
-    function ensureCompactScroll() {
-      const pad = document.getElementById('compactPad');
-      if (!pad) return;
-      pad.style.height = '0px';
-      const range = compactRangePx();
-      const slack = 32;
-      const maxY = scroller
-        ? scroller.scrollHeight - scroller.clientHeight
-        : document.documentElement.scrollHeight - window.innerHeight;
-      const need = Math.max(0, range + slack - Math.max(0, maxY));
-      pad.style.height = need + 'px';
-    }
+    let lastCompact = -1;
 
     function syncMemojiClip() {
       const img = document.querySelector('.dev-image');
@@ -1847,10 +1847,7 @@
     }
 
     function measureChrome() {
-      const edge = document.querySelector('.search-wrapper')
-        || document.getElementById('searchBar')
-        || document.querySelector('.search-bar')
-        || document.getElementById('modeToggle');
+      const edge = chromeEdgeEl() || document.getElementById('modeToggle');
       if (!edge) return;
       const h = Math.ceil(edge.getBoundingClientRect().bottom);
       document.documentElement.style.setProperty('--chrome-expanded', Math.max(0, h) + 'px');
@@ -1871,83 +1868,101 @@
       }
     }
 
-    function onScrollFrame() {
-      scrollWork = 0;
-      syncHeroCompact();
-      if (!touchScroll || !coarsePointer) syncCardMask();
-      else if (!heroStillCollapsing()) syncCardMask();
-      if (!supportsScrollEnd) scheduleRowSnap();
+    // True when every visible card sits in one row that fits below the fully
+    // expanded header (measured as if scrolled to the top), or nothing matches.
+    function singleRowFits() {
+      const cards = activeCards();
+      if (!cards.length) return true;
+      let firstTop = null;
+      let maxBottom = 0;
+      for (const card of cards) {
+        const top = card.offsetTop; // layout position, ignores reveal transforms
+        if (firstTop === null) firstTop = top;
+        else if (Math.abs(top - firstTop) > 6) return false;
+        maxBottom = Math.max(maxBottom, top + card.offsetHeight);
+      }
+      const edge = chromeEdgeEl();
+      if (!edge) return false;
+      const compact = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--hero-compact')) || 0;
+      const expandedEdge = edge.getBoundingClientRect().bottom + compact * cssPx('--tool-collapse', 170);
+      return expandedEdge + maxBottom + 24 <= window.innerHeight;
     }
 
-    (scroller || window).addEventListener('scroll', () => {
-      if (scrollWork) return;
-      scrollWork = requestAnimationFrame(onScrollFrame);
-    }, { passive: true });
-    ['.stage', '.tools', '.theme-toggle', '#interactionGuard'].forEach((sel) => {
+    function updateScrollLock() {
+      const lock = singleRowFits();
+      if (lock === scrollLocked) return;
+      scrollLocked = lock;
+      document.documentElement.classList.toggle('scroll-locked', lock);
+      if (lock && scroller) {
+        scroller.scrollTop = 0;
+        syncHeroCompact();
+      }
+    }
+
+    // Cards fade in as they scroll into view (IntersectionObserver above).
+    // A fast flick can carry a row past the viewport between two frames, so
+    // the observer never sees it intersect — reveal anything already passed.
+    function revealPassed() {
+      if (!cardsBooted) return;
+      const pending = document.querySelectorAll('.hire-card.is-active:not(.is-in)');
+      if (!pending.length) return;
+      const limit = window.innerHeight * 0.92;
+      pending.forEach((card) => {
+        if (card.getBoundingClientRect().top < limit) card.classList.add('is-in');
+      });
+    }
+
+    if (scroller) {
+      scroller.addEventListener('scroll', () => {
+        requestAnimationFrame(() => {
+          syncHeroCompact();
+          revealPassed();
+        });
+      }, { passive: true });
+    }
+    ['.stage', '.tools', '.theme-toggle'].forEach((sel) => {
       const el = document.querySelector(sel);
       if (!el || !scroller) return;
       el.addEventListener('wheel', (e) => {
+        if (scrollLocked) return;
+        // The search menus and the tag strip scroll themselves.
+        if (e.target && e.target.closest && e.target.closest('.overlay-box, .tag-strip')) return;
         scroller.scrollTop += e.deltaY;
       }, { passive: true });
     });
+
     measureChrome();
-    window.addEventListener('resize', measureChrome);
-    requestAnimationFrame(measureChrome);
+    syncHeroCompact();
+    requestAnimationFrame(() => {
+      measureChrome();
+      syncMemojiClip();
+    });
     const toolsEl = document.querySelector('.tools');
     if (window.ResizeObserver && toolsEl) {
       new ResizeObserver(() => measureChrome()).observe(toolsEl);
     }
-
-    // Treat wheel/touch input as "the person is driving the scroll now" —
-    // cancel any in-progress programmatic snap so it doesn't fight them.
-    function markUserScrollIntent() {
-      userInteracted = true;
-      if (snapping) cancelSnapAnimation();
+    const heroImg = document.querySelector('.dev-image');
+    if (heroImg && !heroImg.complete) {
+      heroImg.addEventListener('load', measureChrome, { once: true });
     }
-    window.addEventListener('wheel', markUserScrollIntent, { passive: true });
-    window.addEventListener('touchstart', () => {
-      touchScroll = true;
-      markUserScrollIntent();
-    }, { passive: true });
-    window.addEventListener('touchmove', () => {
-      touchScroll = true;
-      if (snapping) cancelSnapAnimation();
-    }, { passive: true });
-    window.addEventListener('touchend', () => {
-      touchScroll = false;
-      requestAnimationFrame(onScrollFrame);
-      if (supportsScrollEnd) return;
-      // No native scrollend on this browser — lift-off is the best signal
-      // we get that momentum scrolling is (about to be) done, so fall
-      // back to the debounce path from here too.
-      scheduleRowSnap();
-    }, { passive: true });
-    window.addEventListener('touchcancel', () => {
-      touchScroll = false;
-    }, { passive: true });
 
     window.addEventListener('load', scheduleSnap);
     window.addEventListener('load', () => {
       invalidateBeaconOrigin();
-      syncCardMask();
-      updateInteractionGuard();
-      ensureCompactScroll();
-      if (!userInteracted) requestAnimationFrame(() => seatFirstRowForBoot());
+      measureChrome();
+      updateScrollLock();
     });
     let lastInnerW = window.innerWidth;
     window.addEventListener('resize', () => {
       resizeGridCanvas();
       invalidateBeaconOrigin();
       scheduleSnap();
-      syncCardMask();
-      updateInteractionGuard();
-      ensureCompactScroll();
+      measureChrome();
+      syncMemojiClip();
+      updateScrollLock();
       const widthChanged = window.innerWidth !== lastInnerW;
       lastInnerW = window.innerWidth;
-      if (widthChanged && !touchScroll) {
-        playCardReflow();
-        scheduleRowSnap();
-      }
+      if (widthChanged) playCardReflow();
     });
     if (window.ResizeObserver && !coarsePointer) {
       new ResizeObserver(() => playCardReflow()).observe(document.getElementById('cardBoard'));
@@ -1956,6 +1971,8 @@
       document.fonts.ready.then(() => {
         invalidateBeaconOrigin();
         scheduleSnap();
+        measureChrome();
+        updateScrollLock();
       });
     }
 
@@ -1981,34 +1998,30 @@
       });
     }
 
-    document.getElementById('cardBoard').addEventListener('pointerdown', (e) => {
-      if (pointerAboveFade(e)) {
-        clearLit();
-        return;
-      }
-      userInteracted = true;
-      const card = e.target.closest('.hire-card.is-active');
-      clearLit(card);
-      if (card) card.classList.add('is-lit');
-      const row = rowForCard(card);
-      if (row) snapRow(row.cards);
-    });
+    // Selecting a card brings its row up to the top-row position (where the
+    // first row sits when the page is at the top). Native smooth scroll, so
+    // any wheel/touch input from the person simply takes over. Uses 'click',
+    // not 'pointerdown', so starting a swipe over a card on a phone doesn't
+    // select it or move the page.
+    function scrollRowToTop(card) {
+      if (!scroller || scrollLocked || !card) return;
+      const flow = document.getElementById('pageFlow');
+      const padTop = flow ? parseFloat(getComputedStyle(flow).paddingTop) || 0 : 0;
+      const max = scroller.scrollHeight - scroller.clientHeight;
+      const target = Math.max(0, Math.min(max, card.offsetTop - padTop));
+      if (Math.abs(target - scroller.scrollTop) < 2) return;
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      scroller.scrollTo({ top: target, behavior: reduce ? 'auto' : 'smooth' });
+    }
 
-    document.getElementById('cardBoard').addEventListener('pointerover', (e) => {
-      if (coarsePointer) return;
-      if (pointerAboveFade(e)) {
-        window.clearTimeout(hoverTimer);
-        clearLit();
-        return;
-      }
+    document.getElementById('cardBoard').addEventListener('click', (e) => {
+      if (e.target.closest('.card-tag')) return;   // tag click filters instead
+      if (e.target.closest('a, button')) return;   // links keep their own job
       const card = e.target.closest('.hire-card.is-active');
       if (!card) return;
-      userInteracted = true;
       clearLit(card);
-      const row = rowForCard(card);
-      if (!row) return;
-      window.clearTimeout(hoverTimer);
-      hoverTimer = window.setTimeout(() => snapRow(row.cards), 70);
+      card.classList.add('is-lit');
+      scrollRowToTop(card);
     });
 
     document.addEventListener('pointerdown', (e) => {
@@ -2018,10 +2031,851 @@
 
     searchInput.addEventListener('focus', activateDots);
     searchInput.addEventListener('blur', deactivateDots);
-    searchInput.addEventListener('input', () => requestAnimationFrame(ensureCompactScroll));
 
     toggle.addEventListener('mouseenter', activateDots);
     toggle.addEventListener('mouseleave', deactivateDots);
+
+    /* =================================================================
+       Search
+       -----------------------------------------------------------------
+       Layered on top of the shared resources/search-bar component (which
+       only animates the bar and toggles #overlayBox). Everything here is
+       scoped in an IIFE because search-bar.js already owns globals like
+       `input`, `overlay`, `menuBtn` and `cmdBtn`.
+
+       Query syntax (searches the current Roles / Services view):
+         word            title, tags, featured work, description (ranked)
+         "exact phrase"  phrase match
+         #tag  tag:x     must carry a tag (prefix match)
+         title:x         title only        desc:x   description only
+         work:x          featured work / project (alias project:, p:)
+         link:x          any link label or URL
+         -word  -#tag    exclude
+         >               command palette
+       ================================================================= */
+    window.hireSearch = (function () {
+      const qInput = document.getElementById('searchInput');
+      const qBar = document.getElementById('searchBar');
+      const qWrap = document.getElementById('searchWrapper');
+      const qOverlay = document.getElementById('overlayBox');
+      const qMenuBtn = document.getElementById('menuIcon');
+      const qCmdBtn = document.getElementById('commandIcon');
+      const qClear = document.getElementById('searchClear');
+      const tagStrip = document.getElementById('tagStrip');
+      const emptyBox = document.getElementById('emptyState');
+      const board = document.getElementById('cardBoard');
+      if (!qInput || !qOverlay || !tagStrip || !board) return null;
+
+      const MODE_LABEL = { roles: 'Roles', services: 'Services' };
+      const MODE_ONE = { roles: 'role', services: 'service' };
+      const FIELD = {
+        tag: 'tag', tags: 'tag', t: 'tag',
+        title: 'title', name: 'title', role: 'title', service: 'title',
+        desc: 'desc', d: 'desc', about: 'desc',
+        work: 'work', project: 'work', projects: 'work', p: 'work',
+        link: 'link', url: 'link', site: 'link'
+      };
+      const IS_MAC = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent || '');
+      const CMD_KEY = IS_MAC ? '⌘K' : 'Ctrl K';
+
+      const state = { mode: 'roles', query: '', tags: [], sort: 'relevance' };
+      let models = [];
+      let results = [];
+      let parsed = { terms: [], command: null };
+      let overlayMode = null; // 'menu' | 'commands' | 'command-query' | 'suggest'
+      let ovActions = [];
+      let ovSel = 0;
+      let kbNav = false;
+      let suggestCtx = null;
+      let flipTimer = 0;
+      let urlTimer = 0;
+
+      /* ---------- helpers ---------- */
+      function norm(s) {
+        return String(s == null ? '' : s).toLowerCase().normalize('NFKD').replace(/[̀-ͯ]/g, '');
+      }
+      function escRe(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+      function kbd(k) { return '<kbd>' + k + '</kbd>'; }
+      function inMode(mode) { return models.filter((m) => m.mode === mode); }
+
+      // Edit distance with adjacent transpositions ("pyhton" → "python" = 1).
+      function lev(a, b, max) {
+        if (a === b) return 0;
+        let prev2 = null;
+        let prev = new Array(b.length + 1);
+        for (let j = 0; j <= b.length; j++) prev[j] = j;
+        for (let i = 1; i <= a.length; i++) {
+          const cur = [i];
+          let rowMin = i;
+          for (let j = 1; j <= b.length; j++) {
+            let v = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+            if (prev2 && i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) v = Math.min(v, prev2[j - 2] + 1);
+            cur[j] = v;
+            if (v < rowMin) rowMin = v;
+          }
+          if (rowMin > max) return max + 1;
+          prev2 = prev;
+          prev = cur;
+        }
+        return prev[b.length];
+      }
+
+      /* ---------- index ---------- */
+      function build(roles, services) {
+        const els = Array.from(board.querySelectorAll('.hire-card'));
+        const data = roles.map((c) => ['roles', c]).concat(services.map((c) => ['services', c]));
+        models = data.map(([mode, card], i) => {
+          const el = els[i];
+          const tags = (card.tags || []).map(String);
+          const work = (card.work || []).filter((w) => w && w.url);
+          const actions = (card.actions || []).filter((a) => a && a.url);
+          const m = {
+            i, mode, el,
+            title: String(card.title || ''),
+            desc: String(card.desc || ''),
+            titleL: norm(card.title),
+            descL: norm(card.desc),
+            tags, tagsL: tags.map(norm),
+            work: work.map((w) => String(w.label || w.url)),
+            workL: work.map((w) => norm(w.label || w.url)),
+            workUrlL: work.map((w) => norm(w.url)),
+            linkL: work.concat(actions).map((a) => norm((a.label || '') + ' ' + a.url)),
+            titleEl: el.querySelector('.card-title'),
+            descEl: el.querySelector('.card-desc'),
+            tagEls: Array.from(el.querySelectorAll('.card-tag')),
+            workEls: Array.from(el.querySelectorAll('.card-work a')),
+            hlKey: ''
+          };
+          m.words = Array.from(new Set((m.titleL + ' ' + m.tagsL.join(' ')).split(/[^a-z0-9.+#]+/).filter((w) => w.length > 2)));
+          return m;
+        });
+      }
+
+      function modeTags(mode) {
+        const map = new Map();
+        inMode(mode).forEach((m) => m.tags.forEach((label, k) => {
+          const key = m.tagsL[k];
+          const e = map.get(key) || { key, label, total: 0 };
+          e.total++;
+          map.set(key, e);
+        }));
+        return Array.from(map.values()).sort((a, b) => b.total - a.total || a.label.localeCompare(b.label));
+      }
+
+      function modeProjects(mode) {
+        const map = new Map();
+        inMode(mode).forEach((m) => m.work.forEach((label, k) => {
+          const key = m.workL[k];
+          const e = map.get(key) || { key, label, total: 0 };
+          e.total++;
+          map.set(key, e);
+        }));
+        return Array.from(map.values()).sort((a, b) => b.total - a.total || a.label.localeCompare(b.label));
+      }
+
+      /* ---------- query ---------- */
+      function parseQuery(raw) {
+        const text = String(raw || '').trim();
+        if (text.charAt(0) === '>') return { terms: [], command: text.slice(1).trim() };
+        const terms = [];
+        const re = /(-)?(?:([a-z]+):)?(?:"([^"]*)"?|(\S+))/gi;
+        let mm;
+        while ((mm = re.exec(text))) {
+          if (!mm[0]) { re.lastIndex++; continue; }
+          const neg = !!mm[1];
+          let field = mm[2] ? FIELD[mm[2].toLowerCase()] : null;
+          let value = mm[3] != null ? mm[3] : (mm[4] || '');
+          const phrase = mm[3] != null;
+          if (mm[2] && !field) value = mm[2] + ':' + value;              // unknown prefix: plain text (e.g. a URL)
+          if (!field && !phrase && /^[a-z]+:$/i.test(value) && FIELD[value.slice(0, -1).toLowerCase()]) continue; // "tag:" still being typed
+          if (!field && !phrase && value.charAt(0) === '#') { field = 'tag'; value = value.slice(1); }
+          value = norm(value).trim();
+          if (!value || value === '-') continue;
+          terms.push({ neg, field, value, phrase, re: new RegExp('(^|[^a-z0-9])' + escRe(value)) });
+        }
+        return { terms, command: null };
+      }
+
+      function textScore(hay, t, exact, prefix, sub) {
+        if (!hay) return 0;
+        if (hay === t.value) return exact;
+        if (t.re.test(hay)) return prefix;
+        return hay.indexOf(t.value) !== -1 ? sub : 0;
+      }
+
+      function listScore(list, t, exact, prefix, sub) {
+        let best = 0;
+        for (const hay of list) {
+          const s = textScore(hay, t, exact, prefix, sub);
+          if (s > best) best = s;
+        }
+        return best;
+      }
+
+      function fuzzy(m, t) {
+        if (t.phrase || t.value.length < 4) return 0;
+        const max = t.value.length >= 7 ? 2 : 1;
+        for (const w of m.words) {
+          if (Math.abs(w.length - t.value.length) <= max && lev(w, t.value, max) <= max) return 1;
+        }
+        return 0;
+      }
+
+      function scoreTerm(m, t) {
+        switch (t.field) {
+          case 'tag': return listScore(m.tagsL, t, 9, 6, 3);
+          case 'title': return textScore(m.titleL, t, 10, 8, 5);
+          case 'desc': return textScore(m.descL, t, 4, 3, 2);
+          case 'work': return listScore(m.workL, t, 7, 5, 3) || listScore(m.workUrlL, t, 2, 2, 2);
+          case 'link': return listScore(m.linkL, t, 3, 3, 2);
+          default: {
+            const parts = [
+              textScore(m.titleL, t, 12, 8, 5),
+              listScore(m.tagsL, t, 9, 6, 3),
+              listScore(m.workL, t, 6, 4, 2),
+              textScore(m.descL, t, 4, 3, 2)
+            ];
+            const best = Math.max.apply(null, parts);
+            if (best) return best + parts.filter(Boolean).length * 0.25;
+            return fuzzy(m, t);
+          }
+        }
+      }
+
+      function matchCard(m, terms, tags) {
+        if (tags && tags.length && !tags.every((k) => m.tagsL.indexOf(k) !== -1)) return -1;
+        let score = 0;
+        for (const t of terms) {
+          const s = scoreTerm(m, t);
+          if (t.neg) { if (s > 1) return -1; continue; }
+          if (!s) return -1;
+          score += s;
+        }
+        return score;
+      }
+
+      function countFor(mode) {
+        if (mode === state.mode) return results.length;
+        return inMode(mode).filter((m) => matchCard(m, parsed.terms, state.tags) >= 0).length;
+      }
+
+      /* ---------- compute + paint ---------- */
+      function compute() {
+        parsed = parseQuery(state.query);
+        const terms = parsed.terms;
+        results = [];
+        models.forEach((m) => {
+          const score = m.mode === state.mode ? matchCard(m, terms, state.tags) : -1;
+          m.score = score;
+          const ok = score >= 0;
+          m.el.classList.toggle('is-active', ok);
+          if (ok) results.push(m);
+        });
+        const hasText = terms.some((t) => !t.neg);
+        if (state.sort === 'az') results.sort((a, b) => a.title.localeCompare(b.title));
+        else if (state.sort === 'relevance' && hasText) results.sort((a, b) => b.score - a.score || a.i - b.i);
+        else results.sort((a, b) => a.i - b.i);
+        models.forEach((m) => { if (m.score < 0) m.el.style.order = ''; });
+        results.forEach((m, k) => { m.el.style.order = String(k); });
+        paintHighlights(terms);
+        return results;
+      }
+
+      function markText(text, vals) {
+        const escapeHtmlLocal = escapeHtml;
+        if (!vals.length) return escapeHtmlLocal(text);
+        const re = new RegExp('(' + vals.map(escRe).join('|') + ')', 'gi');
+        let out = '';
+        let last = 0;
+        let mm;
+        while ((mm = re.exec(text))) {
+          if (!mm[0]) { re.lastIndex++; continue; }
+          out += escapeHtmlLocal(text.slice(last, mm.index)) + '<mark class="hl">' + escapeHtmlLocal(mm[0]) + '</mark>';
+          last = mm.index + mm[0].length;
+        }
+        return out + escapeHtmlLocal(text.slice(last));
+      }
+
+      function paintHighlights(terms) {
+        const pos = terms.filter((t) => !t.neg);
+        const byLen = (a, b) => b.length - a.length;
+        const titleVals = pos.filter((t) => !t.field || t.field === 'title').map((t) => t.value).filter((v) => v.length > 1).sort(byLen);
+        const descVals = pos.filter((t) => !t.field || t.field === 'desc').map((t) => t.value).filter((v) => v.length > 1).sort(byLen);
+        const tagTerms = pos.filter((t) => !t.field || t.field === 'tag');
+        const workTerms = pos.filter((t) => !t.field || t.field === 'work');
+        const on = new Set(state.tags);
+        const key = titleVals.join('|') + '#' + descVals.join('|') + '#' + tagTerms.map((t) => t.value).join('|') + '#' + workTerms.map((t) => t.value).join('|') + '#' + state.tags.join('|');
+        results.forEach((m) => {
+          if (m.hlKey === key) return;
+          m.hlKey = key;
+          if (m.titleEl) m.titleEl.innerHTML = markText(m.title, titleVals);
+          if (m.descEl) m.descEl.innerHTML = markText(m.desc, descVals);
+          m.tagEls.forEach((el, k) => {
+            const t = m.tagsL[k];
+            el.classList.toggle('is-on', on.has(t));
+            el.classList.toggle('is-match', !on.has(t) && tagTerms.some((term) => textScore(t, term, 1, 1, term.field ? 1 : 0) > 0));
+          });
+          m.workEls.forEach((el, k) => {
+            const w = m.workL[k];
+            el.classList.toggle('is-match', !!w && workTerms.some((term) => textScore(w, term, 1, 1, term.field ? 1 : 0) > 0));
+          });
+        });
+      }
+
+      /* ---------- tag strip + empty state ---------- */
+      function renderTags() {
+        const all = modeTags(state.mode);
+        const counts = new Map();
+        results.forEach((m) => m.tagsL.forEach((k) => counts.set(k, (counts.get(k) || 0) + 1)));
+        const on = new Set(state.tags);
+        const total = inMode(state.mode).length;
+        const filtered = !!(state.tags.length || parsed.terms.length);
+        const ordered = all.filter((t) => on.has(t.key)).concat(all.filter((t) => !on.has(t.key)));
+        let html = '<button type="button" class="tag-chip is-all' + (filtered ? '' : ' is-on') + '" data-act="clear" title="' + (filtered ? 'Clear search and tags' : 'All ' + MODE_LABEL[state.mode]) + '">'
+          + 'All ' + MODE_LABEL[state.mode] + ' <span class="n">' + (filtered ? results.length + '/' + total : total) + '</span></button>';
+        ordered.forEach((t) => {
+          const isOn = on.has(t.key);
+          const n = counts.get(t.key) || 0;
+          html += '<button type="button" class="tag-chip' + (isOn ? ' is-on' : '') + (!n && !isOn ? ' is-empty' : '') + '"'
+            + ' data-tag="' + escapeHtml(t.key) + '" aria-pressed="' + isOn + '">'
+            + escapeHtml(t.label) + ' <span class="n">' + n + '</span></button>';
+        });
+        const sl = tagStrip.scrollLeft;
+        tagStrip.innerHTML = html;
+        tagStrip.scrollLeft = sl;
+      }
+
+      function describeFilters() {
+        const bits = [];
+        if (parsed.terms.length) bits.push('“' + escapeHtml(state.query.trim()) + '”');
+        if (state.tags.length) {
+          const labels = new Map(modeTags(state.mode).map((t) => [t.key, t.label]));
+          bits.push(state.tags.map((k) => '#' + escapeHtml(labels.get(k) || k)).join(' '));
+        }
+        return bits.join(' + ');
+      }
+
+      function renderEmpty() {
+        if (!emptyBox) return;
+        if (results.length || !models.length) {
+          emptyBox.classList.remove('show');
+          emptyBox.innerHTML = '';
+          return;
+        }
+        const other = state.mode === 'roles' ? 'services' : 'roles';
+        const n = countFor(other);
+        let actions = '<button type="button" data-act="clear">Clear search</button>';
+        if (state.tags.length && parsed.terms.length) actions += '<button type="button" data-act="tags">Remove tags</button>';
+        if (n) actions += '<button type="button" data-act="mode:' + other + '">See ' + n + ' matching ' + (n === 1 ? MODE_ONE[other] : other) + ' →</button>';
+        emptyBox.innerHTML = '<h3>No ' + MODE_LABEL[state.mode].toLowerCase() + ' match</h3>'
+          + '<p>Nothing in ' + MODE_LABEL[state.mode] + ' matches ' + describeFilters() + '.'
+          + (n ? '' : ' Try fewer words, a tag, or <code>#</code> to browse tags.') + '</p>'
+          + '<div class="empty-actions">' + actions + '</div>';
+        emptyBox.classList.add('show');
+      }
+
+      function syncUI() {
+        if (qBar) qBar.classList.toggle('has-query', !!state.query);
+        renderTags();
+        renderEmpty();
+        if (overlayMode === 'menu') renderOverlay();
+      }
+
+      /* ---------- url ---------- */
+      function writeUrl() {
+        if (typeof canWriteHistory === 'function' && !canWriteHistory()) return;
+        const p = new URLSearchParams();
+        if (state.query && !parsed.command) p.set('q', state.query.trim());
+        state.tags.forEach((t) => p.append('tag', t));
+        if (state.sort !== 'relevance') p.set('sort', state.sort);
+        const qs = p.toString();
+        try { history.replaceState(history.state, '', location.pathname + (qs ? '?' + qs : '') + location.hash); } catch (err) {}
+      }
+      function writeUrlSoon() {
+        window.clearTimeout(urlTimer);
+        urlTimer = window.setTimeout(writeUrl, 250);
+      }
+      function readUrl() {
+        const p = new URLSearchParams(location.search);
+        state.query = p.get('q') || '';
+        state.tags = Array.from(new Set(p.getAll('tag').map(norm).filter(Boolean)));
+        const s = p.get('sort');
+        if (s === 'az' || s === 'original') state.sort = s;
+        qInput.value = state.query;
+        parsed = parseQuery(state.query);
+      }
+
+      /* ---------- state changes ---------- */
+      // Filter / sort changed in place: FLIP the cards that stay, fade in
+      // the ones that appear, keep the hero state, re-check scroll lock.
+      function refresh() {
+        if (!models.length) return;
+        const before = new Map();
+        activeCards().forEach((c) => {
+          if (c.classList.contains('is-in')) before.set(c, c.getBoundingClientRect());
+        });
+        compute();
+        // Results always start at the top of the board.
+        if (scroller && scroller.scrollTop > 0) scroller.scrollTop = 0;
+        updateScrollLock();
+        const now = activeCards();
+        const fresh = [];
+        const moved = [];
+        now.forEach((c) => {
+          c.classList.remove('is-lit');
+          const a = before.get(c);
+          if (!a) {
+            c.classList.remove('is-in');
+            fresh.push(c);
+            return;
+          }
+          const b = c.getBoundingClientRect();
+          const dx = a.left - b.left;
+          const dy = a.top - b.top;
+          if (Math.abs(dx) < 1 && Math.abs(dy) < 1) return;
+          c.style.transition = 'none';
+          c.style.transform = 'translate(' + dx + 'px, ' + dy + 'px)';
+          moved.push(c);
+        });
+        if (moved.length) {
+          void board.offsetWidth;
+          moved.forEach((c) => {
+            c.style.transition = 'transform 0.42s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.6s ease, background 0.2s ease, border-color 0.2s ease';
+            c.style.transform = '';
+          });
+          window.clearTimeout(flipTimer);
+          flipTimer = window.setTimeout(() => moved.forEach((c) => { c.style.transition = ''; }), 460);
+        }
+        fresh.sort((a, b) => (+a.style.order) - (+b.style.order))
+          .forEach((c, k) => window.setTimeout(() => {
+            if (c.classList.contains('is-active')) c.classList.add('is-in');
+          }, 30 + Math.min(k, 10) * 35));
+        syncUI();
+        writeUrlSoon();
+      }
+
+      function setMode(mode) {
+        state.mode = mode === 'services' ? 'services' : 'roles';
+        if (!models.length) return;
+        const keys = new Set(modeTags(state.mode).map((t) => t.key));
+        state.tags = state.tags.filter((k) => keys.has(k));
+        compute();
+        syncUI();
+        writeUrlSoon();
+      }
+
+      function setQuery(v) {
+        qInput.value = v;
+        state.query = v;
+        if (qBar) qBar.classList.toggle('has-query', !!v);
+        refresh();
+      }
+
+      function toggleTag(raw, force) {
+        const key = norm(raw);
+        if (!key) return;
+        const has = state.tags.indexOf(key) !== -1;
+        if (has && force !== true) state.tags = state.tags.filter((k) => k !== key);
+        else if (!has) state.tags = state.tags.concat(key);
+        refresh();
+        if (!has) tagStrip.scrollLeft = 0;
+      }
+
+      function clearAll() {
+        state.tags = [];
+        setQuery('');
+      }
+
+      function setSort(s) {
+        state.sort = s;
+        refresh();
+      }
+
+      function workTermRe(key) {
+        return new RegExp('(^|\\s)(?:work|project|projects|p):(?:"' + escRe(key) + '"|' + escRe(key) + ')(?=\\s|$)', 'i');
+      }
+
+      function toggleProject(label) {
+        const key = norm(label);
+        const re = workTermRe(key);
+        if (re.test(norm(state.query))) {
+          setQuery(state.query.replace(new RegExp(re.source, 'i'), ' ').replace(/\s+/g, ' ').trim());
+        } else {
+          const val = /\s/.test(label) ? '"' + label + '"' : label;
+          const q = state.query.trim();
+          setQuery((q ? q + ' ' : '') + 'work:' + val);
+        }
+      }
+
+      function insertText(s) {
+        const v = qInput.value;
+        qInput.value = (v && !/\s$/.test(v) ? v + ' ' : v) + s;
+        qInput.focus();
+        const end = qInput.value.length;
+        try { qInput.setSelectionRange(end, end); } catch (err) {}
+        qInput.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+
+      function focusFirst() {
+        const first = results[0];
+        if (!first) return;
+        if (typeof clearLit === 'function') clearLit(first.el);
+        first.el.classList.add('is-lit');
+      }
+
+      function go(url) { window.location.href = url; }
+
+      function copyLink(el) {
+        writeUrl();
+        const done = () => {
+          const label = el && el.querySelector('.ov-label');
+          if (label) label.textContent = 'Link copied ✓';
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(location.href).then(done, () => {});
+        }
+      }
+
+      /* ---------- overlay (menu, commands, suggestions) ---------- */
+      function btn(label, o) {
+        const idx = ovActions.push(o.run) - 1;
+        return '<button type="button" tabindex="-1" class="ov-item' + (o.on ? ' is-on' : '') + '" data-ov="' + idx + '">'
+          + '<span class="ov-ico">' + (o.icon || '') + '</span>'
+          + '<span class="ov-label">' + label + '</span>'
+          + (o.hint != null && o.hint !== '' ? '<span class="ov-hint">' + o.hint + '</span>' : '')
+          + '</button>';
+      }
+
+      function chip(label, n, on, run) {
+        const idx = ovActions.push(run) - 1;
+        return '<button type="button" tabindex="-1" class="tag-chip' + (on ? ' is-on' : '') + (!n && !on ? ' is-empty' : '') + '" data-ov="' + idx + '">'
+          + escapeHtml(label) + ' <span class="n">' + n + '</span></button>';
+      }
+
+      function section(head, body) {
+        return '<div class="ov-section">' + (head ? '<div class="ov-head">' + head + '</div>' : '') + body + '</div>';
+      }
+
+      function foot() {
+        return '<div class="ov-foot"><span>' + kbd('/') + ' search</span><span>' + kbd(CMD_KEY) + ' commands</span>'
+          + '<span>' + kbd('←') + kbd('→') + ' view</span><span>' + kbd('↑') + kbd('↓') + ' ' + kbd('↵') + ' pick</span><span>' + kbd('Esc') + ' clear</span></div>';
+      }
+
+      function commandList() {
+        const other = state.mode === 'roles' ? 'services' : 'roles';
+        const list = [];
+        list.push({ label: 'Show ' + MODE_LABEL[other], icon: '⇄', hint: kbd(other === 'services' ? '→' : '←'), k: 'switch view toggle mode ' + other, run: () => switchMode(other) });
+        if (state.query.trim() && !parsed.command || state.tags.length) {
+          list.push({ label: 'Clear search & tags', icon: '✕', hint: kbd('Esc'), k: 'clear reset remove filters', run: clearAll });
+        }
+        if (results.length && (parsed.terms.length || state.tags.length)) {
+          list.push({ label: 'Jump to top result', icon: '↓', hint: escapeHtml(results[0].title), k: 'first top result jump go', run: focusFirst });
+        }
+        list.push({ label: 'Sort by relevance', icon: '↯', on: state.sort === 'relevance', keep: true, k: 'sort relevance best ranking', run: () => setSort('relevance') });
+        list.push({ label: 'Sort A–Z', icon: 'A', on: state.sort === 'az', keep: true, k: 'sort alphabetical a-z az name', run: () => setSort('az') });
+        list.push({ label: 'Original order', icon: '≣', on: state.sort === 'original', keep: true, k: 'sort original default order', run: () => setSort('original') });
+        list.push({ label: document.body.classList.contains('light') ? 'Switch to dark theme' : 'Switch to light theme', icon: '◐', keep: true, k: 'theme light dark appearance', run: () => { const b = document.getElementById('theme-toggle'); if (b) b.click(); } });
+        list.push({ label: 'Copy link to this view', icon: '⧉', keep: 'static', k: 'copy share link url', run: copyLink });
+        list.push({ label: 'Resume', icon: '↗', k: 'resume cv experience', run: () => go('https://hire.briancrink.com/resume/') });
+        list.push({ label: 'Contact', icon: '↗', k: 'contact email message hire reach', run: () => go('https://contact.briancrink.com') });
+        list.push({ label: 'CareerOS', icon: '↗', k: 'career os careeros', run: () => go('https://os.briancrink.com/career') });
+        list.push({ label: 'Portal', icon: '↗', k: 'portal home', run: () => go('https://portal.briancrink.com#career') });
+        list.push({ label: 'Site map', icon: '↗', k: 'site map sitemap pages', run: () => go('https://site.briancrink.com/map') });
+        return list;
+      }
+
+      function runCmd(c, el) {
+        const fromQuery = overlayMode === 'command-query';
+        c.run(el);
+        if (fromQuery) {
+          closeOverlay();
+          setQuery('');
+        } else if (c.keep === 'static') {
+          // leave as-is (e.g. "Link copied ✓")
+        } else if (c.keep) {
+          renderOverlay();
+        } else {
+          closeOverlay();
+        }
+      }
+
+      function suggestionFor() {
+        const v = qInput.value;
+        if (qInput.selectionEnd != null && qInput.selectionEnd !== v.length) return null;
+        const mm = /(^|\s)(-?)(#|tags?:|t:|work:|projects?:|p:)([^\s"]*)$/i.exec(v);
+        if (!mm) return null;
+        const kind = mm[3] === '#' || /^t/i.test(mm[3]) ? 'tag' : 'work';
+        return { kind, neg: !!mm[2], q: norm(mm[4]), start: mm.index + mm[1].length };
+      }
+
+      function applySuggestion(kind, label) {
+        const s = suggestCtx;
+        if (!s) return;
+        const head = qInput.value.slice(0, s.start).replace(/\s+$/, '');
+        closeOverlay();
+        if (kind === 'tag' && !s.neg) {
+          qInput.value = head ? head + ' ' : '';
+          state.query = qInput.value;
+          toggleTag(label, true);
+        } else {
+          const val = /\s/.test(label) ? '"' + label + '"' : label;
+          setQuery((head ? head + ' ' : '') + (s.neg ? '-' : '') + (kind === 'tag' ? 'tag:' : 'work:') + val + ' ');
+        }
+        qInput.focus();
+      }
+
+      function renderOverlay() {
+        ovActions = [];
+        let html = '';
+        if (overlayMode === 'commands' || overlayMode === 'command-query') {
+          const words = overlayMode === 'command-query' ? norm(parsed.command || '').split(/\s+/).filter(Boolean) : [];
+          const list = commandList().filter((c) => {
+            const hay = norm(c.label + ' ' + c.k);
+            return words.every((w) => hay.indexOf(w) !== -1);
+          });
+          html = section('Commands', list.length
+            ? list.map((c) => btn(escapeHtml(c.label), { icon: c.icon, hint: c.hint, on: c.on, run: (el) => runCmd(c, el) })).join('')
+            : '<div class="ov-empty">No matching commands.</div>');
+          html += foot();
+        } else if (overlayMode === 'suggest' && suggestCtx) {
+          const s = suggestCtx;
+          const pool = s.kind === 'tag' ? modeTags(state.mode) : modeProjects(state.mode);
+          const hits = pool.filter((t) => !s.q || t.key.indexOf(s.q) !== -1)
+            .sort((a, b) => (b.key.indexOf(s.q) === 0) - (a.key.indexOf(s.q) === 0) || b.total - a.total)
+            .slice(0, 10);
+          const head = (s.neg ? 'Exclude ' : '') + (s.kind === 'tag' ? 'Tags' : 'Featured work') + ' in ' + MODE_LABEL[state.mode];
+          html = section(head, hits.length
+            ? hits.map((t) => btn(escapeHtml(t.label), {
+                icon: s.kind === 'tag' ? '#' : '◇',
+                on: s.kind === 'tag' && state.tags.indexOf(t.key) !== -1,
+                hint: t.total + ' ' + (t.total === 1 ? MODE_ONE[state.mode] : MODE_LABEL[state.mode].toLowerCase()),
+                run: () => applySuggestion(s.kind, t.label)
+              })).join('')
+            : '<div class="ov-empty">No ' + (s.kind === 'tag' ? 'tags' : 'projects') + ' start with “' + escapeHtml(s.q) + '”.</div>');
+        } else if (overlayMode === 'menu') {
+          const filtered = !!(parsed.terms.length || state.tags.length);
+          const viewHint = (mode) => { const n = countFor(mode); return filtered ? n + ' match' + (n === 1 ? '' : 'es') : String(n); };
+          html += section('View',
+            btn('Roles', { icon: state.mode === 'roles' ? '●' : '○', on: state.mode === 'roles', hint: viewHint('roles'), run: () => { switchMode('roles'); renderOverlay(); } })
+            + btn('Services', { icon: state.mode === 'services' ? '●' : '○', on: state.mode === 'services', hint: viewHint('services'), run: () => { switchMode('services'); renderOverlay(); } }));
+          html += section('Sort',
+            btn('Relevance', { icon: '↯', on: state.sort === 'relevance', run: () => { setSort('relevance'); renderOverlay(); } })
+            + btn('A–Z', { icon: 'A', on: state.sort === 'az', run: () => { setSort('az'); renderOverlay(); } })
+            + btn('Original order', { icon: '≣', on: state.sort === 'original', run: () => { setSort('original'); renderOverlay(); } }));
+          const counts = new Map();
+          results.forEach((m) => m.tagsL.forEach((k) => counts.set(k, (counts.get(k) || 0) + 1)));
+          const on = new Set(state.tags);
+          const tags = modeTags(state.mode);
+          html += section('Tags · ' + tags.length,
+            '<div class="ov-chips">' + tags.map((t) => chip(t.label, counts.get(t.key) || 0, on.has(t.key), () => { toggleTag(t.key); renderOverlay(); })).join('') + '</div>');
+          const projects = modeProjects(state.mode);
+          if (projects.length) {
+            const pc = new Map();
+            results.forEach((m) => m.workL.forEach((k) => pc.set(k, (pc.get(k) || 0) + 1)));
+            const q = norm(state.query);
+            html += section('Featured work',
+              projects.map((p) => btn(escapeHtml(p.label), {
+                icon: '◇',
+                on: workTermRe(p.key).test(q),
+                hint: String(pc.get(p.key) || 0),
+                run: () => { toggleProject(p.label); renderOverlay(); }
+              })).join(''));
+          }
+          html += section('Search tips',
+            btn('<code>#tag</code> filter by tag', { icon: '#', run: () => insertText('#') })
+            + btn('<code>work:</code> featured work / project', { icon: '◇', run: () => insertText('work:') })
+            + btn('<code>title:</code> titles only', { icon: 'T', run: () => insertText('title:') })
+            + btn('<code>"exact phrase"</code>', { icon: '“', run: () => insertText('"') })
+            + btn('<code>-word</code> exclude', { icon: '−', run: () => insertText('-') })
+            + btn('<code>&gt;</code> run a command', { icon: '›', run: () => { qInput.value = ''; insertText('>'); } }));
+          html += foot();
+        }
+        qOverlay.innerHTML = html;
+        if (ovSel >= ovActions.length) ovSel = Math.max(0, ovActions.length - 1);
+        paintSel(false);
+      }
+
+      function selectable() { return Array.from(qOverlay.querySelectorAll('[data-ov]')); }
+
+      function paintSel(scroll) {
+        const items = selectable();
+        const always = overlayMode === 'suggest' || overlayMode === 'command-query';
+        items.forEach((el, k) => el.classList.toggle('is-sel', (kbNav || always) && k === ovSel));
+        if (scroll && items[ovSel]) items[ovSel].scrollIntoView({ block: 'nearest' });
+      }
+
+      function runSel() {
+        const el = selectable()[ovSel];
+        if (!el) return false;
+        const fn = ovActions[+el.dataset.ov];
+        if (fn) fn(el);
+        return true;
+      }
+
+      function openOverlay(mode) {
+        if (overlayMode !== mode) { ovSel = 0; kbNav = false; }
+        overlayMode = mode;
+        renderOverlay();
+        qOverlay.classList.add('show');
+        if (mode === 'menu' || mode === 'commands') qOverlay.scrollTop = 0;
+      }
+
+      function closeOverlay() {
+        overlayMode = null;
+        suggestCtx = null;
+        qOverlay.classList.remove('show');
+      }
+
+      /* ---------- wiring ---------- */
+      // The component's own click handlers toggle .show first; these run
+      // after and decide the real state.
+      qMenuBtn.addEventListener('click', () => { overlayMode === 'menu' ? closeOverlay() : openOverlay('menu'); });
+      qCmdBtn.addEventListener('click', () => { overlayMode === 'commands' ? closeOverlay() : openOverlay('commands'); });
+
+      qOverlay.addEventListener('mousedown', (e) => {
+        e.preventDefault(); // keep focus in the input so the bar stays open
+        if (document.activeElement !== qInput) qInput.focus();
+      });
+      qOverlay.addEventListener('click', (e) => {
+        const el = e.target.closest('[data-ov]');
+        if (!el) return;
+        const fn = ovActions[+el.dataset.ov];
+        if (fn) fn(el);
+      });
+      qOverlay.addEventListener('mousemove', (e) => {
+        const el = e.target.closest('[data-ov]');
+        if (!el || !kbNav) return;
+        kbNav = false;
+        paintSel(false);
+      });
+
+      if (qClear) {
+        qClear.addEventListener('mousedown', (e) => e.preventDefault());
+        qClear.addEventListener('click', (e) => {
+          e.stopPropagation();
+          closeOverlay();
+          setQuery('');
+          qInput.focus();
+        });
+      }
+
+      qWrap.addEventListener('focusout', (e) => {
+        if (!qWrap.contains(e.relatedTarget)) { overlayMode = null; suggestCtx = null; }
+      });
+      qInput.addEventListener('click', () => {
+        // component hides the overlay on click; keep live modes in sync
+        if (overlayMode === 'menu' || overlayMode === 'commands') overlayMode = null;
+        else if (overlayMode) qOverlay.classList.add('show');
+      });
+
+      qInput.addEventListener('input', () => {
+        const v = qInput.value;
+        const p = parseQuery(v);
+        if (p.command != null) {
+          state.query = v;
+          parsed = p;
+          if (qBar) qBar.classList.add('has-query');
+          openOverlay('command-query');
+          return; // don't filter cards while typing a command
+        }
+        const sug = suggestionFor();
+        if (sug) {
+          suggestCtx = sug;
+          openOverlay('suggest');
+        } else if (overlayMode) {
+          closeOverlay();
+        }
+        state.query = v;
+        refresh();
+      });
+
+      qInput.addEventListener('keydown', (e) => {
+        const open = !!overlayMode && qOverlay.classList.contains('show');
+        const n = open ? selectable().length : 0;
+        if (open && n) {
+          if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+            e.preventDefault();
+            if (!kbNav && overlayMode !== 'suggest' && overlayMode !== 'command-query') { kbNav = true; ovSel = e.key === 'ArrowDown' ? 0 : n - 1; }
+            else { kbNav = true; ovSel = (ovSel + (e.key === 'ArrowDown' ? 1 : -1) + n) % n; }
+            paintSel(true);
+            return;
+          }
+          const live = overlayMode === 'suggest' || overlayMode === 'command-query';
+          if ((e.key === 'Enter' && (kbNav || live)) || (e.key === 'Tab' && overlayMode === 'suggest')) {
+            e.preventDefault();
+            runSel();
+            return;
+          }
+        }
+        if (e.key === 'Escape') {
+          e.preventDefault();
+          if (overlayMode) closeOverlay();
+          else if (state.query || state.tags.length) clearAll();
+          else qInput.blur();
+          return;
+        }
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          closeOverlay();
+          qInput.blur(); // dismisses the keyboard on phones
+          focusFirst();
+        }
+      });
+
+      document.addEventListener('keydown', (e) => {
+        const typing = e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable);
+        if ((e.metaKey || e.ctrlKey) && !e.altKey && (e.key === 'k' || e.key === 'K')) {
+          e.preventDefault();
+          qInput.focus();
+          openOverlay('commands');
+          return;
+        }
+        if (typing || e.metaKey || e.ctrlKey || e.altKey) return;
+        if (e.key === '/') {
+          e.preventDefault();
+          qInput.focus();
+        } else if (e.key === 'Escape' && (state.query || state.tags.length)) {
+          clearAll();
+        }
+      });
+
+      tagStrip.addEventListener('click', (e) => {
+        const el = e.target.closest('.tag-chip');
+        if (!el) return;
+        if (el.dataset.act === 'clear') clearAll();
+        else if (el.dataset.tag) toggleTag(el.dataset.tag);
+      });
+      tagStrip.addEventListener('wheel', (e) => {
+        if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
+        if (tagStrip.scrollWidth <= tagStrip.clientWidth) return;
+        e.preventDefault();
+        tagStrip.scrollLeft += e.deltaY;
+      }, { passive: false });
+
+      board.addEventListener('click', (e) => {
+        const el = e.target.closest('.card-tag');
+        if (el && el.dataset.tag) {
+          e.preventDefault();
+          toggleTag(el.dataset.tag);
+        }
+      });
+
+      if (emptyBox) {
+        emptyBox.addEventListener('click', (e) => {
+          const el = e.target.closest('[data-act]');
+          if (!el) return;
+          const act = el.dataset.act;
+          if (act === 'clear') clearAll();
+          else if (act === 'tags') { state.tags = []; refresh(); }
+          else if (act.indexOf('mode:') === 0) switchMode(act.slice(5));
+        });
+      }
+
+      readUrl();
+      if (qBar) qBar.classList.toggle('has-query', !!state.query);
+
+      return { build, setMode, refresh, clearAll, toggleTag, state };
+    })();
   </script>
 <script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a3b7845ab9ab0de2',t:'MTc4OTQ3NDEwOA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
