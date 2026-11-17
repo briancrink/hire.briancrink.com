@@ -1123,6 +1123,51 @@
     body.light .search-clear { background: rgba(0, 0, 0, 0.06); color: #4b5563; }
     body.light #emptyState { color: #4b5563; }
     body.light #emptyState h3 { color: #111827; }
+    /* Light mode for the shared search-bar component (resources/search-bar
+       is dark-only and left untouched — these overrides live here). */
+    body.light .search-bar {
+      background: rgba(255, 255, 255, 0.22);
+      border-color: rgba(0, 0, 0, 0.14);
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.07);
+    }
+
+    body.light .search-bar:hover {
+      background: rgba(255, 255, 255, 0.4);
+      border-color: rgba(0, 0, 0, 0.24);
+    }
+
+    body.light .search-bar:focus-within { border-color: #22c55e; }
+    body.light .search-icon { color: #6b7280; }
+    body.light .search-bar input::placeholder { color: #8a8f98; }
+    body.light .search-bar input:not(:focus) { color: #4b5563; }
+    body.light .search-bar:focus-within input,
+    body.light .search-bar:focus-within input::placeholder { color: #16a34a; }
+
+    /* Component turns the text white on hover — keep it dark in light mode. */
+    body.light .search-bar:hover:not(:focus-within) input,
+    body.light .search-bar:hover:not(:focus-within) input::placeholder {
+      color: #1a1a1a;
+    }
+
+    /* Menu + command circles: dark glyphs, same glass as the bar, and no
+       drop shadow (the sliding container clips it into square edges). */
+    body.light .icon-circle {
+      background: rgba(255, 255, 255, 0.22);
+      border-color: rgba(0, 0, 0, 0.14);
+      color: #374151;
+      box-shadow: none;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
+
+    body.light .icon-circle:hover {
+      background: rgba(255, 255, 255, 0.45);
+      border-color: rgba(0, 0, 0, 0.26);
+      color: #111827;
+    }
+
     body.light .empty-actions button { background: rgba(0, 0, 0, 0.05); border-color: rgba(0, 0, 0, 0.14); color: #1f2937; }
 
   </style>
@@ -2877,5 +2922,9 @@
       return { build, setMode, refresh, clearAll, toggleTag, state };
     })();
   </script>
+
+  <!-- Social bar (resources submodule): config first, then the component. -->
+  <script src="resources/social-bar/config.js" defer></script>
+  <script src="resources/social-bar/social-bar.js" defer></script>
 <script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a3b7845ab9ab0de2',t:'MTc4OTQ3NDEwOA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
