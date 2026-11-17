@@ -1,0 +1,106 @@
+{
+  "cards": [
+    {
+      "title": "Web Platform",
+      "desc": "Stand up a public surface: portal, product page, or operating shell with a consistent visual system.",
+      "tags": [
+        "HTML",
+        "CSS",
+        "JavaScript",
+        "Cloudflare"
+      ],
+      "work": [
+        {
+          "label": "Portal",
+          "url": "https://portal.briancrink.com"
+        },
+        {
+          "label": "Social",
+          "url": "https://social.briancrink.com"
+        }
+      ],
+      "actions": [
+        {
+          "label": "Resume",
+          "url": "https://hire.briancrink.com/resume/"
+        },
+        {
+          "label": "Contact",
+          "url": "https://contact.briancrink.com"
+        }
+      ],
+      "icon": {
+        "viewBox": "0 0 24 24",
+        "path": "M5 4h14a1 1 0 0 1 1 1v6H4V5a1 1 0 0 1 1-1zm-1 9h16v6a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-6zm3 2.25a.75.75 0 0 0 0 1.5h4a.75.75 0 0 0 0-1.5H7z"
+      }
+    },
+    {
+      "title": "Cloud Operations",
+      "desc": "DNS, edge, deploys, and the small durable systems that keep a domain family reachable.",
+      "tags": [
+        "AWS",
+        "Cloudflare",
+        "Git",
+        "Linux"
+      ],
+      "work": [
+        {
+          "label": "API",
+          "url": "https://api.briancrink.com"
+        },
+        {
+          "label": "Tech",
+          "url": "https://tech.briancrink.com"
+        }
+      ],
+      "actions": [
+        {
+          "label": "Resume",
+          "url": "https://hire.briancrink.com/resume/"
+        },
+        {
+          "label": "Contact",
+          "url": "https://contact.briancrink.com"
+        }
+      ],
+      "icon": {
+        "viewBox": "0 0 24 24",
+        "path": "M7 3h10l4 6-9 12L3 9l4-6zm5 3.2L8.2 9h7.6L12 6.2z"
+      }
+    },
+    {
+      "title": "Product Systems",
+      "desc": "Map a domain of work into modes, routes, and the interactions a person actually uses.",
+      "tags": [
+        "IA",
+        "JavaScript",
+        "Node.js",
+        "Firebase"
+      ],
+      "work": [
+        {
+          "label": "OS",
+          "url": "https://os.briancrink.com"
+        },
+        {
+          "label": "Jobs",
+          "url": "https://jobs.briancrink.com"
+        }
+      ],
+      "actions": [
+        {
+          "label": "Resume",
+          "url": "https://hire.briancrink.com/resume/"
+        },
+        {
+          "label": "Contact",
+          "url": "https://contact.briancrink.com"
+        }
+      ],
+      "icon": {
+        "viewBox": "0 0 24 24",
+        "path": "M12 2a7 7 0 0 1 7 7c0 2.6-1.4 4.9-3.5 6.1L14 22H10l-1.5-6.9A7 7 0 0 1 12 2zm0 3a4 4 0 1 0 .01 8.01A4 4 0 0 0 12 5z"
+      }
+    }
+  ]
+}
