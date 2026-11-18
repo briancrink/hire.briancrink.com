@@ -189,9 +189,15 @@
       object-fit: contain;
       pointer-events: none;
       transform: translateY(-50%);
-      opacity: calc(max(0, (var(--hero-compact) - 0.9) / 0.10));
+      /* Fades in only once the large image is fully gone: syncMemojiClip adds
+         html.mini-on when --hero-compact passes 0.92 (the large image is fully
+         faded by 0.90). A timed transition keeps it smooth on fast scrolls. */
+      opacity: 0;
+      transition: opacity 0.35s ease;
       z-index: 2;
     }
+
+    html.mini-on .dev-image-mini { opacity: 1; }
 
     .name {
       font-size: 3.0rem;
@@ -600,41 +606,105 @@
       .dev-image-mini { display: none; }
     }
 
-    /* ---------- Phones only (desktop untouched) ----------
-       1. Hero sits higher: the Portal / map / CareerOS row lines up with the
-          theme toggle near the top, and everything below moves up the same
-          amount (the whole stack hangs off --stage-top).
-       2. Scrolling down collapses the search bar; scrolling back up (pulling
-          down) brings it back. The tag strip slides up over the bar's slot and
-          the bar fades out, so nothing is squeezed or clipped. */
+    /* ---------- Search bar collapse (all widths) ----------
+       Scrolling down collapses the search bar; scrolling back up (pulling
+       down) brings it back. The tag strip slides up over the bar's slot and
+       the bar fades out, so nothing is squeezed or clipped. */
+    :root {
+      --search-hide: 66px; /* search bar (52px) + its gap above the tag strip (14px) */
+      --search-shift: 0px;
+    }
+
+    html.search-collapsed { --search-shift: var(--search-hide); }
+
+    .search-wrapper {
+      transition: opacity 0.22s ease, transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    html.search-collapsed .search-wrapper {
+      opacity: 0;
+      transform: translateY(-10px);
+      pointer-events: none;
+    }
+
+    /* .tools prefix: outranks the base .tag-strip rule further down */
+    .tools .tag-strip {
+      transform: translate(-50%, calc(var(--search-shift) * -1));
+      transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    /* ---------- Phones ----------
+       Hero sits higher: the Portal / map / CareerOS row lines up with the
+       theme toggle near the top, and everything below moves up the same
+       amount (the whole stack hangs off --stage-top). */
     @media (max-width: 760px) {
       :root {
         /* breadcrumb row center = theme toggle center (12px top + 24px) */
         --stage-top: calc(76px + env(safe-area-inset-top, 0px));
-        --search-hide: 66px; /* search bar (52px) + its gap above the tag strip (14px) */
-        --search-shift: 0px;
       }
 
-      html.search-collapsed { --search-shift: var(--search-hide); }
-
-      .theme-toggle {
+      body .theme-toggle {
         top: calc(12px + env(safe-area-inset-top, 0px));
       }
+    }
 
-      .search-wrapper {
-        transition: opacity 0.22s ease, transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    /* ---------- Desktop: tag strip spans 80% of the window ---------- */
+    @media (min-width: 761px) {
+      .tools .tag-strip { width: 80vw; }
+
+      /* Tighter stack under the toggle pill: 22px to the search bar (was
+         32px); with the search bar hidden the tag strip slides up to 16px
+         under the pill (52px bar + 14px strip gap + 6px). */
+      .mode-toggle { margin-bottom: 22px; }
+      :root { --search-hide: 72px; }
+    }
+
+    /* ---------- Desktop header row ----------
+       One row across the top, centred on the theme toggle (12px + 24px):
+       Portal / map / CareerOS at the top-left, "Brian Crink" + mini
+       developer emoji centred, theme toggle at the right. Starts at 880px —
+       below that the centred name would collide with the left links.
+       The hero box is 450px wide and centred, so its left edge sits at
+       50vw - 225px; the breadcrumb is offset from there to the window edge. */
+    @media (min-width: 880px) {
+      /* With the name in the header row, start the rest of the hero right
+         under it: "Available For Hire" lands ~12px below the header and
+         everything beneath (memoji, toggle, search, cards) moves up with it. */
+      :root { --stage-top: 32px; }
+
+      .sub-header {
+        left: calc(245px - 50vw);
+        right: auto;
+        top: calc(36px - var(--stage-top));
+        transform: translateY(-50%);
+        justify-content: flex-start;
       }
 
-      html.search-collapsed .search-wrapper {
-        opacity: 0;
-        transform: translateY(-10px);
-        pointer-events: none;
+      .identity {
+        top: calc(36px - var(--stage-top));
+        transform: translateY(-50%);
       }
 
-      /* .tools prefix: outranks the base .tag-strip rule further down */
-      .tools .tag-strip {
-        transform: translate(-50%, calc(var(--search-shift) * -1));
-        transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+      /* Name + mini emoji form one group. While the mini is hidden the group
+         is nudged right by half the emoji's footprint (54px + 12px gap) so the
+         name alone is centred; when the mini fades in, the name slides left
+         and the pair is centred together. */
+      .name-wrap {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        transform: translateX(33px);
+        transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+
+      html.mini-on .name-wrap { transform: translateX(0); }
+
+      .dev-image-mini {
+        position: static;
+        width: 54px;
+        height: 54px;
+        margin: 0;
+        transform: none;
       }
     }
 
@@ -757,7 +827,7 @@
     .card-grid:empty { display: none; }
     .card-sec { min-width: 0; }
 
-    /* Bottom row: Featured Work | Credentials | Contact Brian. The row sits
+    /* Bottom row: Featured Work | Credentials | Hire Brian. The row sits
        at the bottom of the card (so buttons line up across a row of cards)
        and the button takes the last grid column, right-aligned. If the card
        is too narrow for three columns it drops below, still on the right. */
@@ -778,7 +848,8 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      padding: 8px 16px;
+      gap: 7px;
+      padding: 6px 10px 6px 16px;
       border: 1px solid rgba(0, 255, 157, 0.5);
       border-radius: 999px;
       background: rgba(0, 255, 157, 0.08);
@@ -799,14 +870,24 @@
     }
     .card-cta:active { transform: translateY(0); }
 
-    .hire-card.is-lit .card-cta {
-      background: rgba(0, 255, 157, 0.9);
-      border-color: transparent;
-      color: #000000;
-      animation: ctaPulse 1.5s ease-out 0.15s 2;
+    .card-cta-emoji {
+      width: 22px;
+      height: 22px;
+      flex: 0 0 22px;
+      display: block;
+      object-fit: contain;
+      margin: -3px 0;
+      pointer-events: none;
     }
 
-    .hire-card.is-lit .card-cta:hover { background: #00ff9d; }
+    .hire-card.is-lit .card-cta {
+      background: rgba(0, 255, 157, 0.68);
+      border-color: transparent;
+      color: #000000;
+      animation: ctaPulse 2.6s ease-out 0.2s infinite;
+    }
+
+    .hire-card.is-lit .card-cta:hover { background: rgba(0, 255, 157, 0.78); }
 
     /* Selected card: Featured Work + Credentials pills pick up a quiet
        translucent purple, so the links read as a group apart from the tags. */
@@ -835,10 +916,11 @@
       border-color: rgba(124, 58, 237, 0.3);
     }
 
+    /* Quiet, continuous breathing glow for as long as the card is selected. */
     @keyframes ctaPulse {
-      0%   { box-shadow: 0 0 0 0 rgba(0, 255, 157, 0.55); }
-      70%  { box-shadow: 0 0 0 10px rgba(0, 255, 157, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(0, 255, 157, 0); }
+      0%   { box-shadow: 0 0 0 0 rgba(0, 255, 157, 0.22); }
+      65%  { box-shadow: 0 0 0 12px rgba(0, 255, 157, 0); }
+      100% { box-shadow: 0 0 0 12px rgba(0, 255, 157, 0); }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -1009,11 +1091,11 @@
       color: #047857;
     }
     body.light .hire-card.is-lit .card-cta {
-      background: rgba(0, 255, 157, 0.9);
+      background: rgba(0, 255, 157, 0.68);
       border-color: transparent;
       color: #000000;
     }
-    body.light .hire-card.is-lit .card-cta:hover { background: #00e68d; }
+    body.light .hire-card.is-lit .card-cta:hover { background: rgba(0, 230, 141, 0.78); }
 
     .card-actions {
       display: flex;
@@ -1595,6 +1677,12 @@
         .map(([id, list]) => ({ id, label: tagIndex.label(id), tags: list }));
     }
 
+    // Mini developer emoji inside the "Hire Brian" button (same image as the
+    // header mini emoji; falls back to the GitHub copy like the others).
+    const CTA_EMOJI = '<img class="card-cta-emoji" src="resources/images/profile/developer_emoji.png" alt="" aria-hidden="true" draggable="false" loading="lazy" decoding="async"'
+      + ' data-fallback-src="https://raw.githubusercontent.com/briancrink/resources.briancrink.com/main/images/profile/developer_emoji.png"'
+      + ' onerror="if(!this.dataset.fell && this.dataset.fallbackSrc){this.dataset.fell=\'1\';this.src=this.dataset.fallbackSrc;}">';
+
     const BADGE_STAR = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 3.5l2.6 5.3 5.9.9-4.25 4.1 1 5.85L12 16.9l-5.25 2.75 1-5.85L3.5 9.7l5.9-.9z"/></svg>';
 
     function renderHireCard(card, mode) {
@@ -1611,7 +1699,11 @@
       const badge = card.badge
         ? '<span class="card-badge">' + BADGE_STAR + escapeHtml(card.badge) + '</span>'
         : '';
-      const contact = card.contact || CONTACT_URL;
+      // Pass the card through to the contact page so it opens already about
+      // this role / service (contact.briancrink.com reads ?role= or ?service=).
+      // A card can still override the whole link with its own "contact" URL.
+      const contact = card.contact
+        || CONTACT_URL + '?' + (mode === 'services' ? 'service' : 'role') + '=' + encodeURIComponent(card.title || '');
       return (
         '<article class="hire-card" data-mode="' + escapeHtml(mode) + '">' +
           '<div class="card-top">' +
@@ -1625,7 +1717,7 @@
           '<div class="card-grid card-links">' +
             (work ? '<div class="card-sec"><p class="card-label">Featured Work</p><div class="card-work">' + work + '</div></div>' : '') +
             (creds ? '<div class="card-sec"><p class="card-label">Credentials</p><div class="card-creds">' + creds + '</div></div>' : '') +
-            '<a class="card-cta" href="' + escapeHtml(contact) + '">Contact Brian</a>' +
+            '<a class="card-cta" href="' + escapeHtml(contact) + '">Hire Brian' + CTA_EMOJI + '</a>' +
           '</div>' +
         '</article>'
       );
@@ -2149,11 +2241,17 @@
       const img = document.querySelector('.dev-image');
       const toggle = document.getElementById('modeToggle');
       if (!img || !toggle) return;
+      // The rising toggle masks the image, but at full collapse ~19px of hair
+      // would still peek out — so also fade it out, gone by compact 0.90. The
+      // mini emoji in the header fades in after that (html.mini-on at 0.92).
+      const compact = Math.max(0, parseFloat(lastCompact) || 0);
+      const fadeOut = 1 - Math.min(1, Math.max(0, (compact - 0.72) / 0.18));
+      document.documentElement.classList.toggle('mini-on', compact >= 0.92);
       const ir = img.getBoundingClientRect();
       const cut = toggle.getBoundingClientRect().bottom;
       const fade = 28;
       if (cut >= ir.bottom - 0.5) {
-        img.style.opacity = '1';
+        img.style.opacity = String(fadeOut);
         img.style.webkitMaskImage = 'none';
         img.style.maskImage = 'none';
         return;
@@ -2164,7 +2262,7 @@
         img.style.maskImage = 'none';
         return;
       }
-      img.style.opacity = '1';
+      img.style.opacity = String(fadeOut);
       const solid = Math.max(0, cut - ir.top - fade);
       const end = Math.max(0, cut - ir.top);
       const mask = 'linear-gradient(to bottom, #000 0, #000 ' + solid + 'px, transparent ' + end + 'px, transparent 100%)';
@@ -2238,12 +2336,11 @@
       });
     }
 
-    /* Phones: collapse the search bar while scrolling down, bring it back on
+    /* Collapse the search bar while scrolling down, bring it back on
        any scroll up (pulling down) or near the top. It never moves scrollTop —
        it only toggles a class; CSS slides the tag strip up over the bar, and
        the scroller's top edge follows the strip for the length of the slide.
        Stays open while the search field has focus. */
-    const phoneQuery = window.matchMedia('(max-width: 760px)');
     let searchCollapsed = false;
     let lastScrollY = 0;
     let scrollRun = 0; // distance travelled in the current direction
@@ -2268,7 +2365,7 @@
       const dy = y - lastScrollY;
       lastScrollY = y;
       const input = document.getElementById('searchInput');
-      if (!phoneQuery.matches || scrollLocked || document.activeElement === input || y <= compactRangePx()) {
+      if (scrollLocked || document.activeElement === input || y <= compactRangePx()) {
         scrollRun = 0;
         setSearchCollapsed(false);
         return;
@@ -2280,9 +2377,6 @@
       else if (scrollRun < -24) setSearchCollapsed(false);
     }
 
-    const onPhoneChange = () => { if (!phoneQuery.matches) setSearchCollapsed(false); };
-    if (phoneQuery.addEventListener) phoneQuery.addEventListener('change', onPhoneChange);
-    else if (phoneQuery.addListener) phoneQuery.addListener(onPhoneChange);
     document.getElementById('searchInput').addEventListener('focus', () => setSearchCollapsed(false));
 
     if (scroller) {

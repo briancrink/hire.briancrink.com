@@ -2217,6 +2217,36 @@
         "viewBox": "0 0 24 24",
         "path": "M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5V9H4V6.5zm0 4.5h16v7A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5V11zm3.25 2.25a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5h-3.5z"
       }
+    },
+    {
+      "title": "Web Developer",
+      "badge": "Primary Role",
+      "desc": "Build fast, accessible sites and web apps that load quickly and work on every screen.",
+      "tags": [
+        "JavaScript",
+        "HTML",
+        "CSS"
+      ],
+      "work": [
+        {
+          "label": "Portal",
+          "url": "https://portal.briancrink.com"
+        },
+        {
+          "label": "Hire",
+          "url": "https://hire.briancrink.com"
+        }
+      ],
+      "credentials": [
+        {
+          "label": "Resume",
+          "url": "https://hire.briancrink.com/resume/"
+        }
+      ],
+      "icon": {
+        "viewBox": "0 0 24 24",
+        "path": "M5 4h14a1 1 0 0 1 1 1v6H4V5a1 1 0 0 1 1-1zm-1 9h16v6a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-6zm3 2.25a.75.75 0 0 0 0 1.5h4a.75.75 0 0 0 0-1.5H7z"
+      }
     }
   ]
 }
