@@ -600,6 +600,44 @@
       .dev-image-mini { display: none; }
     }
 
+    /* ---------- Phones only (desktop untouched) ----------
+       1. Hero sits higher: the Portal / map / CareerOS row lines up with the
+          theme toggle near the top, and everything below moves up the same
+          amount (the whole stack hangs off --stage-top).
+       2. Scrolling down collapses the search bar; scrolling back up (pulling
+          down) brings it back. The tag strip slides up over the bar's slot and
+          the bar fades out, so nothing is squeezed or clipped. */
+    @media (max-width: 760px) {
+      :root {
+        /* breadcrumb row center = theme toggle center (12px top + 24px) */
+        --stage-top: calc(76px + env(safe-area-inset-top, 0px));
+        --search-hide: 66px; /* search bar (52px) + its gap above the tag strip (14px) */
+        --search-shift: 0px;
+      }
+
+      html.search-collapsed { --search-shift: var(--search-hide); }
+
+      .theme-toggle {
+        top: calc(12px + env(safe-area-inset-top, 0px));
+      }
+
+      .search-wrapper {
+        transition: opacity 0.22s ease, transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+
+      html.search-collapsed .search-wrapper {
+        opacity: 0;
+        transform: translateY(-10px);
+        pointer-events: none;
+      }
+
+      /* .tools prefix: outranks the base .tag-strip rule further down */
+      .tools .tag-strip {
+        transform: translate(-50%, calc(var(--search-shift) * -1));
+        transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+    }
+
     .theme-toggle {
       position: fixed;
       top: 12px;
@@ -719,37 +757,82 @@
     .card-grid:empty { display: none; }
     .card-sec { min-width: 0; }
 
-    .card-foot {
-      display: flex;
-      justify-content: flex-end;
-      margin-top: auto;
-      padding-top: 14px;
-      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    /* Bottom row: Featured Work | Credentials | Contact Brian. The row sits
+       at the bottom of the card (so buttons line up across a row of cards)
+       and the button takes the last grid column, right-aligned. If the card
+       is too narrow for three columns it drops below, still on the right. */
+    .card-links {
+      margin: auto 0 0;
     }
 
-    /* The one loud action on the card: same green + black as the active
-       toggle. A selected card nudges it with two slow glow pulses. */
+    .card-links .card-cta {
+      grid-column-end: -1;
+      justify-self: end;
+      align-self: end;
+    }
+
+    /* Resting: quiet, same translucent green as the active "All Roles"
+       chip, since it's on every card. Selected card: full green + black
+       (same as the active toggle) with two slow glow pulses. */
     .card-cta {
       display: inline-flex;
       align-items: center;
       justify-content: center;
       padding: 8px 16px;
+      border: 1px solid rgba(0, 255, 157, 0.5);
       border-radius: 999px;
-      background: rgba(0, 255, 157, 0.9);
-      color: #000000;
+      background: rgba(0, 255, 157, 0.08);
+      color: #5ec79a; /* muted green: reads as the CTA without shouting */
       font-size: 0.82rem;
       font-weight: 600;
       letter-spacing: 0.01em;
       text-decoration: none;
       white-space: nowrap;
-      transition: background 0.2s ease, transform 0.2s ease;
+      transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease, transform 0.2s ease;
     }
 
-    .card-cta:hover { background: #00ff9d; transform: translateY(-1px); }
+    .card-cta:hover {
+      background: rgba(0, 255, 157, 0.14);
+      border-color: rgba(0, 255, 157, 0.7);
+      color: #00ff9d;
+      transform: translateY(-1px);
+    }
     .card-cta:active { transform: translateY(0); }
 
     .hire-card.is-lit .card-cta {
+      background: rgba(0, 255, 157, 0.9);
+      border-color: transparent;
+      color: #000000;
       animation: ctaPulse 1.5s ease-out 0.15s 2;
+    }
+
+    .hire-card.is-lit .card-cta:hover { background: #00ff9d; }
+
+    /* Selected card: Featured Work + Credentials pills pick up a quiet
+       translucent purple, so the links read as a group apart from the tags. */
+    .hire-card.is-lit .card-work a,
+    .hire-card.is-lit .card-creds a {
+      background: rgba(168, 85, 247, 0.1);
+      border-color: rgba(168, 85, 247, 0.26);
+    }
+
+    .hire-card.is-lit .card-work a:hover,
+    .hire-card.is-lit .card-creds a:hover {
+      background: rgba(168, 85, 247, 0.15);
+      border-color: rgba(168, 85, 247, 0.38);
+      opacity: 1;
+    }
+
+    body.light .hire-card.is-lit .card-work a,
+    body.light .hire-card.is-lit .card-creds a {
+      background: rgba(139, 92, 246, 0.07);
+      border-color: rgba(124, 58, 237, 0.2);
+    }
+
+    body.light .hire-card.is-lit .card-work a:hover,
+    body.light .hire-card.is-lit .card-creds a:hover {
+      background: rgba(139, 92, 246, 0.11);
+      border-color: rgba(124, 58, 237, 0.3);
     }
 
     @keyframes ctaPulse {
@@ -829,7 +912,7 @@
       font-weight: 500;
       text-decoration: none;
       letter-spacing: 0.01em;
-      transition: opacity 0.2s ease, border-color 0.2s ease;
+      transition: opacity 0.2s ease, border-color 0.25s ease, background 0.25s ease;
     }
 
     .card-work a:hover,
@@ -915,8 +998,22 @@
       color: #92600a;
     }
 
-    body.light .card-foot { border-top-color: rgba(0, 0, 0, 0.08); }
-    body.light .card-cta:hover { background: #00e68d; }
+    body.light .card-cta {
+      border-color: rgba(4, 120, 87, 0.45);
+      background: rgba(16, 185, 129, 0.08);
+      color: #3f8f6e;
+    }
+    body.light .card-cta:hover {
+      background: rgba(16, 185, 129, 0.14);
+      border-color: rgba(4, 120, 87, 0.65);
+      color: #047857;
+    }
+    body.light .hire-card.is-lit .card-cta {
+      background: rgba(0, 255, 157, 0.9);
+      border-color: transparent;
+      color: #000000;
+    }
+    body.light .hire-card.is-lit .card-cta:hover { background: #00e68d; }
 
     .card-actions {
       display: flex;
@@ -1528,8 +1625,6 @@
           '<div class="card-grid card-links">' +
             (work ? '<div class="card-sec"><p class="card-label">Featured Work</p><div class="card-work">' + work + '</div></div>' : '') +
             (creds ? '<div class="card-sec"><p class="card-label">Credentials</p><div class="card-creds">' + creds + '</div></div>' : '') +
-          '</div>' +
-          '<div class="card-foot">' +
             '<a class="card-cta" href="' + escapeHtml(contact) + '">Contact Brian</a>' +
           '</div>' +
         '</article>'
@@ -1686,7 +1781,17 @@
     function queueCardReveal() {
       clearCardObserver();
       const cards = Array.from(document.querySelectorAll('.hire-card.is-active'));
-      cards.forEach((card) => card.classList.remove('is-in'));
+      // Snap every incoming card to its hidden start (opacity 0, 12px down)
+      // with transitions off. Cards from a view shown earlier still carry
+      // is-in, and the browser may already have painted them visible when
+      // they became active — without this, removing is-in starts a fade-out
+      // from 1 that the reveal then reverses, so the first card barely moves.
+      cards.forEach((card) => {
+        card.style.transition = 'none';
+        card.classList.remove('is-in');
+      });
+      void document.getElementById('cardBoard').offsetWidth;
+      cards.forEach((card) => { card.style.transition = ''; });
 
       const isBoot = !cardsBooted;
       const hold = isBoot ? 400 : 80;
@@ -2133,11 +2238,59 @@
       });
     }
 
+    /* Phones: collapse the search bar while scrolling down, bring it back on
+       any scroll up (pulling down) or near the top. It never moves scrollTop —
+       it only toggles a class; CSS slides the tag strip up over the bar, and
+       the scroller's top edge follows the strip for the length of the slide.
+       Stays open while the search field has focus. */
+    const phoneQuery = window.matchMedia('(max-width: 760px)');
+    let searchCollapsed = false;
+    let lastScrollY = 0;
+    let scrollRun = 0; // distance travelled in the current direction
+
+    function followChrome(ms) {
+      const end = performance.now() + ms;
+      (function step() {
+        measureChrome();
+        if (performance.now() < end) requestAnimationFrame(step);
+      })();
+    }
+
+    function setSearchCollapsed(collapse) {
+      if (collapse === searchCollapsed) return;
+      searchCollapsed = collapse;
+      document.documentElement.classList.toggle('search-collapsed', collapse);
+      followChrome(360);
+    }
+
+    function syncSearchCollapse() {
+      const y = scroller ? scroller.scrollTop : 0;
+      const dy = y - lastScrollY;
+      lastScrollY = y;
+      const input = document.getElementById('searchInput');
+      if (!phoneQuery.matches || scrollLocked || document.activeElement === input || y <= compactRangePx()) {
+        scrollRun = 0;
+        setSearchCollapsed(false);
+        return;
+      }
+      if (!dy) return;
+      if ((dy > 0) !== (scrollRun > 0)) scrollRun = 0;
+      scrollRun += dy;
+      if (scrollRun > 24) setSearchCollapsed(true);
+      else if (scrollRun < -24) setSearchCollapsed(false);
+    }
+
+    const onPhoneChange = () => { if (!phoneQuery.matches) setSearchCollapsed(false); };
+    if (phoneQuery.addEventListener) phoneQuery.addEventListener('change', onPhoneChange);
+    else if (phoneQuery.addListener) phoneQuery.addListener(onPhoneChange);
+    document.getElementById('searchInput').addEventListener('focus', () => setSearchCollapsed(false));
+
     if (scroller) {
       scroller.addEventListener('scroll', () => {
         requestAnimationFrame(() => {
           syncHeroCompact();
           revealPassed();
+          syncSearchCollapse();
         });
       }, { passive: true });
     }
