@@ -1396,7 +1396,10 @@
     body.light .card-tag.is-match,
     body.light .card-work a.is-match { color: #047857; border-color: rgba(4, 120, 87, 0.45); background: rgba(16, 185, 129, 0.08); }
     body.light mark.hl { background: rgba(16, 185, 129, 0.18); }
-    body.light .overlay-box { background: rgba(255, 255, 255, 0.6); border-color: rgba(0, 0, 0, 0.1); box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12); }
+    /* Light mode: the page behind is near-white, so a thinner white layer and a
+       lighter blur are needed for the menu to read as glass, not solid. */
+    body.light .overlay-box { backdrop-filter: blur(6px) saturate(140%); -webkit-backdrop-filter: blur(6px) saturate(140%); }
+    body.light .overlay-box { background: rgba(255, 255, 255, 0.38); border-color: rgba(0, 0, 0, 0.1); box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12); }
     body.light .ov-item { color: #1f2937; }
     body.light .ov-item:hover,
     body.light .ov-item.is-sel { background: rgba(0, 0, 0, 0.05); }
