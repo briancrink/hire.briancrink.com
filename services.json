@@ -2,6 +2,7 @@
   "cards": [
     {
       "title": "Web Platform",
+      "badge": "Primary Service",
       "desc": "Stand up a public surface: portal, product page, or operating shell with a consistent visual system.",
       "tags": [
         "HTML",
@@ -62,6 +63,7 @@
     },
     {
       "title": "Product Systems",
+      "badge": "Primary Service",
       "desc": "Map a domain of work into modes, routes, and the interactions a person actually uses.",
       "tags": [
         "IA",

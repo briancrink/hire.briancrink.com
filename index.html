@@ -1188,6 +1188,33 @@
     .tag-chip.is-on { color: #00ff9d; border-color: rgba(0, 255, 157, 0.5); background: rgba(0, 255, 157, 0.08); }
     .tag-chip.is-empty { opacity: 0.32; }
 
+    /* Badge filter chip ("★ Primary Role") — same gold as the card badge. */
+    .tag-chip.badge-chip {
+      gap: 5px;
+      color: #f5c451;
+      border-color: rgba(245, 196, 81, 0.35);
+      background: rgba(245, 196, 81, 0.06);
+    }
+    .tag-chip.badge-chip svg { width: 11px; height: 11px; display: block; flex: 0 0 auto; }
+    .tag-chip.badge-chip:hover { color: #ffd76a; border-color: rgba(245, 196, 81, 0.6); }
+    .tag-chip.badge-chip.is-on {
+      color: #ffd76a;
+      border-color: rgba(245, 196, 81, 0.75);
+      background: rgba(245, 196, 81, 0.16);
+    }
+    body.light .tag-chip.badge-chip {
+      color: #92600a;
+      border-color: rgba(161, 98, 7, 0.35);
+      background: rgba(234, 179, 8, 0.1);
+    }
+    body.light .tag-chip.badge-chip:hover { color: #7a4f06; border-color: rgba(161, 98, 7, 0.6); }
+    body.light .tag-chip.badge-chip.is-on {
+      color: #7a4f06;
+      border-color: rgba(161, 98, 7, 0.7);
+      background: rgba(234, 179, 8, 0.22);
+    }
+    .card-badge { cursor: pointer; }
+
     .card-tag {
       cursor: pointer;
       transition: color 0.2s ease, border-color 0.2s ease;
@@ -2490,7 +2517,7 @@
     }
 
     document.getElementById('cardBoard').addEventListener('click', (e) => {
-      if (e.target.closest('.card-tag')) return;   // tag click filters instead
+      if (e.target.closest('.card-tag, .card-badge')) return;   // tag / badge click filters instead
       if (e.target.closest('a, button')) return;   // links keep their own job
       const card = e.target.closest('.hire-card.is-active');
       if (!card) return;
@@ -2555,7 +2582,7 @@
       const IS_MAC = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent || '');
       const CMD_KEY = IS_MAC ? '⌘K' : 'Ctrl K';
 
-      const state = { mode: 'roles', query: '', tags: [], sort: 'relevance' };
+      const state = { mode: 'roles', query: '', tags: [], badges: [], sort: 'relevance' };
       let models = [];
       let results = [];
       let parsed = { terms: [], command: null };
@@ -2619,6 +2646,7 @@
             workUrlL: work.map((w) => norm(w.url)),
             linkL: work.concat(actions).map((a) => norm((a.label || '') + ' ' + a.url)),
             catsL: Array.from(new Set(tagCats.flatMap((id) => [norm(id), norm(window.hireTags ? window.hireTags.label(id) : id)]))),
+            badge: String(card.badge || ''),
             badgeL: norm(card.badge || ''),
             titleEl: el.querySelector('.card-title'),
             descEl: el.querySelector('.card-desc'),
@@ -2639,6 +2667,19 @@
           e.total++;
           map.set(key, e);
         }));
+        return Array.from(map.values()).sort((a, b) => b.total - a.total || a.label.localeCompare(b.label));
+      }
+
+      // Card badges in a view (e.g. "Primary Role"), shown as gold chips in the
+      // tag strip right after "All …". Only views that have badges show them.
+      function modeBadges(mode) {
+        const map = new Map();
+        inMode(mode).forEach((m) => {
+          if (!m.badgeL) return;
+          const e = map.get(m.badgeL) || { key: m.badgeL, label: m.badge, total: 0 };
+          e.total++;
+          map.set(m.badgeL, e);
+        });
         return Array.from(map.values()).sort((a, b) => b.total - a.total || a.label.localeCompare(b.label));
       }
 
@@ -2725,8 +2766,9 @@
         }
       }
 
-      function matchCard(m, terms, tags) {
+      function matchCard(m, terms, tags, badges) {
         if (tags && tags.length && !tags.every((k) => m.tagsL.indexOf(k) !== -1)) return -1;
+        if (badges && badges.length && badges.indexOf(m.badgeL) === -1) return -1;
         let score = 0;
         for (const t of terms) {
           const s = scoreTerm(m, t);
@@ -2739,7 +2781,7 @@
 
       function countFor(mode) {
         if (mode === state.mode) return results.length;
-        return inMode(mode).filter((m) => matchCard(m, parsed.terms, state.tags) >= 0).length;
+        return inMode(mode).filter((m) => matchCard(m, parsed.terms, state.tags, state.badges) >= 0).length;
       }
 
       /* ---------- compute + paint ---------- */
@@ -2748,7 +2790,7 @@
         const terms = parsed.terms;
         results = [];
         models.forEach((m) => {
-          const score = m.mode === state.mode ? matchCard(m, terms, state.tags) : -1;
+          const score = m.mode === state.mode ? matchCard(m, terms, state.tags, state.badges) : -1;
           m.score = score;
           const ok = score >= 0;
           m.el.classList.toggle('is-active', ok);
@@ -2812,10 +2854,17 @@
         results.forEach((m) => m.tagsL.forEach((k) => counts.set(k, (counts.get(k) || 0) + 1)));
         const on = new Set(state.tags);
         const total = inMode(state.mode).length;
-        const filtered = !!(state.tags.length || parsed.terms.length);
+        const filtered = !!(state.tags.length || state.badges.length || parsed.terms.length);
         const ordered = all.filter((t) => on.has(t.key)).concat(all.filter((t) => !on.has(t.key)));
         let html = '<button type="button" class="tag-chip is-all' + (filtered ? '' : ' is-on') + '" data-act="clear" title="' + (filtered ? 'Clear search and tags' : 'All ' + MODE_LABEL[state.mode]) + '">'
           + 'All ' + MODE_LABEL[state.mode] + ' <span class="n">' + (filtered ? results.length + '/' + total : total) + '</span></button>';
+        modeBadges(state.mode).forEach((bdg) => {
+          const isOn = state.badges.indexOf(bdg.key) !== -1;
+          const n = results.filter((m) => m.badgeL === bdg.key).length;
+          html += '<button type="button" class="tag-chip badge-chip' + (isOn ? ' is-on' : '') + (!n && !isOn ? ' is-empty' : '') + '"'
+            + ' data-badge="' + escapeHtml(bdg.key) + '" aria-pressed="' + isOn + '" title="Filter by ' + escapeHtml(bdg.label) + '">'
+            + BADGE_STAR + escapeHtml(bdg.label) + ' <span class="n">' + n + '</span></button>';
+        });
         ordered.forEach((t) => {
           const isOn = on.has(t.key);
           const n = counts.get(t.key) || 0;
@@ -2831,6 +2880,10 @@
       function describeFilters() {
         const bits = [];
         if (parsed.terms.length) bits.push('“' + escapeHtml(state.query.trim()) + '”');
+        if (state.badges.length) {
+          const labels = new Map(modeBadges(state.mode).map((t) => [t.key, t.label]));
+          bits.push(state.badges.map((k) => '★ ' + escapeHtml(labels.get(k) || k)).join(' '));
+        }
         if (state.tags.length) {
           const labels = new Map(modeTags(state.mode).map((t) => [t.key, t.label]));
           bits.push(state.tags.map((k) => '#' + escapeHtml(labels.get(k) || k)).join(' '));
@@ -2870,6 +2923,7 @@
         const p = new URLSearchParams();
         if (state.query && !parsed.command) p.set('q', state.query.trim());
         state.tags.forEach((t) => p.append('tag', t));
+        state.badges.forEach((b) => p.append('badge', b));
         if (state.sort !== 'relevance') p.set('sort', state.sort);
         const qs = p.toString();
         try { history.replaceState(history.state, '', location.pathname + (qs ? '?' + qs : '') + location.hash); } catch (err) {}
@@ -2882,6 +2936,7 @@
         const p = new URLSearchParams(location.search);
         state.query = p.get('q') || '';
         state.tags = Array.from(new Set(p.getAll('tag').map(norm).filter(Boolean)));
+        state.badges = Array.from(new Set(p.getAll('badge').map(norm).filter(Boolean)));
         const s = p.get('sort');
         if (s === 'az' || s === 'original') state.sort = s;
         qInput.value = state.query;
@@ -2942,6 +2997,8 @@
         if (!models.length) return;
         const keys = new Set(modeTags(state.mode).map((t) => t.key));
         state.tags = state.tags.filter((k) => keys.has(k));
+        const badgeKeys = new Set(modeBadges(state.mode).map((b) => b.key));
+        state.badges = state.badges.filter((k) => badgeKeys.has(k));
         compute();
         syncUI();
         writeUrlSoon();
@@ -2964,8 +3021,18 @@
         if (!has) tagStrip.scrollLeft = 0;
       }
 
+      function toggleBadge(raw) {
+        const key = norm(raw);
+        if (!key) return;
+        const has = state.badges.indexOf(key) !== -1;
+        state.badges = has ? state.badges.filter((k) => k !== key) : state.badges.concat(key);
+        refresh();
+        if (!has) tagStrip.scrollLeft = 0;
+      }
+
       function clearAll() {
         state.tags = [];
+        state.badges = [];
         setQuery('');
       }
 
@@ -3048,7 +3115,7 @@
         const other = state.mode === 'roles' ? 'services' : 'roles';
         const list = [];
         list.push({ label: 'Show ' + MODE_LABEL[other], icon: '⇄', hint: kbd(other === 'services' ? '→' : '←'), k: 'switch view toggle mode ' + other, run: () => switchMode(other) });
-        if (state.query.trim() && !parsed.command || state.tags.length) {
+        if (state.query.trim() && !parsed.command || state.tags.length || state.badges.length) {
           list.push({ label: 'Clear search & tags', icon: '✕', hint: kbd('Esc'), k: 'clear reset remove filters', run: clearAll });
         }
         if (results.length && (parsed.terms.length || state.tags.length)) {
@@ -3136,7 +3203,7 @@
               })).join('')
             : '<div class="ov-empty">No ' + (s.kind === 'tag' ? 'tags' : 'projects') + ' start with “' + escapeHtml(s.q) + '”.</div>');
         } else if (overlayMode === 'menu') {
-          const filtered = !!(parsed.terms.length || state.tags.length);
+          const filtered = !!(parsed.terms.length || state.tags.length || state.badges.length);
           const viewHint = (mode) => { const n = countFor(mode); return filtered ? n + ' match' + (n === 1 ? '' : 'es') : String(n); };
           html += section('View',
             btn('Roles', { icon: state.mode === 'roles' ? '●' : '○', on: state.mode === 'roles', hint: viewHint('roles'), run: () => { switchMode('roles'); renderOverlay(); } })
@@ -3306,7 +3373,7 @@
         if (e.key === 'Escape') {
           e.preventDefault();
           if (overlayMode) closeOverlay();
-          else if (state.query || state.tags.length) clearAll();
+          else if (state.query || state.tags.length || state.badges.length) clearAll();
           else qInput.blur();
           return;
         }
@@ -3330,7 +3397,7 @@
         if (e.key === '/') {
           e.preventDefault();
           qInput.focus();
-        } else if (e.key === 'Escape' && (state.query || state.tags.length)) {
+        } else if (e.key === 'Escape' && (state.query || state.tags.length || state.badges.length)) {
           clearAll();
         }
       });
@@ -3339,6 +3406,7 @@
         const el = e.target.closest('.tag-chip');
         if (!el) return;
         if (el.dataset.act === 'clear') clearAll();
+        else if (el.dataset.badge) toggleBadge(el.dataset.badge);
         else if (el.dataset.tag) toggleTag(el.dataset.tag);
       });
       tagStrip.addEventListener('wheel', (e) => {
@@ -3353,7 +3421,10 @@
         if (el && el.dataset.tag) {
           e.preventDefault();
           toggleTag(el.dataset.tag);
+          return;
         }
+        const badge = e.target.closest('.card-badge');
+        if (badge) toggleBadge(badge.textContent.trim());
       });
 
       if (emptyBox) {
