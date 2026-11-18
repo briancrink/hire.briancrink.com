@@ -1216,7 +1216,11 @@
       overscroll-behavior: contain;
       padding: 8px;
       text-align: left;
-      background: rgba(12, 12, 12, 0.94);
+      /* Translucent glass: what's behind shows through, blurred so it
+         doesn't compete with the menu items. */
+      background: rgba(12, 12, 12, 0.7);
+      backdrop-filter: blur(16px) saturate(120%);
+      -webkit-backdrop-filter: blur(16px) saturate(120%);
       scrollbar-width: thin;
     }
 
@@ -1392,7 +1396,7 @@
     body.light .card-tag.is-match,
     body.light .card-work a.is-match { color: #047857; border-color: rgba(4, 120, 87, 0.45); background: rgba(16, 185, 129, 0.08); }
     body.light mark.hl { background: rgba(16, 185, 129, 0.18); }
-    body.light .overlay-box { background: rgba(255, 255, 255, 0.97); border-color: rgba(0, 0, 0, 0.1); box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12); }
+    body.light .overlay-box { background: rgba(255, 255, 255, 0.7); border-color: rgba(0, 0, 0, 0.1); box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12); }
     body.light .ov-item { color: #1f2937; }
     body.light .ov-item:hover,
     body.light .ov-item.is-sel { background: rgba(0, 0, 0, 0.05); }
