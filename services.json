@@ -19,14 +19,10 @@
           "url": "https://social.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -53,14 +49,10 @@
           "url": "https://tech.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -87,14 +79,10 @@
           "url": "https://jobs.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {

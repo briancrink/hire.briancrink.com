@@ -1,0 +1,169 @@
+{
+  "categories": [
+    {
+      "id": "language",
+      "label": "Languages"
+    },
+    {
+      "id": "framework",
+      "label": "Frameworks"
+    },
+    {
+      "id": "platform",
+      "label": "Platforms"
+    },
+    {
+      "id": "data",
+      "label": "Data"
+    },
+    {
+      "id": "ai",
+      "label": "AI & ML"
+    },
+    {
+      "id": "architecture",
+      "label": "Architecture"
+    },
+    {
+      "id": "security",
+      "label": "Security"
+    },
+    {
+      "id": "operations",
+      "label": "Operations"
+    },
+    {
+      "id": "methodology",
+      "label": "Methodologies"
+    },
+    {
+      "id": "tool",
+      "label": "Tools"
+    },
+    {
+      "id": "domain",
+      "label": "Domains"
+    },
+    {
+      "id": "other",
+      "label": "Other"
+    }
+  ],
+  "aliases": {
+    "CI": "CI/CD"
+  },
+  "tags": {
+    "CSS": "language",
+    "HTML": "language",
+    "JavaScript": "language",
+    "Markdown": "language",
+    "Python": "language",
+    "SQL": "language",
+    "TypeScript": "language",
+    "Airflow": "framework",
+    "Angular": "framework",
+    "Cypress": "framework",
+    "Node.js": "framework",
+    "PyTorch": "framework",
+    "Selenium": "framework",
+    "Spark": "framework",
+    "AWS": "platform",
+    "Azure": "platform",
+    "Cloudflare": "platform",
+    "Docker": "platform",
+    "Firebase": "platform",
+    "K8s": "platform",
+    "Linux": "platform",
+    "macOS": "platform",
+    "Network": "platform",
+    "PLC": "platform",
+    "SCADA": "platform",
+    "Terraform": "platform",
+    "VPC": "platform",
+    "Windows": "platform",
+    "Analysis": "data",
+    "Datasets": "data",
+    "ETL": "data",
+    "Postgres": "data",
+    "Tableau": "data",
+    "Taxonomy": "data",
+    "Agents": "ai",
+    "Alignment": "ai",
+    "Eval": "ai",
+    "LLM": "ai",
+    "MLOps": "ai",
+    "Orchestration": "ai",
+    "RAG": "ai",
+    "Safety": "ai",
+    "ADRs": "architecture",
+    "APIs": "architecture",
+    "Architecture": "architecture",
+    "gRPC": "architecture",
+    "IA": "architecture",
+    "Integration": "architecture",
+    "Queues": "architecture",
+    "Systems": "architecture",
+    "Adversarial": "security",
+    "Defense": "security",
+    "IAM": "security",
+    "IR": "security",
+    "Okta": "security",
+    "Security": "security",
+    "SIEM": "security",
+    "SOC": "security",
+    "Chat": "operations",
+    "ITIL": "operations",
+    "Logs": "operations",
+    "Monitoring": "operations",
+    "Observability": "operations",
+    "Remote": "operations",
+    "SLA": "operations",
+    "SRE": "operations",
+    "Tickets": "operations",
+    "Agile": "methodology",
+    "BPM": "methodology",
+    "Cases": "methodology",
+    "CI/CD": "methodology",
+    "Docs": "methodology",
+    "Planning": "methodology",
+    "PM": "methodology",
+    "Process": "methodology",
+    "Product": "methodology",
+    "Program": "methodology",
+    "QA": "methodology",
+    "Requirements": "methodology",
+    "Roadmap": "methodology",
+    "Scheduling": "methodology",
+    "Scrum": "methodology",
+    "CMS": "tool",
+    "Confluence": "tool",
+    "CRM": "tool",
+    "Figma": "tool",
+    "Git": "tool",
+    "Jira": "tool",
+    "Stripe": "tool",
+    "TestRail": "tool",
+    "Tools": "tool",
+    "Zendesk": "tool",
+    "Bayes": "domain",
+    "Controls": "domain",
+    "Diligence": "domain",
+    "Finance": "domain",
+    "Foresight": "domain",
+    "Hiring": "domain",
+    "Incentives": "domain",
+    "Intel": "domain",
+    "M&A": "domain",
+    "Modeling": "domain",
+    "Models": "domain",
+    "Networks": "domain",
+    "Ops": "domain",
+    "Policy": "domain",
+    "Research": "domain",
+    "Risk": "domain",
+    "Scenarios": "domain",
+    "Strategy": "domain",
+    "TA": "domain",
+    "Trends": "domain"
+  }
+}

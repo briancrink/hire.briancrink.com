@@ -18,14 +18,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -51,14 +47,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -84,14 +76,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -117,14 +105,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -150,14 +134,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -183,14 +163,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -216,14 +192,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -249,14 +221,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -282,14 +250,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -315,14 +279,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -332,6 +292,7 @@
     },
     {
       "title": "Backend Developer",
+      "badge": "Primary Role",
       "desc": "Build the services, stores, and contracts a product surface depends on.",
       "tags": [
         "Node.js",
@@ -348,14 +309,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -381,14 +338,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -414,14 +367,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -447,14 +396,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -480,14 +425,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -513,14 +454,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -546,14 +483,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -579,14 +512,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -612,14 +541,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -645,14 +570,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -678,14 +599,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -711,14 +628,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -744,14 +657,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -777,14 +686,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -810,14 +715,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -843,14 +744,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -876,14 +773,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -909,14 +802,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -942,14 +831,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -975,14 +860,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -1008,14 +889,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -1041,14 +918,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -1058,6 +931,7 @@
     },
     {
       "title": "Full Stack Developer",
+      "badge": "Primary Role",
       "desc": "Work both sides of the request: the client a person uses and the service behind it.",
       "tags": [
         "TypeScript",
@@ -1074,14 +948,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -1107,14 +977,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -1140,14 +1006,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -1173,14 +1035,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -1206,14 +1064,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -1239,14 +1093,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -1272,14 +1122,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -1305,14 +1151,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -1338,14 +1180,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -1371,14 +1209,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -1404,14 +1238,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -1438,14 +1268,10 @@
           "url": "https://app.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -1472,14 +1298,10 @@
           "url": "https://career.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -1505,14 +1327,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -1538,14 +1356,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -1571,14 +1385,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -1604,14 +1414,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -1637,14 +1443,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -1670,14 +1472,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -1703,14 +1501,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -1736,14 +1530,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -1769,14 +1559,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -1786,6 +1572,7 @@
     },
     {
       "title": "SaaS Developer",
+      "badge": "Primary Role",
       "desc": "Ship a multi-tenant product that stays stable as accounts and usage grow.",
       "tags": [
         "TypeScript",
@@ -1802,14 +1589,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -1835,14 +1618,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -1868,14 +1647,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -1901,14 +1676,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -1934,14 +1705,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -1967,14 +1734,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -2000,14 +1763,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -2017,6 +1776,7 @@
     },
     {
       "title": "Software Architect",
+      "badge": "Primary Role",
       "desc": "Set the shape of the codebase so later work does not fight the first decisions.",
       "tags": [
         "ADRs",
@@ -2033,14 +1793,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -2050,6 +1806,7 @@
     },
     {
       "title": "Software Developer",
+      "badge": "Primary Role",
       "desc": "Write and ship the code that turns a spec into a running surface.",
       "tags": [
         "TypeScript",
@@ -2066,14 +1823,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -2083,6 +1836,7 @@
     },
     {
       "title": "Software Engineer",
+      "badge": "Primary Role",
       "desc": "Build and ship product surfaces across web clients, APIs, and the systems that keep them online.",
       "tags": [
         "TypeScript",
@@ -2104,14 +1858,10 @@
           "url": "https://tech.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -2124,7 +1874,7 @@
       "desc": "Automate the proof that a build still does what the last one claimed.",
       "tags": [
         "Cypress",
-        "CI",
+        "CI/CD",
         "QA"
       ],
       "work": [
@@ -2137,14 +1887,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -2170,14 +1916,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -2203,14 +1945,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -2236,14 +1974,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -2269,14 +2003,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -2286,6 +2016,7 @@
     },
     {
       "title": "Systems Architect",
+      "badge": "Primary Role",
       "desc": "Draw the boundaries of a system so each part has a job and a failure mode.",
       "tags": [
         "Architecture",
@@ -2302,14 +2033,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -2335,14 +2062,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -2368,14 +2091,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -2401,14 +2120,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -2434,14 +2149,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -2467,14 +2178,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {
@@ -2500,14 +2207,10 @@
           "url": "https://hire.briancrink.com"
         }
       ],
-      "actions": [
+      "credentials": [
         {
           "label": "Resume",
           "url": "https://hire.briancrink.com/resume/"
-        },
-        {
-          "label": "Contact",
-          "url": "https://contact.briancrink.com"
         }
       ],
       "icon": {

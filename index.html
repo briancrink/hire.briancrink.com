@@ -637,7 +637,8 @@
     }
 
     .hire-card.is-active {
-      display: block;
+      display: flex;
+      flex-direction: column;
     }
 
 
@@ -669,13 +670,141 @@
       color: #00ff9d;
     }
 
+    .card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      min-height: 22px;
+      margin: 0 0 12px;
+    }
+
     .card-icon {
       width: 18px;
       height: 18px;
       display: block;
+      flex: 0 0 auto;
       transition: color 0.2s ease;
-      margin: 0 0 12px;
       color: #ffffff;
+    }
+
+    /* Top-right qualifier (e.g. "Primary Role"). Gold, so it never reads
+       as the green selection / call-to-action colour. */
+    .card-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 9px 3px 7px;
+      border: 1px solid rgba(245, 196, 81, 0.35);
+      border-radius: 999px;
+      background: rgba(245, 196, 81, 0.08);
+      color: #f5c451;
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+
+    .card-badge svg { width: 11px; height: 11px; display: block; }
+
+    /* Category blocks and the Featured Work / Credentials row share one grid,
+       so short tag lists sit side by side instead of stacking. */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(128px, 1fr));
+      gap: 12px 16px;
+      margin: 0 0 16px;
+    }
+
+    .card-grid:empty { display: none; }
+    .card-sec { min-width: 0; }
+
+    /* Bottom row: Featured Work | Credentials | Contact Brian. The row sits
+       at the bottom of the card (so buttons line up across a row of cards)
+       and the button takes the last grid column, right-aligned. If the card
+       is too narrow for three columns it drops below, still on the right. */
+    .card-links {
+      margin: auto 0 0;
+    }
+
+    .card-links .card-cta {
+      grid-column-end: -1;
+      justify-self: end;
+      align-self: end;
+    }
+
+    /* Resting: quiet, same translucent green as the active "All Roles"
+       chip, since it's on every card. Selected card: full green + black
+       (same as the active toggle) with two slow glow pulses. */
+    .card-cta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 16px;
+      border: 1px solid rgba(0, 255, 157, 0.5);
+      border-radius: 999px;
+      background: rgba(0, 255, 157, 0.08);
+      color: #5ec79a; /* muted green: reads as the CTA without shouting */
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease, transform 0.2s ease;
+    }
+
+    .card-cta:hover {
+      background: rgba(0, 255, 157, 0.14);
+      border-color: rgba(0, 255, 157, 0.7);
+      color: #00ff9d;
+      transform: translateY(-1px);
+    }
+    .card-cta:active { transform: translateY(0); }
+
+    .hire-card.is-lit .card-cta {
+      background: rgba(0, 255, 157, 0.9);
+      border-color: transparent;
+      color: #000000;
+      animation: ctaPulse 1.5s ease-out 0.15s 2;
+    }
+
+    .hire-card.is-lit .card-cta:hover { background: #00ff9d; }
+
+    /* Selected card: Featured Work + Credentials pills pick up a quiet
+       translucent purple, so the links read as a group apart from the tags. */
+    .hire-card.is-lit .card-work a,
+    .hire-card.is-lit .card-creds a {
+      background: rgba(168, 85, 247, 0.1);
+      border-color: rgba(168, 85, 247, 0.26);
+    }
+
+    .hire-card.is-lit .card-work a:hover,
+    .hire-card.is-lit .card-creds a:hover {
+      background: rgba(168, 85, 247, 0.15);
+      border-color: rgba(168, 85, 247, 0.38);
+      opacity: 1;
+    }
+
+    body.light .hire-card.is-lit .card-work a,
+    body.light .hire-card.is-lit .card-creds a {
+      background: rgba(139, 92, 246, 0.07);
+      border-color: rgba(124, 58, 237, 0.2);
+    }
+
+    body.light .hire-card.is-lit .card-work a:hover,
+    body.light .hire-card.is-lit .card-creds a:hover {
+      background: rgba(139, 92, 246, 0.11);
+      border-color: rgba(124, 58, 237, 0.3);
+    }
+
+    @keyframes ctaPulse {
+      0%   { box-shadow: 0 0 0 0 rgba(0, 255, 157, 0.55); }
+      70%  { box-shadow: 0 0 0 10px rgba(0, 255, 157, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(0, 255, 157, 0); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .hire-card.is-lit .card-cta { animation: none; }
     }
 
     .card-title {
@@ -700,7 +829,6 @@
       display: flex;
       flex-wrap: wrap;
       gap: 6px;
-      margin: 0 0 16px;
     }
 
     .card-tag {
@@ -724,14 +852,15 @@
       text-transform: uppercase;
     }
 
-    .card-work {
+    .card-work,
+    .card-creds {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
-      margin: 0 0 16px;
     }
 
     .card-work a,
+    .card-creds a,
     .card-actions a {
       display: inline-flex;
       align-items: center;
@@ -745,10 +874,11 @@
       font-weight: 500;
       text-decoration: none;
       letter-spacing: 0.01em;
-      transition: opacity 0.2s ease, border-color 0.2s ease;
+      transition: opacity 0.2s ease, border-color 0.25s ease, background 0.25s ease;
     }
 
     .card-work a:hover,
+    .card-creds a:hover,
     .card-actions a:hover {
       opacity: 0.85;
       border-color: rgba(255, 255, 255, 0.16);
@@ -817,11 +947,35 @@
     }
 
     body.light .card-work a,
+    body.light .card-creds a,
     body.light .card-actions a {
       background: rgba(0, 0, 0, 0.06);
       border-color: rgba(0, 0, 0, 0.14);
       color: #1f2937;
     }
+
+    body.light .card-badge {
+      border-color: rgba(161, 98, 7, 0.35);
+      background: rgba(234, 179, 8, 0.1);
+      color: #92600a;
+    }
+
+    body.light .card-cta {
+      border-color: rgba(4, 120, 87, 0.45);
+      background: rgba(16, 185, 129, 0.08);
+      color: #3f8f6e;
+    }
+    body.light .card-cta:hover {
+      background: rgba(16, 185, 129, 0.14);
+      border-color: rgba(4, 120, 87, 0.65);
+      color: #047857;
+    }
+    body.light .hire-card.is-lit .card-cta {
+      background: rgba(0, 255, 157, 0.9);
+      border-color: transparent;
+      color: #000000;
+    }
+    body.light .hire-card.is-lit .card-cta:hover { background: #00e68d; }
 
     .card-actions {
       display: flex;
@@ -1010,6 +1164,13 @@
     .ov-item.is-sel { background: rgba(255, 255, 255, 0.06); }
     .ov-item.is-on,
     .ov-item.is-on .ov-ico { color: #00ff9d; }
+
+    .ov-sub {
+      padding: 6px 10px 2px;
+      color: #8b949e;
+      font-size: 0.7rem;
+      font-weight: 500;
+    }
 
     .ov-chips {
       display: flex;
@@ -1341,24 +1502,93 @@
       return '<a href="' + escapeHtml(item.url) + '">' + escapeHtml(item.label || item.url) + '</a>';
     }
 
+    /* ---------- Tag categories (tags.json) ----------
+       tags.json maps each tag to a category id; categories carry the label
+       and display order; aliases fold variants into one tag (e.g. CI → CI/CD).
+       Tags missing from tags.json still render, under "Other". */
+    const CONTACT_URL = 'https://contact.briancrink.com';
+    const tagIndex = {
+      categories: [],            // [{ id, label }] in display order
+      byTag: new Map(),          // lower-case tag → category id
+      aliases: new Map(),        // lower-case variant → canonical tag
+      label(id) {
+        const c = this.categories.find((x) => x.id === id);
+        return c ? c.label : 'Other';
+      },
+      categoryOf(tag) {
+        return this.byTag.get(String(tag).toLowerCase()) || 'other';
+      },
+      canonical(tag) {
+        return this.aliases.get(String(tag).toLowerCase()) || tag;
+      }
+    };
+    window.hireTags = tagIndex;
+
+    function loadTagIndex(data) {
+      const cats = (data && Array.isArray(data.categories)) ? data.categories : [];
+      tagIndex.categories = cats.filter((c) => c && c.id).map((c) => ({ id: String(c.id), label: String(c.label || c.id) }));
+      if (!tagIndex.categories.some((c) => c.id === 'other')) tagIndex.categories.push({ id: 'other', label: 'Other' });
+      tagIndex.byTag = new Map(Object.entries((data && data.tags) || {}).map(([t, c]) => [t.toLowerCase(), String(c)]));
+      tagIndex.aliases = new Map(Object.entries((data && data.aliases) || {}).map(([a, t]) => [a.toLowerCase(), String(t)]));
+    }
+
+    function canonicalTags(card) {
+      const seen = new Set();
+      card.tags = (card.tags || []).map((t) => tagIndex.canonical(String(t))).filter((t) => {
+        const k = t.toLowerCase();
+        if (seen.has(k)) return false;
+        seen.add(k);
+        return true;
+      });
+      return card;
+    }
+
+    // Group a card's tags into [{ id, label, tags }] in category order.
+    function groupTags(tags) {
+      const groups = new Map();
+      tags.forEach((t) => {
+        const id = tagIndex.categoryOf(t);
+        if (!groups.has(id)) groups.set(id, []);
+        groups.get(id).push(t);
+      });
+      const order = tagIndex.categories.map((c) => c.id);
+      return Array.from(groups.entries())
+        .sort((a, b) => (order.indexOf(a[0]) + 1 || 999) - (order.indexOf(b[0]) + 1 || 999))
+        .map(([id, list]) => ({ id, label: tagIndex.label(id), tags: list }));
+    }
+
+    const BADGE_STAR = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 3.5l2.6 5.3 5.9.9-4.25 4.1 1 5.85L12 16.9l-5.25 2.75 1-5.85L3.5 9.7l5.9-.9z"/></svg>';
+
     function renderHireCard(card, mode) {
       const icon = card.icon || {};
-      const tags = (card.tags || []).map(function (tag) {
-        return '<span class="card-tag" data-tag="' + escapeHtml(tag) + '" title="Filter by ' + escapeHtml(tag) + '">' + escapeHtml(tag) + '</span>';
-      }).join('');
+      const chip = (tag) => '<span class="card-tag" data-tag="' + escapeHtml(tag) + '" title="Filter by ' + escapeHtml(tag) + '">' + escapeHtml(tag) + '</span>';
+      const cats = groupTags(card.tags || []).map((g) =>
+        '<div class="card-sec" data-cat="' + escapeHtml(g.id) + '">' +
+          '<p class="card-label">' + escapeHtml(g.label) + '</p>' +
+          '<div class="card-tags">' + g.tags.map(chip).join('') + '</div>' +
+        '</div>'
+      ).join('');
       const work = (card.work || []).map(cardLink).join('');
-      const actions = (card.actions || []).map(cardLink).join('');
+      const creds = (card.credentials || []).map(cardLink).join('');
+      const badge = card.badge
+        ? '<span class="card-badge">' + BADGE_STAR + escapeHtml(card.badge) + '</span>'
+        : '';
+      const contact = card.contact || CONTACT_URL;
       return (
         '<article class="hire-card" data-mode="' + escapeHtml(mode) + '">' +
-          '<svg class="card-icon" viewBox="' + escapeHtml(icon.viewBox || '0 0 24 24') + '" aria-hidden="true">' +
-            '<path fill="currentColor" d="' + escapeHtml(icon.path || '') + '"/>' +
-          '</svg>' +
+          '<div class="card-top">' +
+            '<svg class="card-icon" viewBox="' + escapeHtml(icon.viewBox || '0 0 24 24') + '" aria-hidden="true">' +
+              '<path fill="currentColor" d="' + escapeHtml(icon.path || '') + '"/>' +
+            '</svg>' + badge +
+          '</div>' +
           '<h3 class="card-title">' + escapeHtml(card.title || '') + '</h3>' +
           '<p class="card-desc">' + escapeHtml(card.desc || '') + '</p>' +
-          '<div class="card-tags">' + tags + '</div>' +
-          '<p class="card-label">Featured Work</p>' +
-          '<div class="card-work">' + work + '</div>' +
-          '<div class="card-actions">' + actions + '</div>' +
+          (cats ? '<div class="card-grid card-cats">' + cats + '</div>' : '') +
+          '<div class="card-grid card-links">' +
+            (work ? '<div class="card-sec"><p class="card-label">Featured Work</p><div class="card-work">' + work + '</div></div>' : '') +
+            (creds ? '<div class="card-sec"><p class="card-label">Credentials</p><div class="card-creds">' + creds + '</div></div>' : '') +
+            '<a class="card-cta" href="' + escapeHtml(contact) + '">Contact Brian</a>' +
+          '</div>' +
         '</article>'
       );
     }
@@ -1372,15 +1602,18 @@
     async function loadHireCards() {
       const board = document.getElementById('cardBoard');
       if (!board) return;
-      const [rolesRes, servicesRes] = await Promise.all([
+      const [rolesRes, servicesRes, tagsRes] = await Promise.all([
         fetch('roles.json', { cache: 'no-store' }),
-        fetch('services.json', { cache: 'no-store' })
+        fetch('services.json', { cache: 'no-store' }),
+        fetch('tags.json', { cache: 'no-store' }).catch(() => null)
       ]);
       if (!rolesRes.ok || !servicesRes.ok) {
         throw new Error('Could not load hire card data (roles.json / services.json)');
       }
-      const roles = listCards(await rolesRes.json());
-      const services = listCards(await servicesRes.json());
+      // Categories are optional: without tags.json every tag shows under "Other".
+      loadTagIndex(tagsRes && tagsRes.ok ? await tagsRes.json().catch(() => null) : null);
+      const roles = listCards(await rolesRes.json()).map(canonicalTags);
+      const services = listCards(await servicesRes.json()).map(canonicalTags);
       board.innerHTML =
         roles.map(function (card) { return renderHireCard(card, 'roles'); }).join('') +
         services.map(function (card) { return renderHireCard(card, 'services'); }).join('');
@@ -1510,7 +1743,17 @@
     function queueCardReveal() {
       clearCardObserver();
       const cards = Array.from(document.querySelectorAll('.hire-card.is-active'));
-      cards.forEach((card) => card.classList.remove('is-in'));
+      // Snap every incoming card to its hidden start (opacity 0, 12px down)
+      // with transitions off. Cards from a view shown earlier still carry
+      // is-in, and the browser may already have painted them visible when
+      // they became active — without this, removing is-in starts a fade-out
+      // from 1 that the reveal then reverses, so the first card barely moves.
+      cards.forEach((card) => {
+        card.style.transition = 'none';
+        card.classList.remove('is-in');
+      });
+      void document.getElementById('cardBoard').offsetWidth;
+      cards.forEach((card) => { card.style.transition = ''; });
 
       const isBoot = !cardsBooted;
       const hold = isBoot ? 400 : 80;
@@ -2118,7 +2361,9 @@
         title: 'title', name: 'title', role: 'title', service: 'title',
         desc: 'desc', d: 'desc', about: 'desc',
         work: 'work', project: 'work', projects: 'work', p: 'work',
-        link: 'link', url: 'link', site: 'link'
+        link: 'link', url: 'link', site: 'link',
+        cat: 'cat', category: 'cat', type: 'cat', kind: 'cat',
+        is: 'badge', badge: 'badge'
       };
       const IS_MAC = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent || '');
       const CMD_KEY = IS_MAC ? '⌘K' : 'Ctrl K';
@@ -2173,7 +2418,8 @@
           const el = els[i];
           const tags = (card.tags || []).map(String);
           const work = (card.work || []).filter((w) => w && w.url);
-          const actions = (card.actions || []).filter((a) => a && a.url);
+          const actions = (card.credentials || card.actions || []).filter((a) => a && a.url);
+          const tagCats = tags.map((t) => (window.hireTags ? window.hireTags.categoryOf(t) : 'other'));
           const m = {
             i, mode, el,
             title: String(card.title || ''),
@@ -2185,6 +2431,8 @@
             workL: work.map((w) => norm(w.label || w.url)),
             workUrlL: work.map((w) => norm(w.url)),
             linkL: work.concat(actions).map((a) => norm((a.label || '') + ' ' + a.url)),
+            catsL: Array.from(new Set(tagCats.flatMap((id) => [norm(id), norm(window.hireTags ? window.hireTags.label(id) : id)]))),
+            badgeL: norm(card.badge || ''),
             titleEl: el.querySelector('.card-title'),
             descEl: el.querySelector('.card-desc'),
             tagEls: Array.from(el.querySelectorAll('.card-tag')),
@@ -2273,12 +2521,15 @@
           case 'desc': return textScore(m.descL, t, 4, 3, 2);
           case 'work': return listScore(m.workL, t, 7, 5, 3) || listScore(m.workUrlL, t, 2, 2, 2);
           case 'link': return listScore(m.linkL, t, 3, 3, 2);
+          case 'cat': return listScore(m.catsL, t, 6, 5, 3);
+          case 'badge': return textScore(m.badgeL, t, 6, 5, 3);
           default: {
             const parts = [
               textScore(m.titleL, t, 12, 8, 5),
               listScore(m.tagsL, t, 9, 6, 3),
               listScore(m.workL, t, 6, 4, 2),
-              textScore(m.descL, t, 4, 3, 2)
+              textScore(m.descL, t, 4, 3, 2),
+              textScore(m.badgeL, t, 4, 3, 0)
             ];
             const best = Math.max.apply(null, parts);
             if (best) return best + parts.filter(Boolean).length * 0.25;
@@ -2356,7 +2607,7 @@
           if (m.titleEl) m.titleEl.innerHTML = markText(m.title, titleVals);
           if (m.descEl) m.descEl.innerHTML = markText(m.desc, descVals);
           m.tagEls.forEach((el, k) => {
-            const t = m.tagsL[k];
+            const t = norm(el.dataset.tag);
             el.classList.toggle('is-on', on.has(t));
             el.classList.toggle('is-match', !on.has(t) && tagTerms.some((term) => textScore(t, term, 1, 1, term.field ? 1 : 0) > 0));
           });
@@ -2711,8 +2962,19 @@
           results.forEach((m) => m.tagsL.forEach((k) => counts.set(k, (counts.get(k) || 0) + 1)));
           const on = new Set(state.tags);
           const tags = modeTags(state.mode);
-          html += section('Tags · ' + tags.length,
-            '<div class="ov-chips">' + tags.map((t) => chip(t.label, counts.get(t.key) || 0, on.has(t.key), () => { toggleTag(t.key); renderOverlay(); })).join('') + '</div>');
+          const tagGroups = new Map();
+          tags.forEach((t) => {
+            const id = window.hireTags ? window.hireTags.categoryOf(t.label) : 'other';
+            if (!tagGroups.has(id)) tagGroups.set(id, []);
+            tagGroups.get(id).push(t);
+          });
+          const catOrder = window.hireTags ? window.hireTags.categories.map((c) => c.id) : [];
+          const groupedHtml = Array.from(tagGroups.entries())
+            .sort((a, b) => (catOrder.indexOf(a[0]) + 1 || 999) - (catOrder.indexOf(b[0]) + 1 || 999))
+            .map(([id, list]) => '<div class="ov-sub">' + escapeHtml(window.hireTags ? window.hireTags.label(id) : 'Tags') + '</div>'
+              + '<div class="ov-chips">' + list.map((t) => chip(t.label, counts.get(t.key) || 0, on.has(t.key), () => { toggleTag(t.key); renderOverlay(); })).join('') + '</div>')
+            .join('');
+          html += section('Tags · ' + tags.length, groupedHtml);
           const projects = modeProjects(state.mode);
           if (projects.length) {
             const pc = new Map();
@@ -2730,6 +2992,8 @@
             btn('<code>#tag</code> filter by tag', { icon: '#', run: () => insertText('#') })
             + btn('<code>work:</code> featured work / project', { icon: '◇', run: () => insertText('work:') })
             + btn('<code>title:</code> titles only', { icon: 'T', run: () => insertText('title:') })
+            + btn('<code>cat:</code> tag category (languages, tools…)', { icon: '▦', run: () => insertText('cat:') })
+            + btn('<code>is:primary</code> primary roles', { icon: '★', run: () => insertText('is:primary') })
             + btn('<code>"exact phrase"</code>', { icon: '“', run: () => insertText('"') })
             + btn('<code>-word</code> exclude', { icon: '−', run: () => insertText('-') })
             + btn('<code>&gt;</code> run a command', { icon: '›', run: () => { qInput.value = ''; insertText('>'); } }));
